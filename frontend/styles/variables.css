@@ -1,0 +1,34 @@
+:root {
+
+    /* Backgrounds */
+    --bg-primary: #F6F3EC;
+    --bg-secondary: #FAF8F4;
+    --bg-paper: #F3E9D2;
+
+    /* Text */
+    --text-primary: #3B342C;
+    --text-secondary: #6A6258;
+
+    /* Greens */
+    --green-primary: #607D5A;
+    --green-light: #8FAE78;
+    --green-hover: #54704F;
+
+    /* Accent */
+    --accent: #D6C58C;
+
+    /* Wood */
+    --wood: #A9794D;
+
+    /* Borders */
+    --border: #D9D0C5;
+
+    /* Shadow */
+    --shadow:
+        0px 10px 30px rgba(0,0,0,.08);
+
+    /* Radius */
+
+    --radius:16px;
+
+}

@@ -1,0 +1,29 @@
+h1,
+h2,
+h3,
+h4 {
+
+    font-family: "Cormorant Garamond", serif;
+    font-weight: 600;
+    letter-spacing: .5px;
+
+}
+
+h1 {
+
+    font-size: 64px;
+
+}
+
+h2 {
+    font-size: 42px;
+}
+
+h3 {
+    font-size: 28px;
+}
+
+p
+{
+    color: var(--text-secondary);
+}
