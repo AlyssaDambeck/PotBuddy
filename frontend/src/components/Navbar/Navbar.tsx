@@ -9,9 +9,9 @@ function Navbar() {
                 </div>
 
                 <nav className="navbar__links">
-                    <a href="#">Explore</a>
-                    <a href="#">About</a>
-                    <a href="#">Login</a>
+                    <Link to="/">Home</Link>
+                    <Link to="/login">Login</Link>
+                    <Link to="/register">Register</Link>
                     <button className="navbar__button">
                         Get Started
                     </button>
