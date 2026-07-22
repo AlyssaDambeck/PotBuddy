@@ -1,10 +1,6 @@
 const express = require("express");
 const cors = require("cors");
 
-const dns = require("node:dns");
-
-dns.setServers(["8.8.8.8", "1.1.1.1"]);
-
 const { connectDB } = require("./config/db");
 const plantRoutes = require("./routes/plantRoutes");
 
@@ -25,8 +21,13 @@ app.get("/", (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
-connectDB().then(() => {
-    app.listen(PORT, () => {
-        console.log(`Server running on port ${PORT}`);
+connectDB()
+    .then(() => {
+        app.listen(PORT, () => {
+            console.log(`Server running on port ${PORT}`);
+        });
+    })
+    .catch((error) => {
+        console.error("Failed to start server:", error);
+        process.exit(1);
     });
-});
