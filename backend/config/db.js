@@ -3,6 +3,11 @@ require("dotenv").config();
 
 const uri = process.env.MONGODB_URI;
 
+// for debugging
+if (!uri) {
+    throw new Error("MONGODB_URI is missing from the .env file.");
+}
+
 const client = new MongoClient(uri);
 
 async function connectDB() {
