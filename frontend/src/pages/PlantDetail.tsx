@@ -45,6 +45,54 @@ type PlantDetailData = {
   careTimeline?: CareEvent[];
 };
 
+const previewPlants: Record<string, PlantDetailData> = {
+  "1": {
+    _id: "1",
+    nickname: "Snakey",
+    species: {
+      commonName: "Snake Plant",
+      scientificName: "Dracaena trifasciata",
+    },
+    healthStatus: "Healthy",
+    healthScore: 92,
+    lastWateredAt: "2026-07-21T12:00:00.000Z",
+    nextWateringAt: "2026-07-28T12:00:00.000Z",
+    location: "Bedroom window",
+    notes: "Prefers bright, indirect light and infrequent watering.",
+    careTimeline: [],
+  },
+  "2": {
+    _id: "2",
+    nickname: "Monty",
+    species: {
+      commonName: "Monstera",
+      scientificName: "Monstera deliciosa",
+    },
+    healthStatus: "Healthy",
+    healthScore: 88,
+    lastWateredAt: "2026-07-24T12:00:00.000Z",
+    nextWateringAt: "2026-07-31T12:00:00.000Z",
+    location: "Living room",
+    notes: "Rotate the pot regularly so growth stays even.",
+    careTimeline: [],
+  },
+  "3": {
+    _id: "3",
+    nickname: "Lily",
+    species: {
+      commonName: "Peace Lily",
+      scientificName: "Spathiphyllum",
+    },
+    healthStatus: "Needs attention",
+    healthScore: 64,
+    lastWateredAt: "2026-07-20T12:00:00.000Z",
+    nextWateringAt: "2026-07-23T12:00:00.000Z",
+    location: "Kitchen",
+    notes: "Check soil moisture and keep away from direct sunlight.",
+    careTimeline: [],
+  },
+};
+
 function getPhotoSource(photo?: PlantPhoto | null): string | null {
   if (photo?.url) return photo.url;
   if (photo?.fileId) return `/api/photos/${photo.fileId}`;
@@ -119,6 +167,21 @@ function PlantDetail() {
         return;
       }
 
+      const previewPlant = previewPlants[plantId];
+
+      if (previewPlant) {
+        setPlant({
+          ...previewPlant,
+          species: previewPlant.species
+            ? { ...previewPlant.species }
+            : previewPlant.species,
+          careTimeline: [...(previewPlant.careTimeline ?? [])],
+        });
+        setPageError("");
+        setLoading(false);
+        return;
+      }
+
       try {
         setPageError("");
 
@@ -132,6 +195,14 @@ function PlantDetail() {
             response.status === 404
               ? "This plant could not be found."
               : "The plant details could not be loaded.",
+          );
+        }
+
+        const contentType = response.headers.get("content-type");
+
+        if (!contentType?.includes("application/json")) {
+          throw new Error(
+            "The plant API returned a webpage instead of plant data.",
           );
         }
 
@@ -181,6 +252,36 @@ function PlantDetail() {
     try {
       setWatering(true);
       setActionMessage("");
+
+      if (previewPlants[plantId]) {
+        const wateredAt = new Date();
+        const nextWateringAt = new Date(wateredAt);
+        nextWateringAt.setDate(nextWateringAt.getDate() + 7);
+
+        setPlant((currentPlant) =>
+          currentPlant
+            ? {
+                ...currentPlant,
+                lastWateredAt: wateredAt.toISOString(),
+                nextWateringAt: nextWateringAt.toISOString(),
+                careTimeline: [
+                  {
+                    _id: `preview-water-${Date.now()}`,
+                    type: "watered",
+                    title: "Plant watered",
+                    details: "Watering was recorded in the frontend preview.",
+                    occurredAt: wateredAt.toISOString(),
+                  },
+                  ...(currentPlant.careTimeline ?? []),
+                ],
+              }
+            : currentPlant,
+        );
+        setActionMessage(
+          "Watering recorded for this preview. It will reset after refresh.",
+        );
+        return;
+      }
 
       const response = await fetch(`/api/user-plants/${plantId}/water`, {
         method: "PATCH",
@@ -234,6 +335,34 @@ function PlantDetail() {
       setUploadingPhoto(true);
       setActionMessage("");
 
+      if (previewPlants[plantId]) {
+        const previewUrl = URL.createObjectURL(selectedFile);
+        const uploadedAt = new Date().toISOString();
+
+        setPlant((currentPlant) =>
+          currentPlant
+            ? {
+                ...currentPlant,
+                picture: { url: previewUrl },
+                careTimeline: [
+                  {
+                    _id: `preview-photo-${Date.now()}`,
+                    type: "photo",
+                    title: "Photo added",
+                    details: selectedFile.name,
+                    occurredAt: uploadedAt,
+                  },
+                  ...(currentPlant.careTimeline ?? []),
+                ],
+              }
+            : currentPlant,
+        );
+        setActionMessage(
+          "Photo added to this preview. It will reset after refresh.",
+        );
+        return;
+      }
+
       const formData = new FormData();
       formData.append("photo", selectedFile);
 
@@ -271,6 +400,11 @@ function PlantDetail() {
 
     try {
       setDeleting(true);
+
+      if (previewPlants[plantId]) {
+        navigate("/garden");
+        return;
+      }
 
       const response = await fetch(`/api/user-plants/${plantId}`, {
         method: "DELETE",
