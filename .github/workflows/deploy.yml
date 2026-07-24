@@ -71,9 +71,6 @@ jobs:
 
             /usr/local/bin/npm ci --omit=dev --prefix backend
             /usr/local/bin/npm ci --prefix frontend
-
-            sudo -n /usr/bin/rm -rf /var/www/PotBuddy/frontend/dist
-
             /usr/local/bin/npm run build --prefix frontend
 
             sudo /usr/bin/systemctl restart potbuddy
