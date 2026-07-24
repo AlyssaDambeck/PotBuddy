@@ -1,15 +1,17 @@
-@keyframes floatPlant {
+.fade-in {
+    animation: fadeIn .6s ease;
+}
 
-    0% {
-        transform: translateX(0px);
+@keyframes fadeIn {
+
+    from {
+        opacity: 0;
+        transform: translateY(15px);
     }
 
-    50% {
-        transform: translateX(4px);
-    }
-
-    100% {
-        transform: translateX(0px);
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 
 }

@@ -1,22 +1,8 @@
-import { useEffect, useState } from "react";
+
+import Landing from "./pages/Landing/Landing";
 
 function App() {
-  const [message, setMessage] = useState("");
-
-  useEffect(() => {
-    fetch("http://localhost:5000/")
-      .then((res) => res.json())
-      .then((data) => setMessage(data.message))
-      .catch(() => setMessage("Backend not running"));
-  }, []);
-
-  return (
-    <div>
-      <h1>PotBuddy</h1>
-
-      <h2>{message}</h2>
-    </div>
-  );
+    return <Landing />;
 }
 
 export default App;

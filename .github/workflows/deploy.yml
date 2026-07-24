@@ -1,0 +1,77 @@
+name: PotBuddy CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: potbuddy-production
+  cancel-in-progress: false
+
+jobs:
+  ci:
+    name: Install and build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            backend/package-lock.json
+            frontend/package-lock.json
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: frontend
+        run: npm run build
+
+  deploy:
+    name: Deploy to production
+    needs: ci
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configure SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
+          SSH_HOST_KEY: ${{ secrets.SERVER_HOST_KEY }}
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/potbuddy_deploy
+          chmod 600 ~/.ssh/potbuddy_deploy
+          printf '%s\n' "$SSH_HOST_KEY" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Update production server
+        env:
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+        run: |
+          ssh -i ~/.ssh/potbuddy_deploy "$SERVER_USER@$SERVER_HOST" '
+            set -e
+
+            cd /var/www/PotBuddy
+            git fetch origin main
+            git checkout main
+            git reset --hard origin/main
+
+            /usr/local/bin/npm ci --omit=dev --prefix backend
+            /usr/local/bin/npm ci --prefix frontend
+            /usr/local/bin/npm run build --prefix frontend
+
+            sudo /usr/bin/systemctl restart potbuddy
+          '
