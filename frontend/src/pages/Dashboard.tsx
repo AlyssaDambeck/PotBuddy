@@ -127,14 +127,6 @@ function Dashboard() {
             My Plants
           </button>
 
-          <button
-            type="button"
-            className="side-menu__link"
-            onClick={() => handleNavigation("/garden")}
-          >
-            <span aria-hidden="true">🌿</span>
-            Garden
-          </button>
 
           <button
             type="button"
