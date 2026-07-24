@@ -28,7 +28,7 @@ const mockPlants = [
   },
 ];
 
-function getWateringText(days) {
+function getWateringText(days: number) {
   if (days < 0) {
     const overdueDays = Math.abs(days);
 
@@ -56,7 +56,7 @@ function Dashboard() {
     (plant) => plant.waterInDays <= 0
   );
 
-  const handleNavigation = (destination) => {
+  const handleNavigation = (destination: string) => {
     console.log(`Navigate to: ${destination}`);
     setMenuOpen(false);
 
