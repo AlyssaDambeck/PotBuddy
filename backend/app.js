@@ -1,7 +1,13 @@
-
 const express = require("express");
 const cors = require("cors");
+
 const authRoutes = require("./routes/authRoutes");
+const plantRoutes = require("./routes/plantRoutes");
+const speciesRoutes = require("./routes/speciesRoutes");
+
+/*const dns = require("node:dns");
+
+dns.setServers(["8.8.8.8", "1.1.1.1"]);*/
 
 const app = express();
 
@@ -16,6 +22,8 @@ app.get("/api/health", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/plants", plantRoutes);
+app.use("/api/species", speciesRoutes);
 
 app.use((req, res) => {
   res.status(404).json({
