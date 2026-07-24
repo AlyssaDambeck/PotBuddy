@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Dashboard.css";
 
 const mockPlants = [
@@ -49,6 +50,7 @@ function getWateringText(days: number) {
 }
 
 function Dashboard() {
+  const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [plants] = useState(mockPlants);
 
@@ -57,13 +59,17 @@ function Dashboard() {
   );
 
   const handleNavigation = (destination: string) => {
-    console.log(`Navigate to: ${destination}`);
     setMenuOpen(false);
 
+    if (destination === "/journal") {
+      navigate("/journal");
+      return;
+    }
+
+    console.log(`Navigate to: ${destination}`);
+
     /*
-     * Replace this with React Router later:
-     *
-     * navigate(destination);
+     * Connect the remaining destinations as their pages are added.
      */
   };
 
