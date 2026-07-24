@@ -7,6 +7,7 @@ import NotFound from "./pages/NotFound";
 import RegisterPage from "./pages/RegisterPage";
 import Journal from "./pages/Journal";
 import PlantDetail from "./pages/PlantDetail";
+import PlantInventory from "./pages/PlantInventory";
 
 function App() {
     return (
@@ -24,6 +25,8 @@ function App() {
                 <Route path="/journal" element={<Journal />} />
 
                 <Route path="/plants/:plantId" element={<PlantDetail />} />
+
+                <Route path="/plants" element={<PlantInventory />} />
 
                 <Route path="*" element={<NotFound />} />
 
