@@ -20,6 +20,8 @@ function App() {
 
                 <Route path="/garden" element={<Dashboard />} />
 
+                <Route path="/journal" element={<Journal />} />
+
                 <Route path="*" element={<NotFound />} />
 
             </Routes>
