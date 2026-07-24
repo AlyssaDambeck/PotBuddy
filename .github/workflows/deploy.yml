@@ -76,5 +76,5 @@ jobs:
 
             /usr/local/bin/npm run build --prefix frontend
 
-            sudo /usr/bin/systemctl restart potbuddyy
+            sudo /usr/bin/systemctl restart potbuddy
           '
