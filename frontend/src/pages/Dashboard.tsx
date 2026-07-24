@@ -61,10 +61,13 @@ function Dashboard() {
   const handleNavigation = (destination: string) => {
     setMenuOpen(false);
 
-    if (destination === "/journal") {
-      navigate("/journal");
-      return;
-    }
+     if (
+    destination === "/journal" ||
+    destination.startsWith("/plants/")
+  ) {
+    navigate(destination);
+    return;
+  }
 
     console.log(`Navigate to: ${destination}`);
 
