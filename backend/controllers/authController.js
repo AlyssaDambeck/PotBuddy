@@ -1,5 +1,4 @@
 const crypto = require("crypto");
-const { OAuth2Client } = require("google-auth-library");
 const sendVerificationEmail = require("../utils/sendVerificationEmail");
 const bcrypt = require("bcrypt");
 const { client } = require("../config/db");
@@ -300,8 +299,10 @@ async function resendVerification(req, res) {
     });
   }
 }
-
 module.exports = {
   register,
   login,
+  verifyEmail,
+  resendVerification,
 };
+
