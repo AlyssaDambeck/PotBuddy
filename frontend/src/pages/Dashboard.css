@@ -817,7 +817,20 @@ button:focus-visible {
   box-shadow: 0 8px 18px rgba(33, 72, 43, 0.18);
 }
 
-.care-card__image {
+
+span.care-card__image {
+  display: grid;
+  width: 4rem;
+  height: 4rem;
+  place-items: center;
+  border-radius: 1rem;
+  background: var(--potbuddy-green-100);
+  font-size: 2.25rem;
+  line-height: 1;
+}
+
+
+img.care-card__image {
   display: block;
   width: 4rem;
   height: 4rem;
@@ -827,7 +840,19 @@ button:focus-visible {
 }
 
 
-.plant-summary-card__image {
+span.plant-summary-card__image {
+  display: grid;
+  width: 3.5rem;
+  height: 3.5rem;
+  place-items: center;
+  border-radius: 0.9rem;
+  background: var(--potbuddy-green-100);
+  font-size: 2rem;
+  line-height: 1;
+}
+
+
+img.plant-summary-card__image {
   display: block;
   width: 3.5rem;
   height: 3.5rem;
