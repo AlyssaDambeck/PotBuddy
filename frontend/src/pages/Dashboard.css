@@ -406,39 +406,21 @@ For notification counts that may reach two digits, use this slightly more flexib
   gap: 0.8rem;
 }
 
+/* Fix overlapping text in Action Needed cards */
 .care-card {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem;
-  border: 1px solid var(--potbuddy-border);
-  border-radius: 1.1rem;
-  background: var(--potbuddy-cream);
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.9rem;
+  width: 100%;
 }
 
+/* Plant picture and plant information */
 .care-card__plant {
   display: grid;
   grid-template-columns: 4rem minmax(0, 1fr);
   align-items: center;
-  gap: 0.9rem;
-  min-width: 0;
-  padding: 0;
-  border: 0;
-  color: inherit;
-  background: transparent;
-  cursor: pointer;
-  text-align: left;
-}
-
-.care-card__image {
-  display: grid;
-  width: 4rem;
-  height: 4rem;
-  place-items: center;
-  border-radius: 1rem;
-  background: var(--potbuddy-green-100);
-  font-size: 2.3rem;
+  gap: 0.85rem;
+  width: 100%;
 }
 
 .care-card__information {
@@ -446,63 +428,66 @@ For notification counts that may reach two digits, use this slightly more flexib
   min-width: 0;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.3rem;
+  gap: 0.2rem;
 }
 
 .care-card__information strong {
-  color: var(--potbuddy-green-950);
-  font-size: 1.05rem;
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
-.care-card__information > span {
-  display: block;
-  max-width: 100%;
+.care-card__information > span:nth-child(2) {
+  overflow: visible;
   line-height: 1.35;
+  text-overflow: initial;
+  white-space: normal;
 }
 
+/* Prevent the health badge from colliding with other text */
 .health-status {
-  width: fit-content;
-  margin-top: 0.15rem;
-  padding: 0.25rem 0.5rem;
-  border-radius: 999px;
-  font-size: 0.7rem;
-  font-weight: 800;
-  line-height: 1.2;
+  display: inline-block;
+  width: auto;
+  max-width: 100%;
+  margin-top: 0.35rem;
+  line-height: 1.25;
+  white-space: normal;
 }
 
+/* Put watering information on its own row */
 .care-card__action {
-  display: flex;
-  min-width: 9rem;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 0.55rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--potbuddy-border);
 }
 
 .watering-label {
   display: flex;
+  min-width: 0;
   align-items: center;
-  justify-content: center;
-  gap: 0.35rem;
-  color: var(--potbuddy-warning);
-  font-size: 0.8rem;
-  font-weight: 800;
-  line-height: 1.3;
-  text-align: center;
+  gap: 0.4rem;
+  line-height: 1.35;
+  white-space: normal;
+  overflow-wrap: break-word;
 }
 
 .water-button {
-  min-width: 9rem;
-  min-height: 2.75rem;
-  padding: 0.6rem 0.9rem;
-  border: 1px solid var(--potbuddy-green-700);
-  border-radius: 0.8rem;
-  color: var(--potbuddy-green-800);
-  background: white;
-  cursor: pointer;
-  font-size: 0.78rem;
-  font-weight: 800;
-  line-height: 1.25;
+  min-width: max-content;
+  white-space: nowrap;
+}
+
+/* Stack the button on very small screens */
+@media (max-width: 28rem) {
+  .care-card__action {
+    grid-template-columns: 1fr;
+  }
+
+  .water-button {
+    width: 100%;
+    min-width: 0;
+  }
 }
 .water-button:hover,
 .water-button:focus-visible {
