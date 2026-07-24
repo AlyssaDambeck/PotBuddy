@@ -246,7 +246,7 @@ function PlantInventory() {
             }}
           >
             <span aria-hidden="true">🪴</span>
-            Plant inventory
+            My Plants
           </button>
 
           <button type="button" onClick={() => navigate("/journal")}>
