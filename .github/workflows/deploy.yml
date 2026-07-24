@@ -64,14 +64,17 @@ jobs:
           ssh -i ~/.ssh/potbuddy_deploy "$SERVER_USER@$SERVER_HOST" '
             set -e
 
+            sudo /usr/bin/chown -R deploy:deploy /var/www/PotBuddy
             cd /var/www/PotBuddy
+
             git fetch origin main
-            git checkout main
+            git checkout -f main
             git reset --hard origin/main
 
-            /usr/local/bin/npm ci --omit=dev --prefix backend
-            /usr/local/bin/npm ci --prefix frontend
+            /usr/local/bin/npm ci --omit=dev --prefix backend --no-audit --no-fund
+            /usr/local/bin/npm ci --prefix frontend --no-audit --no-fund
             /usr/local/bin/npm run build --prefix frontend
 
             sudo /usr/bin/systemctl restart potbuddy
           '
+         
