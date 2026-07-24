@@ -1,0 +1,40 @@
+.feature-card{
+
+    background:var(--card);
+    border-radius:18px;
+    padding:2.25rem;
+    transition:.25s;
+    box-shadow:0 10px 30px rgba(0,0,0,.05);
+
+}
+
+.feature-card:hover{
+    transform:translateY(-6px);
+}
+
+.feature-icon{
+
+    width:64px;
+    height:64px;
+    border-radius:16px;
+    background:rgba(96,125,90,.08);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:2rem;
+    margin-bottom:1.5rem;
+
+}
+
+.feature-card h3{
+
+    margin-bottom:.75rem;
+
+}
+
+.feature-card p{
+
+    line-height:1.7;
+    color:#666;
+
+}

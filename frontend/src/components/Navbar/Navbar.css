@@ -1,56 +1,55 @@
 .navbar {
-    width: 100%;
-    padding: 1.5rem 0;
-}
 
-.navbar__container {
-    width: min(1200px, 90%);
-    margin: 0 auto;
+    height: 80px;
 
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 0 8%;
+    background: transparent;
+
 }
 
-.navbar__logo {
+.logo {
+
+    text-decoration: none;
+    color: var(--text);
     font-family: "Cormorant Garamond", serif;
     font-size: 2rem;
     font-weight: 700;
-    cursor: pointer;
+    letter-spacing: .5px;
+
 }
 
-.navbar__links {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
+nav{
+
+    display:flex;
+    align-items:center;
+    gap:2rem;
+
 }
 
-.navbar__links a {
-    color: var(--text);
-    font-weight: 500;
-    transition: .25s;
+nav a{
+
+    text-decoration:none;
+    color:var(--text);
+    font-weight:500;
+    transition:.2s;
+
 }
 
-.navbar__links a:hover {
-    color: var(--primary);
+nav a:hover{
+    color:var(--primary-green);
 }
 
-.navbar__button {
-    background: var(--primary);
+.signup-link{
 
-    color: white;
-
-    border: none;
-
-    padding: .8rem 1.5rem;
-
-    border-radius: 999px;
-
-    cursor: pointer;
-
-    transition: .25s;
+    padding:.7rem 1.4rem;
+    background:var(--primary-green);
+    color:white;
+    border-radius:999px;
 }
 
-.navbar__button:hover {
-    transform: translateY(-2px);
+.signup-link:hover{
+    transform:translateY(-2px);
 }

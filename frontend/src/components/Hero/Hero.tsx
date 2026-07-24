@@ -3,46 +3,43 @@ import Button from "../Button/Button";
 import "./Hero.css";
 
 function Hero() {
+  const navigate = useNavigate();
 
-    const navigate = useNavigate();
+  return (
+    <section className="hero">
 
-    return (
+      <div className="hero-content">
 
-        <section className="hero">
+        <p className="hero-eyebrow">
+          Welcome to PotBuddy
+        </p>
 
-            <div className="hero__content">
+        <h1>
+          Grow together.
+        </h1>
 
-                <p className="hero__eyebrow">
-                    Plant Care • Journal • Reminders
-                </p>
+        <p className="hero-description">
+          PotBuddy helps you keep every plant healthy with watering reminders,
+          care guides, and a beautiful digital garden you'll actually enjoy
+          coming back to.
+        </p>
 
-                <h1>
-                    Grow together.
-                </h1>
+        <Button
+          text="Get Started"
+          onClick={() => navigate("/register")}
+        />
 
-                <p className="hero__description">
+      </div>
 
-                    Keep track of every plant,
-                    every watering,
-                    every new leaf,
-                    and every milestone.
+      <div className="hero-image">
 
-                </p>
+        <div className="plant-placeholder">
+          🌱
+        </div>
 
-                <Button
+      </div>
 
-                    text="Get Started"
-
-                    onClick={() => navigate("/login")}
-
-                />
-
-            </div>
-
-        </section>
-
-    );
-
+    </section>
+  );
 }
-
 export default Hero;
