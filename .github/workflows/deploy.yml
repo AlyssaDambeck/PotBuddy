@@ -66,7 +66,8 @@ jobs:
 
             cd /var/www/PotBuddy
             git fetch origin main
-            git pull --ff-only origin main
+            git checkout main
+            git reset --hard origin/main
 
             /usr/local/bin/npm ci --omit=dev --prefix backend
             /usr/local/bin/npm ci --prefix frontend
