@@ -129,11 +129,7 @@ button {
 }
 
 
-display: flex;
-align-items: center;
-justify-content: center;
-line-height: 1;
-padding: 0;
+
 
 
 .notification-badge {
@@ -793,4 +789,81 @@ button:focus-visible {
   .water-button {
     width: 100%;
   }
+}
+
+
+.garden-plant__emoji {
+  display: grid;
+  width: 5rem;
+  height: 5rem;
+  place-items: center;
+  border: 3px solid rgba(255, 255, 255, 0.85);
+  border-radius: 50%;
+  background: var(--potbuddy-green-100);
+  box-shadow: 0 8px 18px rgba(33, 72, 43, 0.18);
+  font-size: 3rem;
+  line-height: 1;
+}
+
+
+.garden-plant__image {
+  display: block;
+  width: 5rem;
+  height: 5rem;
+  border: 3px solid rgba(255, 255, 255, 0.85);
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--potbuddy-green-100);
+  box-shadow: 0 8px 18px rgba(33, 72, 43, 0.18);
+}
+
+.care-card__image {
+  display: block;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 1rem;
+  object-fit: cover;
+  background: var(--potbuddy-green-100);
+}
+
+
+.plant-summary-card__image {
+  display: block;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 0.9rem;
+  object-fit: cover;
+  background: var(--potbuddy-green-100);
+}
+
+
+.care-card__information strong,
+.plant-summary-card__details strong {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+
+.garden-plant__name {
+  display: block;
+  max-width: 5.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+.garden-plants {
+  justify-content: flex-start;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.garden-plants::-webkit-scrollbar {
+  height: 0.4rem;
+}
+
+.garden-plants::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(45, 96, 56, 0.35);
 }
