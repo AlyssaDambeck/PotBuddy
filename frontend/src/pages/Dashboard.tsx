@@ -63,6 +63,7 @@ function Dashboard() {
 
      if (
     destination === "/journal" ||
+    destination === "/plants" ||
     destination.startsWith("/plants/")
   ) {
     navigate(destination);
@@ -264,7 +265,7 @@ function Dashboard() {
             <button
               className="primary-button"
               type="button"
-              onClick={() => handleNavigation("/garden")}
+              onClick={() => handleNavigation("/plants")}
             >
               View full garden
               <span aria-hidden="true">→</span>
