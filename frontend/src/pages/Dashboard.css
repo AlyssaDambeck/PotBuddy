@@ -1048,7 +1048,3 @@ img.plant-summary-card__image {
 .dashboard-page .side-menu__link--active {
   background: linear-gradient(135deg, var(--potbuddy-green-100), #eee1d1);
 }
-.garden-plants::-webkit-scrollbar-thumb {
-  border-radius: 999px;
-  background: rgba(45, 96, 56, 0.35);
-}
