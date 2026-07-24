@@ -1,12 +1,12 @@
 import {
-  ChangeEvent,
-  FormEvent,
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
+
+import type { ChangeEvent, FormEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./PlantDetail.css";
 
