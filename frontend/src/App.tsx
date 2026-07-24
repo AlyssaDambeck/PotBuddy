@@ -5,6 +5,7 @@ import Landing from "./pages/Landing/Landing";
 import LoginPage from "./pages/LoginPage";
 import NotFound from "./pages/NotFound";
 import RegisterPage from "./pages/RegisterPage";
+import Journal from "./pages/Journal";
 
 function App() {
     return (
