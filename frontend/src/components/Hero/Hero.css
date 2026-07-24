@@ -1,0 +1,59 @@
+.hero {
+
+    width: min(1100px, 90%);
+    margin: 0 auto;
+
+    min-height: calc(100vh - 90px);
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    text-align: center;
+
+}
+
+.hero__content {
+
+    max-width: 700px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 1.5rem;
+
+    animation: fade-in .8s ease;
+
+}
+
+.hero__eyebrow {
+
+    text-transform: uppercase;
+
+    letter-spacing: 3px;
+
+    font-size: .8rem;
+
+    color: var(--secondary-green);
+
+}
+
+.hero h1 {
+
+    font-size: clamp(4rem, 9vw, 6rem);
+
+    color: var(--text-brown);
+
+}
+
+.hero__description {
+
+    font-size: 1.25rem;
+
+    color: #6A645D;
+
+    line-height: 1.8;
+
+}

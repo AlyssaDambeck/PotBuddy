@@ -1,34 +1,31 @@
 :root {
+  /* Colors */
+  --bg-cream: #F6F3EC;
+  --card-white: #FAF8F4;
+  --journal-paper: #F3E9D2;
+  --text-brown: #3B342C;
+  --primary-green: #607D5A;
+  --secondary-green: #8FAE78;
+  --accent-gold: #D6C58C;
 
-    /* Backgrounds */
-    --bg-primary: #F6F3EC;
-    --bg-secondary: #FAF8F4;
-    --bg-paper: #F3E9D2;
+  /* Typography */
+  --font-header: 'Cormorant Garamond', serif;
+  --font-body: 'Inter', sans-serif;
 
-    /* Text */
-    --text-primary: #3B342C;
-    --text-secondary: #6A6258;
+  /* Components */
+  --radius-card: 16px;
+  --shadow-soft: 0 4px 20px rgba(59, 52, 44, 0.05);
+  --transition-smooth: all 0.3s ease;
+}
 
-    /* Greens */
-    --green-primary: #607D5A;
-    --green-light: #8FAE78;
-    --green-hover: #54704F;
+body {
+  background-color: var(--bg-cream);
+  color: var(--text-brown);
+  font-family: var(--font-body);
+  margin: 0;
+  padding: 0;
+}
 
-    /* Accent */
-    --accent: #D6C58C;
-
-    /* Wood */
-    --wood: #A9794D;
-
-    /* Borders */
-    --border: #D9D0C5;
-
-    /* Shadow */
-    --shadow:
-        0px 10px 30px rgba(0,0,0,.08);
-
-    /* Radius */
-
-    --radius:16px;
-
+h1, h2, h3, h4 {
+  font-family: var(--font-header);
 }
