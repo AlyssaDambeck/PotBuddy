@@ -30,7 +30,7 @@
 .hero-description {
     font-size: 1.15rem;
     line-height: 1.8;
-    color: #5d5d5d;
+    color: var(--text-muted);
     margin-bottom: 2.5rem;
 }
 
@@ -40,17 +40,18 @@
     align-items: center;
 }
 
-.plant-placeholder {
+.plant-placeholder{
 
-    width: 320px;
-    height: 320px;
-    border-radius: 50%;
-    background: var(--card);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 8rem;
-    box-shadow: 0 20px 50px rgba(0,0,0,.08);
+    width:420px;
+    height:420px;
+    border-radius:32px;
+    background:linear-gradient(
+        145deg,
+        #30362F,
+        #252B24
+    );
+    border:1px solid var(--border);
+
 }
 
 @media (max-width: 900px){

@@ -1,7 +1,7 @@
 .button {
 
-    background: var(--primary-green);
-    color: white;
+    background:var(--terracotta);
+    color:var(--text);
     border: none;
     border-radius: 999px;
     padding: 16px 34px;
@@ -22,7 +22,7 @@
 
 .button:hover {
 
-    background: var(--secondary-green);
+    background:#C07A55;
     transform: translateY(-3px);
     box-shadow:
         0 16px 30px rgba(0,0,0,.12);

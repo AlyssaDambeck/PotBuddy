@@ -1,28 +1,31 @@
-.feature-card{
+.feature-card {
 
-    background:var(--card);
-    border-radius:18px;
-    padding:2.25rem;
-    transition:.25s;
-    box-shadow:0 10px 30px rgba(0,0,0,.05);
+    background: var(--surface-light);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 2.25rem;
+    transition: .25s;
 
 }
 
-.feature-card:hover{
-    transform:translateY(-6px);
+.feature-card:hover {
+
+    border-color: var(--gold);
+    background: #394139;
+
 }
 
-.feature-icon{
+.feature-icon {
 
-    width:64px;
-    height:64px;
-    border-radius:16px;
-    background:rgba(96,125,90,.08);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    font-size:2rem;
-    margin-bottom:1.5rem;
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    background: rgba(177,111,78,.15);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
 
 }
 
