@@ -128,32 +128,6 @@ button {
   place-items: center;
 }
 
-.notification-badge {
-  position: absolute;
-  top: 0;
-  right: -0.1rem;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  width: 1.2rem;
-  height: 1.2rem;
-  padding: 0;
-
-  border: 2px solid var(--potbuddy-cream);
-  border-radius: 50%;
-
-  color: #ffffff;
-  background: var(--potbuddy-warning);
-
-  font-size: 0.65rem;
-  font-weight: 800;
-  line-height: 1;
-  text-align: center;
-}
-
-The important fixes are:
 
 display: flex;
 align-items: center;
@@ -161,7 +135,6 @@ justify-content: center;
 line-height: 1;
 padding: 0;
 
-For notification counts that may reach two digits, use this slightly more flexible version instead:
 
 .notification-badge {
   position: absolute;
@@ -404,95 +377,6 @@ For notification counts that may reach two digits, use this slightly more flexib
 .care-list {
   display: grid;
   gap: 0.8rem;
-}
-
-/* Fix overlapping text in Action Needed cards */
-.care-card {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 0.9rem;
-  width: 100%;
-}
-
-/* Plant picture and plant information */
-.care-card__plant {
-  display: grid;
-  grid-template-columns: 4rem minmax(0, 1fr);
-  align-items: center;
-  gap: 0.85rem;
-  width: 100%;
-}
-
-.care-card__information {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.2rem;
-}
-
-.care-card__information strong {
-  line-height: 1.25;
-}
-
-.care-card__information > span:nth-child(2) {
-  overflow: visible;
-  line-height: 1.35;
-  text-overflow: initial;
-  white-space: normal;
-}
-
-/* Prevent the health badge from colliding with other text */
-.health-status {
-  display: inline-block;
-  width: auto;
-  max-width: 100%;
-  margin-top: 0.35rem;
-  line-height: 1.25;
-  white-space: normal;
-}
-
-/* Put watering information on its own row */
-.care-card__action {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 0.75rem;
-  width: 100%;
-  padding-top: 0.75rem;
-  border-top: 1px solid var(--potbuddy-border);
-}
-
-.watering-label {
-  display: flex;
-  min-width: 0;
-  align-items: center;
-  gap: 0.4rem;
-  line-height: 1.35;
-  white-space: normal;
-  overflow-wrap: break-word;
-}
-
-.water-button {
-  min-width: max-content;
-  white-space: nowrap;
-}
-
-/* Stack the button on very small screens */
-@media (max-width: 28rem) {
-  .care-card__action {
-    grid-template-columns: 1fr;
-  }
-
-  .water-button {
-    width: 100%;
-    min-width: 0;
-  }
-}
-.water-button:hover,
-.water-button:focus-visible {
-  color: white;
-  background: var(--potbuddy-green-800);
 }
 
 .empty-care-state {
