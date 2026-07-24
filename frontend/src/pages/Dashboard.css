@@ -718,10 +718,6 @@ button:focus-visible {
     padding: 1.4rem;
   }
 
-  .care-card {
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: center;
-  }
 
   .plant-summary-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -766,5 +762,151 @@ button:focus-visible {
 
   .plant-summary-grid {
     grid-template-columns: 1fr;
+  }
+}
+.care-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.9rem;
+  width: 100%;
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid var(--potbuddy-border);
+  border-radius: 1.1rem;
+  background: var(--potbuddy-cream);
+}
+
+.care-card__plant {
+  display: grid;
+  grid-template-columns: 4rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.85rem;
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.care-card__image {
+  display: grid;
+  width: 4rem;
+  height: 4rem;
+  flex-shrink: 0;
+  place-items: center;
+  border-radius: 1rem;
+  background: var(--potbuddy-green-100);
+  font-size: 2.25rem;
+  line-height: 1;
+}
+
+.care-card__information {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+}
+
+.care-card__information strong {
+  margin: 0;
+  color: var(--potbuddy-green-950);
+  font-size: 1rem;
+  line-height: 1.25;
+}
+
+.care-card__information > span:nth-child(2) {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  color: var(--potbuddy-muted);
+  font-size: 0.82rem;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.health-status {
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+  margin-top: 0.35rem;
+  padding: 0.2rem 0.5rem;
+  align-items: center;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 1.25;
+  white-space: normal;
+}
+
+.health-status--healthy {
+  color: var(--potbuddy-green-800);
+  background: var(--potbuddy-green-100);
+}
+
+.health-status--warning {
+  color: var(--potbuddy-warning);
+  background: var(--potbuddy-warning-light);
+}
+
+.care-card__action {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  padding-top: 0.75rem;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-top: 1px solid var(--potbuddy-border);
+}
+
+.watering-label {
+  display: inline-flex;
+  min-width: 0;
+  flex: 1 1 9rem;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--potbuddy-warning);
+  font-size: 0.8rem;
+  font-weight: 800;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.water-button {
+  min-height: 2.5rem;
+  padding: 0.55rem 0.85rem;
+  flex: 0 0 auto;
+  border: 1px solid var(--potbuddy-green-700);
+  border-radius: 0.8rem;
+  color: var(--potbuddy-green-800);
+  background: var(--potbuddy-white);
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.water-button:hover,
+.water-button:focus-visible {
+  color: var(--potbuddy-white);
+  background: var(--potbuddy-green-800);
+}
+
+@media (max-width: 34rem) {
+  .care-card__action {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .water-button {
+    width: 100%;
   }
 }
