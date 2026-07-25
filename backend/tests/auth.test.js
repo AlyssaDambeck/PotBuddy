@@ -72,3 +72,10 @@ describe("Authentication validation", () => {
     expect(response.body.success).toBe(false);
   });
 });
+
+test("current-user endpoint requires authentication", async () => {
+  const response = await request(app).get("/api/auth/me");
+
+  expect(response.statusCode).toBe(401);
+  expect(response.body.success).toBe(false);
+});
