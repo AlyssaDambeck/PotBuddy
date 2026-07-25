@@ -15,8 +15,25 @@ type Species = {
   scientificName?: string;
 };
 
+type PlantHealthStatus =
+  | "healthy"
+  | "needs-attention"
+  | "sick"
+  | "recovering"
+  | "dormant"
+  | "dead";
+
+type NotificationSettings = {
+  enabled: boolean;
+  reminderTime: string;
+  reminderDaysBefore: number;
+};
+
 type PlantPicture = {
   fileId?: string;
+  filename?: string;
+  contentType?: string;
+  altText?: string | null;
   url?: string;
 };
 
@@ -25,9 +42,12 @@ type UserPlant = {
   nickname: string;
   speciesId?: Species | null;
   species?: Species | null;
-  healthStatus?: string | null;
+  healthStatus?: PlantHealthStatus | null;
+  healthNotes?: string | null;
   lastWateredAt?: string | null;
   nextWateringAt?: string | null;
+  wateringRemindersEnabled?: boolean;
+  notificationSettings?: NotificationSettings | null;
   picture?: PlantPicture | null;
 };
 
@@ -36,11 +56,11 @@ type ModalName = "add-plant" | "add-photo" | "log-care" | null;
 type AddPlantDraft = {
   nickname: string;
   speciesId: string;
-  healthStatus: string;
+  healthStatus: PlantHealthStatus;
   location: string;
   acquiredAt: string;
   lastWateredAt: string;
-  notes: string;
+  healthNotes: string;
 };
 
 type CareType =
@@ -54,19 +74,40 @@ type CareType =
 type CareDraft = {
   plantId: string;
   type: CareType;
-  occurredAt: string;
+  entryDate: string;
   notes: string;
-  healthStatus: string;
+  healthStatus: PlantHealthStatus | "";
 };
 
 const emptyPlantDraft: AddPlantDraft = {
   nickname: "",
   speciesId: "",
-  healthStatus: "Healthy",
+  healthStatus: "healthy",
   location: "",
   acquiredAt: "",
   lastWateredAt: "",
-  notes: "",
+  healthNotes: "",
+};
+
+const healthOptions: Array<{
+  value: PlantHealthStatus;
+  label: string;
+}> = [
+  { value: "healthy", label: "Healthy" },
+  { value: "needs-attention", label: "Needs attention" },
+  { value: "sick", label: "Sick" },
+  { value: "recovering", label: "Recovering" },
+  { value: "dormant", label: "Dormant" },
+  { value: "dead", label: "Dead" },
+];
+
+const careTitles: Record<CareType, string> = {
+  watered: "Watered",
+  fertilized: "Fertilized",
+  pruned: "Pruned",
+  repotted: "Repotted",
+  "health-check": "Health check",
+  other: "Plant care",
 };
 
 function localDateTimeValue(): string {
@@ -209,29 +250,62 @@ function wateringText(nextWateringAt?: string | null): string {
   return `Water in ${days} days`;
 }
 
-function needsCare(plant: UserPlant): boolean {
-  const days = daysUntil(plant.nextWateringAt);
+function healthLabel(
+  healthStatus?: PlantHealthStatus | null,
+): string {
+  if (!healthStatus) {
+    return "Not recorded";
+  }
+
   return (
-    (days !== null && days <= 0) ||
-    (Boolean(plant.healthStatus) && plant.healthStatus !== "Healthy")
+    healthOptions.find((option) => option.value === healthStatus)?.label ??
+    healthStatus
   );
+}
+
+function wateringNeedsAction(plant: UserPlant): boolean {
+  if (
+    plant.wateringRemindersEnabled === false ||
+    plant.notificationSettings?.enabled === false
+  ) {
+    return false;
+  }
+
+  const days = daysUntil(plant.nextWateringAt);
+  const reminderDaysBefore =
+    plant.notificationSettings?.reminderDaysBefore ?? 0;
+
+  return days !== null && days <= reminderDaysBefore;
+}
+
+function needsCare(plant: UserPlant): boolean {
+  const healthNeedsAttention =
+    Boolean(plant.healthStatus) && plant.healthStatus !== "healthy";
+
+  return wateringNeedsAction(plant) || healthNeedsAttention;
 }
 
 function neededActions(plant: UserPlant): string[] {
   const actions: string[] = [];
   const days = daysUntil(plant.nextWateringAt);
 
-  if (days !== null && days < 0) {
-    const overdue = Math.abs(days);
-    actions.push(
-      `Watering overdue by ${overdue} ${overdue === 1 ? "day" : "days"}`,
-    );
-  } else if (days === 0) {
-    actions.push("Water today");
+  if (wateringNeedsAction(plant)) {
+    if (days !== null && days < 0) {
+      const overdue = Math.abs(days);
+      actions.push(
+        `Watering overdue by ${overdue} ${overdue === 1 ? "day" : "days"}`,
+      );
+    } else if (days === 0) {
+      actions.push("Water today");
+    } else if (days === 1) {
+      actions.push("Water tomorrow");
+    } else if (days !== null) {
+      actions.push(`Water in ${days} days`);
+    }
   }
 
-  if (plant.healthStatus && plant.healthStatus !== "Healthy") {
-    actions.push(`Health: ${plant.healthStatus}`);
+  if (plant.healthStatus && plant.healthStatus !== "healthy") {
+    actions.push(`Health: ${healthLabel(plant.healthStatus)}`);
   }
 
   return actions;
@@ -289,7 +363,7 @@ function Dashboard() {
   const [careDraft, setCareDraft] = useState<CareDraft>({
     plantId: "",
     type: "watered",
-    occurredAt: localDateTimeValue(),
+    entryDate: localDateTimeValue(),
     notes: "",
     healthStatus: "",
   });
@@ -464,7 +538,7 @@ function Dashboard() {
       setCareDraft({
         plantId: firstPlantId,
         type: "watered",
-        occurredAt: localDateTimeValue(),
+        entryDate: localDateTimeValue(),
         notes: "",
         healthStatus: "",
       });
@@ -500,10 +574,16 @@ function Dashboard() {
           nickname: plantDraft.nickname.trim(),
           speciesId: plantDraft.speciesId,
           healthStatus: plantDraft.healthStatus,
+          healthNotes: plantDraft.healthNotes.trim() || null,
           location: plantDraft.location.trim() || null,
           acquiredAt: toIsoDate(plantDraft.acquiredAt),
           lastWateredAt: toIsoDate(plantDraft.lastWateredAt),
-          notes: plantDraft.notes.trim() || null,
+          wateringRemindersEnabled: true,
+          notificationSettings: {
+            enabled: true,
+            reminderTime: "09:00",
+            reminderDaysBefore: 0,
+          },
         }),
       });
 
@@ -566,7 +646,7 @@ function Dashboard() {
       formData.append("photo", photoFile);
 
       const response = await fetch(
-        `/api/user-plants/${photoPlantId}/photos`,
+        `/api/user-plants/${photoPlantId}/picture`,
         {
           method: "POST",
           credentials: "include",
@@ -584,7 +664,7 @@ function Dashboard() {
 
       await loadPlants();
       setModal(null);
-      setMessage("Photo added.");
+      setMessage("Plant photo updated.");
     } catch (error) {
       setMessage(
         error instanceof Error
@@ -606,36 +686,38 @@ function Dashboard() {
       return;
     }
 
+    if (careDraft.type === "health-check" && !careDraft.healthStatus) {
+      setMessage("Choose a health status.");
+      return;
+    }
+
     try {
       setSaving(true);
       setMessage("");
 
-      const occurredAt = new Date(careDraft.occurredAt).toISOString();
-      const watering = careDraft.type === "watered";
-      const endpoint = watering
-        ? `/api/user-plants/${careDraft.plantId}/water`
-        : `/api/user-plants/${careDraft.plantId}/care-events`;
+      const entryDate = new Date(careDraft.entryDate).toISOString();
+      const title = careTitles[careDraft.type];
+      const defaultBody =
+        careDraft.type === "watered"
+          ? "Watering recorded from the dashboard."
+          : `${title} recorded from the dashboard.`;
 
-      const response = await fetch(endpoint, {
-        method: watering ? "PATCH" : "POST",
+      const response = await fetch("/api/journal-entries", {
+        method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(
-          watering
-            ? {
-                wateredAt: occurredAt,
-                notes: careDraft.notes.trim() || null,
-              }
-            : {
-                type: careDraft.type,
-                occurredAt,
-                notes: careDraft.notes.trim() || null,
-                healthStatus:
-                  careDraft.type === "health-check"
-                    ? careDraft.healthStatus || null
-                    : null,
-              },
-        ),
+        body: JSON.stringify({
+          userPlantId: careDraft.plantId,
+          title,
+          body: careDraft.notes.trim() || defaultBody,
+          healthStatus:
+            careDraft.type === "health-check"
+              ? careDraft.healthStatus
+              : null,
+          watered: careDraft.type === "watered",
+          entryDate,
+          photos: [],
+        }),
       });
 
       if (redirectOnUnauthorized(response)) {
@@ -648,7 +730,7 @@ function Dashboard() {
 
       await loadPlants();
       setModal(null);
-      setMessage("Care activity saved.");
+      setMessage("Care activity saved to the journal.");
     } catch (error) {
       setMessage(
         error instanceof Error
@@ -1019,12 +1101,12 @@ function Dashboard() {
                         </span>
                         <span
                           className={`health-status ${
-                            plant.healthStatus === "Healthy"
+                            plant.healthStatus === "healthy"
                               ? "health-status--healthy"
                               : "health-status--warning"
                           }`}
                         >
-                          {plant.healthStatus || "Not recorded"}
+                          {healthLabel(plant.healthStatus)}
                         </span>
                       </span>
                     </button>
@@ -1242,9 +1324,11 @@ function Dashboard() {
                         }))
                       }
                     >
-                      <option>Healthy</option>
-                      <option>Needs attention</option>
-                      <option>Recovering</option>
+                      {healthOptions.map((option) => (
+                        <option value={option.value} key={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
                     </select>
                   </label>
 
@@ -1294,15 +1378,15 @@ function Dashboard() {
                 </label>
 
                 <label>
-                  Notes
+                  Health notes
                   <textarea
-                    value={plantDraft.notes}
+                    value={plantDraft.healthNotes}
                     rows={4}
-                    maxLength={1000}
+                    maxLength={3000}
                     onChange={(event) =>
                       setPlantDraft((draft) => ({
                         ...draft,
-                        notes: event.target.value,
+                        healthNotes: event.target.value,
                       }))
                     }
                   />
@@ -1335,6 +1419,10 @@ function Dashboard() {
                     ))}
                   </select>
                 </label>
+
+                <p className="dashboard-file-name">
+                  This sets or replaces the plant's featured picture.
+                </p>
 
                 <label>
                   Photo
@@ -1406,12 +1494,12 @@ function Dashboard() {
                     Date and time
                     <input
                       type="datetime-local"
-                      value={careDraft.occurredAt}
+                      value={careDraft.entryDate}
                       required
                       onChange={(event) =>
                         setCareDraft((draft) => ({
                           ...draft,
-                          occurredAt: event.target.value,
+                          entryDate: event.target.value,
                         }))
                       }
                     />
@@ -1432,9 +1520,11 @@ function Dashboard() {
                       }
                     >
                       <option value="">Choose a status</option>
-                      <option>Healthy</option>
-                      <option>Needs attention</option>
-                      <option>Recovering</option>
+                      {healthOptions.map((option) => (
+                        <option value={option.value} key={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
                     </select>
                   </label>
                 )}
