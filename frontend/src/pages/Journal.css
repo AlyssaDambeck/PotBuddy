@@ -616,6 +616,18 @@
   text-decoration: underline;
 }
 
+.journal-health--sick,
+.journal-health--dead {
+  color: #8b322c;
+  background: #ffe7e4;
+}
+
+.journal-health--dormant,
+.journal-health--not-recorded {
+  color: #5f645e;
+  background: #edf0ec;
+}
+
 .journal-composer button:disabled,
 .journal-composer input:disabled,
 .journal-composer select:disabled,
