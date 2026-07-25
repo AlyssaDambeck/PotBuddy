@@ -1,58 +1,41 @@
-.hero {
-    min-height: calc(100vh - 80px);
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 6rem;
-    padding: 4rem 8%;
+.hero{
+    width:min(900px,90%);
+    margin:0 auto;
+    padding:3rem 1 1rem;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
 }
 
 .hero-content {
-    max-width: 550px;
+    max-width: 800px;
+    text-align: center;
 }
 
 .hero-eyebrow {
-    color: var(--secondary-green);
+    color: var(--gold);
     font-weight: 600;
     letter-spacing: 2px;
     text-transform: uppercase;
     margin-bottom: 1rem;
+    margin-top: 3rem;
 }
 
 .hero h1 {
-    font-size: 4.5rem;
+    font-size: 3.5rem;
     line-height: 1.05;
     margin-bottom: 1.5rem;
-    color: var(--text);
+    color:var(--text);
 }
 
 .hero-description {
-    font-size: 1.15rem;
+    font-size: 1rem;
     line-height: 1.8;
-    color: var(--text-muted);
+    color:var(--text-muted);
     margin-bottom: 2.5rem;
 }
 
-.hero-image {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.plant-placeholder{
-
-    width:420px;
-    height:420px;
-    border-radius:32px;
-    background:linear-gradient(
-        145deg,
-        #30362F,
-        #252B24
-    );
-    border:1px solid var(--border);
-
-}
 
 @media (max-width: 900px){
 
@@ -65,5 +48,18 @@
 .hero h1{
     font-size:3.2rem;
 }
+
+.hero-title{
+
+    color:var(--text);
+
+}
+
+.hero-tag{
+
+    color:var(--gold);
+
+}
+
 
 }

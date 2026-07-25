@@ -1,0 +1,26 @@
+:root{
+
+    /* Backgrounds */
+
+    --background:#1F241E;
+    --surface:#2A3028;
+    --surface-light:#343B33;
+
+    /* Colors */
+
+    --primary-green:#879A72;
+    --secondary-green:#6D8062;
+
+    --terracotta:#B16F4E;
+    --gold:#C5A46D;
+
+    /* Text */
+
+    --text:#ECE8DE;
+    --text-muted:#B8B2A6;
+
+    /* Borders */
+
+    --border:rgba(236,232,222,.08);
+
+}

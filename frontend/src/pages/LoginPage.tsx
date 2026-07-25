@@ -1,12 +1,17 @@
-import Login from '../components/Login.tsx';
-import PageTitle from '../components/PageTitle.tsx';
-const LoginPage = () =>
-{
-    return(
-    <div>
-    <PageTitle />
-    <Login />
-    </div>
+import Login from "../components/Login";
+import Navbar from "../components/Navbar/Navbar";
+
+function LoginPage() {
+
+    return (
+
+        <>
+            <Navbar />
+            <Login />
+        </>
+
     );
-};
+
+}
+
 export default LoginPage;

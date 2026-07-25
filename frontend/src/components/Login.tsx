@@ -1,8 +1,9 @@
-import { useState } from "react";
-import type { FormEvent } from "react";
-import { GoogleLogin } from "@react-oauth/google";
 import type { CredentialResponse } from "@react-oauth/google";
-import { useNavigate } from "react-router-dom";
+import { GoogleLogin } from "@react-oauth/google";
+import type { FormEvent } from "react";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import "../styles/Auth.css";
 
 const apiBaseUrl = import.meta.env.VITE_API_URL || "/api";
 
@@ -103,52 +104,103 @@ function Login() {
   }
 
   return (
-    <div id="loginDiv">
-      <span id="inner-title">PLEASE LOG IN</span>
 
-      <form onSubmit={doLogin}>
-        <input
-          type="email"
-          id="loginEmail"
-          placeholder="Email"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-          required
-        />
+    <div className="auth-page">
+    <div className="auth-card">
 
-        <br />
-
-        <input
-          type="password"
-          id="loginPassword"
-          placeholder="Password"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          required
-        />
-
-        <br />
-
-        <input
-          type="submit"
-          id="loginButton"
-          className="buttons"
-          value={loginButtonText}
-          disabled={isLoading}
-        />
-      </form>
-
-      <div>
-        <GoogleLogin
-          onSuccess={handleGoogleSuccess}
-          onError={() => {
-            setLoginResult("Google login was unsuccessful");
-          }}
-        />
-      </div>
-
-      <span id="loginResult">{loginResult}</span>
+    <div className="auth-logo">
+      PotBuddy
     </div>
+
+    <h1>
+      Welcome Back
+    </h1>
+
+    <p className="auth-subtitle">
+      Sign in to continue caring for your plants.
+    </p>
+
+    <form
+      className="auth-form"
+      onSubmit={doLogin}
+    >
+
+    <input
+      type="email"
+      placeholder="Email"
+      value={email}
+      onChange={(event)=>setEmail(event.target.value)}
+      required
+    />
+
+    <input
+      type="password"
+      placeholder="Password"
+      value={password}
+      onChange={(event)=>setPassword(event.target.value)}
+      required
+    />
+
+    <button
+      className="auth-submit"
+      type="submit"
+      disabled={isLoading}
+    >
+
+    {loginButtonText}
+
+    </button>
+
+    </form>
+
+    <div className="auth-divider">
+
+      or
+
+    </div>
+
+    <div className="auth-google">
+
+    <GoogleLogin
+      onSuccess={handleGoogleSuccess}
+      onError={()=>{
+      setLoginResult("Google login was unsuccessful");
+      }}
+    />
+
+    </div>
+
+    <div className="auth-footer">
+
+      Don't have an account?
+
+      {" "}
+
+      <Link to="/register">
+
+        Create one
+
+      </Link>
+
+    </div>
+    {
+
+      loginResult && (
+
+      <p className="auth-error">
+
+      {loginResult}
+
+      </p>
+
+      )
+
+    }
+
+    </div>
+
+    </div>
+
   );
 }
 

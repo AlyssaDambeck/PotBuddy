@@ -1,34 +1,10 @@
-.landing {
+.landing-page {
 
-    width: min(900px, 90%);
+    min-height: calc(100vh - 80px);
 
-    margin: 0 auto;
-
-    min-height: calc(100vh - 100px);
-
-    display: flex;
-    flex-direction: column;
-
-    justify-content: center;
-    align-items: center;
-
-    text-align: center;
-
-    gap: 2rem;
-}
-
-.landing h1 {
-
-    font-size: clamp(3rem, 8vw, 5rem);
-
-}
-
-.landing p {
-
-    font-size: 1.2rem;
-
-    max-width: 650px;
-
-    color: #6a645d;
+    background:
+        radial-gradient(circle at top right, rgba(177,111,78,.12), transparent 30%),
+        radial-gradient(circle at bottom left, rgba(135,154,114,.12), transparent 35%),
+        var(--background);
 
 }
