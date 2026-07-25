@@ -217,6 +217,26 @@ function needsCare(plant: UserPlant): boolean {
   );
 }
 
+function neededActions(plant: UserPlant): string[] {
+  const actions: string[] = [];
+  const days = daysUntil(plant.nextWateringAt);
+
+  if (days !== null && days < 0) {
+    const overdue = Math.abs(days);
+    actions.push(
+      `Watering overdue by ${overdue} ${overdue === 1 ? "day" : "days"}`,
+    );
+  } else if (days === 0) {
+    actions.push("Water today");
+  }
+
+  if (plant.healthStatus && plant.healthStatus !== "Healthy") {
+    actions.push(`Health: ${plant.healthStatus}`);
+  }
+
+  return actions;
+}
+
 function PlantImage({
   plant,
   className,
@@ -251,6 +271,8 @@ function Dashboard() {
 
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
   const [plants, setPlants] = useState<UserPlant[]>([]);
   const [speciesOptions, setSpeciesOptions] = useState<Species[]>([]);
   const [loading, setLoading] = useState(true);
@@ -376,6 +398,7 @@ function Dashboard() {
 
   function handleNavigation(destination: string): void {
     setMenuOpen(false);
+    setNotificationsOpen(false);
 
     if (
       destination === "/garden" ||
@@ -390,7 +413,37 @@ function Dashboard() {
     console.log(`Navigate to: ${destination}`);
   }
 
+  async function handleLogout(): Promise<void> {
+    try {
+      setLoggingOut(true);
+      setMessage("");
+      setMenuOpen(false);
+      setNotificationsOpen(false);
+
+      const response = await fetch("/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (!response.ok && response.status !== 401) {
+        throw new Error("You could not be logged out.");
+      }
+
+      setCurrentUser(null);
+      setPlants([]);
+      navigate("/login", { replace: true });
+    } catch (error) {
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : "You could not be logged out.",
+      );
+      setLoggingOut(false);
+    }
+  }
+
   function openModal(name: Exclude<ModalName, null>): void {
+    setNotificationsOpen(false);
     const firstPlantId = plants[0]?._id ?? "";
     setMessage("");
     setModal(name);
@@ -714,6 +767,16 @@ function Dashboard() {
             <span aria-hidden="true">⚙️</span>
             Settings
           </button>
+
+          <button
+            type="button"
+            className="side-menu__link side-menu__link--logout"
+            disabled={loggingOut}
+            onClick={() => void handleLogout()}
+          >
+            <span aria-hidden="true">↪</span>
+            {loggingOut ? "Logging out…" : "Log out"}
+          </button>
         </nav>
       </aside>
 
@@ -740,23 +803,91 @@ function Dashboard() {
           </button>
 
           <div className="top-navigation__actions">
-            <button
-              className="icon-button notification-button"
-              type="button"
-              aria-label="Open notifications"
-              onClick={() => console.log("Open notifications")}
-            >
-              <span aria-hidden="true">🔔</span>
+            <div className="dashboard-notification-container">
+              <button
+                className="icon-button notification-button"
+                type="button"
+                aria-label="Open plant care notifications"
+                aria-expanded={notificationsOpen}
+                aria-controls="dashboard-notification-menu"
+                onClick={() =>
+                  setNotificationsOpen((currentlyOpen) => !currentlyOpen)
+                }
+              >
+                <span aria-hidden="true">🔔</span>
 
-              {carePlants.length > 0 && (
-                <span
-                  className="notification-badge"
-                  aria-label={`${carePlants.length} notifications`}
+                {carePlants.length > 0 && (
+                  <span
+                    className="notification-badge"
+                    aria-label={`${carePlants.length} plants need action`}
+                  >
+                    {carePlants.length}
+                  </span>
+                )}
+              </button>
+
+              {notificationsOpen && (
+                <section
+                  className="dashboard-notification-menu"
+                  id="dashboard-notification-menu"
+                  aria-label="Plants needing action"
                 >
-                  {carePlants.length}
-                </span>
+                  <div className="dashboard-notification-menu__header">
+                    <div>
+                      <p className="eyebrow">Plant care</p>
+                      <h2>Action needed</h2>
+                    </div>
+
+                    <button
+                      type="button"
+                      aria-label="Close notifications"
+                      onClick={() => setNotificationsOpen(false)}
+                    >
+                      ×
+                    </button>
+                  </div>
+
+                  {carePlants.length > 0 ? (
+                    <ul className="dashboard-notification-list">
+                      {carePlants.map((plant) => {
+                        const actions = neededActions(plant);
+
+                        return (
+                          <li key={plant._id}>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleNavigation(`/plants/${plant._id}`)
+                              }
+                            >
+                              <PlantImage
+                                plant={plant}
+                                className="dashboard-notification-image"
+                              />
+
+                              <span className="dashboard-notification-details">
+                                <strong>{plant.nickname}</strong>
+                                <span>
+                                  {actions.join(" • ") || "Review plant care"}
+                                </span>
+                              </span>
+
+                              <span aria-hidden="true">→</span>
+                            </button>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  ) : (
+                    <div className="dashboard-notification-empty">
+                      <span aria-hidden="true">🌿</span>
+                      <strong>Everything looks good</strong>
+                      <p>No plants need action right now.</p>
+                    </div>
+                  )}
+                </section>
               )}
-            </button>
+            </div>
 
             <button
               className="profile-button"
