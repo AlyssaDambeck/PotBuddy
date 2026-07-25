@@ -31,14 +31,6 @@ function Hero() {
 
       </div>
 
-      <div className="hero-image">
-
-        <div className="plant-placeholder">
-          🌱
-        </div>
-
-      </div>
-
     </section>
   );
 }
