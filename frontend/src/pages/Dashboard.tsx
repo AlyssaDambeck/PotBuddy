@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import "./Dashboard.css";
 
 type CurrentUser = {
@@ -394,6 +394,7 @@ function PlantImage({
 
 function Dashboard() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -517,6 +518,60 @@ function Dashboard() {
     void loadDashboard();
     void loadSpecies();
   }, [loadDashboard, loadSpecies]);
+
+  /*
+   * The inventory page links back here with:
+   * /garden?modal=add-plant
+   *
+   * That opens the existing dashboard modal instead of using a
+   * separate /plants/add page.
+   */
+  useEffect(() => {
+    if (
+      loading ||
+      searchParams.get("modal") !== "add-plant"
+    ) {
+      return;
+    }
+
+    setNotificationsOpen(false);
+    setMessage("");
+    setModal("add-plant");
+    setPlantDraft({
+      ...emptyPlantDraft,
+      speciesId: speciesOptions[0]?._id ?? "",
+    });
+
+    setSearchParams({}, { replace: true });
+  }, [
+    loading,
+    searchParams,
+    setSearchParams,
+    speciesOptions,
+  ]);
+
+  /*
+   * Species may finish loading just after the modal opens.
+   * Select the first real species automatically when that happens.
+   */
+  useEffect(() => {
+    if (
+      modal !== "add-plant" ||
+      plantDraft.speciesId ||
+      !speciesOptions[0]?._id
+    ) {
+      return;
+    }
+
+    setPlantDraft((currentDraft) => ({
+      ...currentDraft,
+      speciesId: speciesOptions[0]._id,
+    }));
+  }, [
+    modal,
+    plantDraft.speciesId,
+    speciesOptions,
+  ]);
 
   const carePlants = useMemo(() => plants.filter(needsCare), [plants]);
   const gardenPlants = plants.slice(0, 5);
