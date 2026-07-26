@@ -23,6 +23,15 @@ type PlantHealthStatus =
   | "dormant"
   | "dead";
 
+type LegacyPlantHealthStatus =
+  | "Healthy"
+  | "Needs attention"
+  | "Needs Attention"
+  | "Sick"
+  | "Recovering"
+  | "Dormant"
+  | "Dead";
+
 type NotificationSettings = {
   enabled: boolean;
   reminderTime: string;
@@ -42,7 +51,7 @@ type UserPlant = {
   nickname: string;
   speciesId?: Species | null;
   species?: Species | null;
-  healthStatus?: PlantHealthStatus | null;
+  healthStatus?: PlantHealthStatus | LegacyPlantHealthStatus | null;
   healthNotes?: string | null;
   lastWateredAt?: string | null;
   nextWateringAt?: string | null;
@@ -250,16 +259,48 @@ function wateringText(nextWateringAt?: string | null): string {
   return `Water in ${days} days`;
 }
 
-function healthLabel(
-  healthStatus?: PlantHealthStatus | null,
-): string {
+function normalizeHealthStatus(
+  healthStatus?: PlantHealthStatus | LegacyPlantHealthStatus | null,
+): PlantHealthStatus | null {
+  const normalizedHealthStatuses: Record<
+    LegacyPlantHealthStatus,
+    PlantHealthStatus
+  > = {
+    Healthy: "healthy",
+    "Needs attention": "needs-attention",
+    "Needs Attention": "needs-attention",
+    Sick: "sick",
+    Recovering: "recovering",
+    Dormant: "dormant",
+    Dead: "dead",
+  };
+
   if (!healthStatus) {
+    return null;
+  }
+
+  if (healthStatus in normalizedHealthStatuses) {
+    return normalizedHealthStatuses[
+      healthStatus as LegacyPlantHealthStatus
+    ];
+  }
+
+  return healthStatus as PlantHealthStatus;
+}
+
+function healthLabel(
+  healthStatus?: PlantHealthStatus | LegacyPlantHealthStatus | null,
+): string {
+  const normalizedHealthStatus = normalizeHealthStatus(healthStatus);
+
+  if (!normalizedHealthStatus) {
     return "Not recorded";
   }
 
   return (
-    healthOptions.find((option) => option.value === healthStatus)?.label ??
-    healthStatus
+    healthOptions.find(
+      (option) => option.value === normalizedHealthStatus,
+    )?.label ?? normalizedHealthStatus
   );
 }
 
@@ -279,8 +320,12 @@ function wateringNeedsAction(plant: UserPlant): boolean {
 }
 
 function needsCare(plant: UserPlant): boolean {
+  const normalizedHealthStatus = normalizeHealthStatus(
+    plant.healthStatus,
+  );
   const healthNeedsAttention =
-    Boolean(plant.healthStatus) && plant.healthStatus !== "healthy";
+    Boolean(normalizedHealthStatus) &&
+    normalizedHealthStatus !== "healthy";
 
   return wateringNeedsAction(plant) || healthNeedsAttention;
 }
@@ -304,8 +349,15 @@ function neededActions(plant: UserPlant): string[] {
     }
   }
 
-  if (plant.healthStatus && plant.healthStatus !== "healthy") {
-    actions.push(`Health: ${healthLabel(plant.healthStatus)}`);
+  const normalizedHealthStatus = normalizeHealthStatus(
+    plant.healthStatus,
+  );
+
+  if (
+    normalizedHealthStatus &&
+    normalizedHealthStatus !== "healthy"
+  ) {
+    actions.push(`Health: ${healthLabel(normalizedHealthStatus)}`);
   }
 
   return actions;
@@ -574,6 +626,8 @@ function Dashboard() {
           nickname: plantDraft.nickname.trim(),
           speciesId: plantDraft.speciesId,
           healthStatus: plantDraft.healthStatus,
+          health: healthLabel(plantDraft.healthStatus),
+          notes: plantDraft.healthNotes.trim() || null,
           healthNotes: plantDraft.healthNotes.trim() || null,
           location: plantDraft.location.trim() || null,
           acquiredAt: toIsoDate(plantDraft.acquiredAt),
@@ -642,17 +696,34 @@ function Dashboard() {
       setSaving(true);
       setMessage("");
 
-      const formData = new FormData();
-      formData.append("photo", photoFile);
+      const selectedPhoto = photoFile;
 
-      const response = await fetch(
-        `/api/user-plants/${photoPlantId}/picture`,
+      const createPhotoFormData = (): FormData => {
+        const formData = new FormData();
+        formData.append("photo", selectedPhoto);
+
+        return formData;
+      };
+
+      let response = await fetch(
+        `/api/user-plants/${photoPlantId}/photos`,
         {
           method: "POST",
           credentials: "include",
-          body: formData,
+          body: createPhotoFormData(),
         },
       );
+
+      if (response.status === 404 || response.status === 405) {
+        response = await fetch(
+          `/api/user-plants/${photoPlantId}/picture`,
+          {
+            method: "POST",
+            credentials: "include",
+            body: createPhotoFormData(),
+          },
+        );
+      }
 
       if (redirectOnUnauthorized(response)) {
         return;
@@ -664,7 +735,7 @@ function Dashboard() {
 
       await loadPlants();
       setModal(null);
-      setMessage("Plant photo updated.");
+      setMessage("Plant photo saved.");
     } catch (error) {
       setMessage(
         error instanceof Error
@@ -695,30 +766,61 @@ function Dashboard() {
       setSaving(true);
       setMessage("");
 
-      const entryDate = new Date(careDraft.entryDate).toISOString();
+      const occurredAt = new Date(careDraft.entryDate).toISOString();
       const title = careTitles[careDraft.type];
-      const defaultBody =
-        careDraft.type === "watered"
+      const notes =
+        careDraft.notes.trim() ||
+        (careDraft.type === "watered"
           ? "Watering recorded from the dashboard."
-          : `${title} recorded from the dashboard.`;
+          : `${title} recorded from the dashboard.`);
 
-      const response = await fetch("/api/journal-entries", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userPlantId: careDraft.plantId,
-          title,
-          body: careDraft.notes.trim() || defaultBody,
-          healthStatus:
-            careDraft.type === "health-check"
-              ? careDraft.healthStatus
-              : null,
-          watered: careDraft.type === "watered",
-          entryDate,
-          photos: [],
-        }),
-      });
+      const legacyPayload = {
+        plantId: careDraft.plantId,
+        type: careDraft.type,
+        occurredAt,
+        notes,
+        healthStatus:
+          careDraft.type === "health-check"
+            ? healthLabel(careDraft.healthStatus)
+            : null,
+      };
+
+      let response = await fetch(
+        `/api/user-plants/${careDraft.plantId}/care-events`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(legacyPayload),
+        },
+      );
+
+      if (response.status === 404 || response.status === 405) {
+        response = await fetch("/api/journal-entries", {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            plantId: careDraft.plantId,
+            userPlantId: careDraft.plantId,
+            title,
+            notes,
+            body: notes,
+            health:
+              careDraft.type === "health-check"
+                ? healthLabel(careDraft.healthStatus)
+                : null,
+            healthStatus:
+              careDraft.type === "health-check"
+                ? careDraft.healthStatus
+                : null,
+            watered: careDraft.type === "watered",
+            occurredAt,
+            entryDate: occurredAt,
+            photos: [],
+          }),
+        });
+      }
 
       if (redirectOnUnauthorized(response)) {
         return;
@@ -730,7 +832,7 @@ function Dashboard() {
 
       await loadPlants();
       setModal(null);
-      setMessage("Care activity saved to the journal.");
+      setMessage("Care activity saved.");
     } catch (error) {
       setMessage(
         error instanceof Error
@@ -1101,7 +1203,8 @@ function Dashboard() {
                         </span>
                         <span
                           className={`health-status ${
-                            plant.healthStatus === "healthy"
+                            normalizeHealthStatus(plant.healthStatus) ===
+                            "healthy"
                               ? "health-status--healthy"
                               : "health-status--warning"
                           }`}
@@ -1320,7 +1423,8 @@ function Dashboard() {
                       onChange={(event) =>
                         setPlantDraft((draft) => ({
                           ...draft,
-                          healthStatus: event.target.value,
+                          healthStatus:
+                            event.target.value as PlantHealthStatus,
                         }))
                       }
                     >
@@ -1421,7 +1525,7 @@ function Dashboard() {
                 </label>
 
                 <p className="dashboard-file-name">
-                  This sets or replaces the plant's featured picture.
+                  Choose a photo for the selected plant.
                 </p>
 
                 <label>
@@ -1515,7 +1619,8 @@ function Dashboard() {
                       onChange={(event) =>
                         setCareDraft((draft) => ({
                           ...draft,
-                          healthStatus: event.target.value,
+                          healthStatus:
+                            event.target.value as PlantHealthStatus,
                         }))
                       }
                     >
