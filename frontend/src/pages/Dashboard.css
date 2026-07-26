@@ -890,3 +890,467 @@ img.plant-summary-card__image {
 .garden-plants::-webkit-scrollbar {
   height: 0.4rem;
 }
+.side-menu__link--logout {
+  margin-top: 0.75rem;
+  border-top: 1px solid var(--potbuddy-border);
+  border-radius: 0;
+  color: #8d3c35;
+}
+
+.side-menu__link--logout:hover,
+.side-menu__link--logout:focus-visible {
+  color: #7b2f2a;
+  background: #fff0ef;
+}
+
+.side-menu__link--logout:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.dashboard-notification-container {
+  position: relative;
+}
+
+.dashboard-notification-menu {
+  position: absolute;
+  top: calc(100% + 0.7rem);
+  right: -3.25rem;
+  z-index: 30;
+  width: min(22rem, calc(100vw - 2rem));
+  overflow: hidden;
+  border: 1px solid var(--potbuddy-border);
+  border-radius: 1.15rem;
+  background: var(--potbuddy-white);
+  box-shadow: var(--potbuddy-shadow);
+}
+
+.dashboard-notification-menu::before {
+  position: absolute;
+  top: -0.45rem;
+  right: 4.15rem;
+  width: 0.85rem;
+  height: 0.85rem;
+  border-top: 1px solid var(--potbuddy-border);
+  border-left: 1px solid var(--potbuddy-border);
+  background: var(--potbuddy-white);
+  content: "";
+  transform: rotate(45deg);
+}
+
+.dashboard-notification-menu__header {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  padding: 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid var(--potbuddy-border);
+  background: var(--potbuddy-cream);
+}
+
+.dashboard-notification-menu__header h2 {
+  margin: 0;
+  color: var(--potbuddy-green-950);
+  font-size: 1.05rem;
+}
+
+.dashboard-notification-menu__header > button {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  color: var(--potbuddy-green-950);
+  background: var(--potbuddy-green-100);
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+
+.dashboard-notification-list {
+  display: grid;
+  max-height: min(24rem, 60vh);
+  margin: 0;
+  padding: 0.45rem;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.dashboard-notification-list li + li {
+  border-top: 1px solid var(--potbuddy-border);
+}
+
+.dashboard-notification-list li > button {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  padding: 0.75rem 0.55rem;
+  grid-template-columns: 2.8rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.7rem;
+  border: 0;
+  border-radius: 0.8rem;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.dashboard-notification-list li > button:hover,
+.dashboard-notification-list li > button:focus-visible {
+  background: var(--potbuddy-green-100);
+}
+
+.dashboard-notification-image {
+  display: grid;
+  width: 2.8rem;
+  height: 2.8rem;
+  overflow: hidden;
+  place-items: center;
+  border-radius: 0.75rem;
+  background: var(--potbuddy-green-100);
+  font-size: 1.55rem;
+}
+
+.dashboard-notification-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.dashboard-notification-image > span {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+}
+
+.dashboard-notification-details {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.18rem;
+}
+
+.dashboard-notification-details strong {
+  overflow-wrap: anywhere;
+  color: var(--potbuddy-green-950);
+  font-size: 0.9rem;
+}
+
+.dashboard-notification-details > span {
+  overflow-wrap: anywhere;
+  color: var(--potbuddy-warning);
+  font-size: 0.74rem;
+  font-weight: 750;
+  line-height: 1.35;
+}
+
+.dashboard-notification-empty {
+  display: grid;
+  padding: 2rem 1rem;
+  place-items: center;
+  text-align: center;
+}
+
+.dashboard-notification-empty > span {
+  font-size: 2.5rem;
+}
+
+.dashboard-notification-empty strong {
+  margin-top: 0.5rem;
+  color: var(--potbuddy-green-950);
+}
+
+.dashboard-notification-empty p {
+  margin: 0.25rem 0 0;
+  color: var(--potbuddy-muted);
+  font-size: 0.8rem;
+}
+
+@media (min-width: 42rem) {
+  .dashboard-notification-menu {
+    right: 0;
+  }
+
+  .dashboard-notification-menu::before {
+    right: 1rem;
+  }
+}
+.dashboard-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  padding: 1rem;
+  place-items: center;
+  overflow-y: auto;
+  background: rgba(15, 35, 20, 0.58);
+  backdrop-filter: blur(6px);
+  animation: dashboard-modal-fade-in 160ms ease-out;
+}
+
+.dashboard-action-dialog {
+  width: min(100%, 40rem);
+  max-height: min(48rem, calc(100dvh - 2rem));
+  overflow: hidden;
+  border: 1px solid rgba(219, 231, 217, 0.95);
+  border-radius: 1.5rem;
+  background: var(--potbuddy-white);
+  box-shadow:
+    0 30px 90px rgba(15, 35, 20, 0.32),
+    0 8px 24px rgba(29, 77, 39, 0.12);
+  animation: dashboard-dialog-pop-in 180ms ease-out;
+}
+
+.dashboard-action-dialog__header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  margin: 0;
+  padding: 1.2rem 1.25rem;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid var(--potbuddy-border);
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(174, 225, 151, 0.42),
+      transparent 12rem
+    ),
+    var(--potbuddy-cream);
+}
+
+.dashboard-action-dialog__header .eyebrow {
+  margin-bottom: 0.3rem;
+}
+
+.dashboard-action-dialog__header h2 {
+  margin: 0;
+  color: var(--potbuddy-green-950);
+  font-size: clamp(1.35rem, 5vw, 1.8rem);
+  line-height: 1.15;
+}
+
+.dashboard-action-dialog__header > button {
+  display: grid;
+  width: 2.55rem;
+  height: 2.55rem;
+  flex: 0 0 auto;
+  padding: 0;
+  place-items: center;
+  border: 1px solid var(--potbuddy-border);
+  border-radius: 50%;
+  color: var(--potbuddy-green-950);
+  background: var(--potbuddy-white);
+  box-shadow: var(--potbuddy-small-shadow);
+  cursor: pointer;
+  font-size: 1.45rem;
+  line-height: 1;
+}
+
+.dashboard-action-dialog__header > button:hover,
+.dashboard-action-dialog__header > button:focus-visible {
+  border-color: var(--potbuddy-green-500);
+  background: var(--potbuddy-green-100);
+}
+
+.dashboard-dialog-message {
+  margin: 1rem 1.25rem 0;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid #f1cfb7;
+  border-radius: 0.85rem;
+  color: var(--potbuddy-warning);
+  background: var(--potbuddy-warning-light);
+  font-size: 0.82rem;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.dashboard-action-form {
+  display: grid;
+  max-height: calc(100dvh - 9.5rem);
+  padding: 1.25rem;
+  gap: 1rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.dashboard-action-form label {
+  display: grid;
+  gap: 0.42rem;
+  color: var(--potbuddy-green-950);
+  font-size: 0.82rem;
+  font-weight: 850;
+}
+
+.dashboard-action-form__row {
+  display: grid;
+  gap: 1rem;
+}
+
+.dashboard-action-form input,
+.dashboard-action-form select,
+.dashboard-action-form textarea {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--potbuddy-border);
+  border-radius: 0.9rem;
+  outline: 0;
+  color: var(--potbuddy-text);
+  background: var(--potbuddy-cream);
+  font: inherit;
+  font-weight: 500;
+  transition:
+    border-color 140ms ease,
+    box-shadow 140ms ease,
+    background 140ms ease;
+}
+
+.dashboard-action-form input,
+.dashboard-action-form select {
+  min-height: 3.15rem;
+  padding: 0 0.85rem;
+}
+
+.dashboard-action-form input[type="file"] {
+  min-height: auto;
+  padding: 0.75rem;
+}
+
+.dashboard-action-form textarea {
+  min-height: 7rem;
+  padding: 0.85rem;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.dashboard-action-form input:hover,
+.dashboard-action-form select:hover,
+.dashboard-action-form textarea:hover {
+  border-color: var(--potbuddy-green-300);
+  background: var(--potbuddy-white);
+}
+
+.dashboard-action-form input:focus,
+.dashboard-action-form select:focus,
+.dashboard-action-form textarea:focus {
+  border-color: var(--potbuddy-green-600);
+  background: var(--potbuddy-white);
+  box-shadow: 0 0 0 4px rgba(76, 150, 85, 0.15);
+}
+
+.dashboard-action-form > button {
+  min-height: 3.2rem;
+  margin-top: 0.2rem;
+  padding: 0.75rem 1rem;
+  border: 0;
+  border-radius: 0.95rem;
+  color: var(--potbuddy-white);
+  background:
+    linear-gradient(
+      135deg,
+      var(--potbuddy-green-700),
+      var(--potbuddy-green-900)
+    );
+  box-shadow: 0 10px 22px rgba(33, 72, 43, 0.2);
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.dashboard-action-form > button:hover,
+.dashboard-action-form > button:focus-visible {
+  background:
+    linear-gradient(
+      135deg,
+      var(--potbuddy-green-800),
+      var(--potbuddy-green-950)
+    );
+  transform: translateY(-1px);
+}
+
+.dashboard-action-form > button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+  transform: none;
+}
+
+.dashboard-file-name {
+  margin: -0.3rem 0 0;
+  color: var(--potbuddy-muted);
+  font-size: 0.78rem;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+@keyframes dashboard-modal-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes dashboard-dialog-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (min-width: 42rem) {
+  .dashboard-action-dialog__header,
+  .dashboard-action-form {
+    padding-right: 1.5rem;
+    padding-left: 1.5rem;
+  }
+
+  .dashboard-action-form__row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 32rem) {
+  .dashboard-modal {
+    padding: 0.75rem;
+  }
+
+  .dashboard-action-dialog {
+    max-height: calc(100dvh - 1.5rem);
+    border-radius: 1.25rem;
+  }
+
+  .dashboard-action-dialog__header {
+    padding: 1rem;
+  }
+
+  .dashboard-action-form {
+    max-height: calc(100dvh - 8.5rem);
+    padding: 1rem;
+  }
+
+  .dashboard-dialog-message {
+    margin-right: 1rem;
+    margin-left: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-modal,
+  .dashboard-action-dialog {
+    animation: none;
+  }
+}
