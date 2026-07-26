@@ -5,15 +5,102 @@ import {
   useRef,
   useState,
 } from "react";
-
 import type { ChangeEvent, FormEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./PlantDetail.css";
 
-type PlantPhoto = {
+type PlantHealthStatus =
+  | "healthy"
+  | "needs-attention"
+  | "sick"
+  | "recovering"
+  | "dormant"
+  | "dead";
+
+type LegacyPlantHealthStatus =
+  | "Healthy"
+  | "Needs attention"
+  | "Needs Attention"
+  | "Sick"
+  | "Recovering"
+  | "Dormant"
+  | "Dead";
+
+type CurrentUser = {
+  _id: string;
+  username: string;
+  email: string;
+};
+
+type PlantSpecies = {
+  _id?: string;
+  commonName?: string;
+  scientificName?: string;
+};
+
+type PlantPicture = {
   fileId?: string;
+  filename?: string;
+  contentType?: string;
+  altText?: string | null;
   url?: string;
   alt?: string;
+};
+
+type NotificationSettings = {
+  enabled: boolean;
+  reminderTime: string;
+  reminderDaysBefore: number;
+};
+
+type PlantDetailData = {
+  _id: string;
+  ownerId?: string;
+  speciesId?: PlantSpecies | string | null;
+  species?: PlantSpecies | null;
+  nickname: string;
+  picture?: PlantPicture | null;
+  healthStatus?: PlantHealthStatus | LegacyPlantHealthStatus | null;
+  healthNotes?: string | null;
+  notes?: string | null;
+  location?: string | null;
+  acquiredAt?: string | null;
+  lastWateredAt?: string | null;
+  nextWateringAt?: string | null;
+  wateringRemindersEnabled?: boolean;
+  notificationSettings?: NotificationSettings | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+};
+
+type JournalPhoto = {
+  fileId?: string;
+  filename?: string;
+  contentType?: string;
+  caption?: string | null;
+};
+
+type PopulatedJournalPlant = {
+  _id: string;
+  nickname?: string;
+};
+
+type JournalEntryApi = {
+  _id?: string;
+  id?: string;
+  userPlantId?: PopulatedJournalPlant | string;
+  plantId?: PopulatedJournalPlant | string;
+  title?: string | null;
+  body?: string;
+  notes?: string;
+  healthStatus?: PlantHealthStatus | LegacyPlantHealthStatus | null;
+  health?: PlantHealthStatus | LegacyPlantHealthStatus | null;
+  watered?: boolean;
+  entryDate?: string;
+  occurredAt?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  photos?: JournalPhoto[];
 };
 
 type CareEventType =
@@ -21,9 +108,7 @@ type CareEventType =
   | "photo"
   | "journal"
   | "health"
-  | "added"
-  | "edited"
-  | "other";
+  | "added";
 
 type CareEvent = {
   _id: string;
@@ -33,125 +118,176 @@ type CareEvent = {
   occurredAt: string;
 };
 
-type PlantDetailData = {
-  _id: string;
-  nickname: string;
-  species?: {
-    _id?: string;
-    commonName?: string;
-    scientificName?: string;
-  } | null;
-  healthStatus?: string | null;
-  healthScore?: number | null;
-  notes?: string | null;
-  location?: string | null;
-  acquiredAt?: string | null;
-  lastWateredAt?: string | null;
-  nextWateringAt?: string | null;
-  picture?: PlantPhoto | null;
-  photos?: PlantPhoto[];
-  careTimeline?: CareEvent[];
-};
-
 type PlantEditDraft = {
   nickname: string;
-  healthStatus: string;
-  healthScore: string;
+  healthStatus: PlantHealthStatus;
+  healthNotes: string;
   location: string;
+  acquiredAt: string;
   lastWateredAt: string;
   nextWateringAt: string;
-  notes: string;
+  wateringRemindersEnabled: boolean;
+  notificationEnabled: boolean;
+  reminderTime: string;
+  reminderDaysBefore: string;
 };
 
-const previewPlants: Record<string, PlantDetailData> = {
-  "1": {
-    _id: "1",
-    nickname: "Snakey",
-    species: {
-      commonName: "Snake Plant",
-      scientificName: "Dracaena trifasciata",
-    },
-    healthStatus: "Healthy",
-    healthScore: 92,
-    lastWateredAt: "2026-07-21T12:00:00.000Z",
-    nextWateringAt: "2026-07-28T12:00:00.000Z",
-    location: "Bedroom window",
-    notes: "Prefers bright, indirect light and infrequent watering.",
-    careTimeline: [
-      {
-        _id: "snakey-added",
-        type: "added",
-        title: "Added to the garden",
-        details: "Snakey joined your PotBuddy collection.",
-        occurredAt: "2026-07-10T15:30:00.000Z",
-      },
-    ],
-  },
-  "2": {
-    _id: "2",
-    nickname: "Monty",
-    species: {
-      commonName: "Monstera",
-      scientificName: "Monstera deliciosa",
-    },
-    healthStatus: "Healthy",
-    healthScore: 88,
-    lastWateredAt: "2026-07-24T12:00:00.000Z",
-    nextWateringAt: "2026-07-31T12:00:00.000Z",
-    location: "Living room",
-    notes: "Rotate the pot regularly so growth stays even.",
-    careTimeline: [
-      {
-        _id: "monty-watered",
-        type: "watered",
-        title: "Plant watered",
-        details: "Watering was recorded for Monty.",
-        occurredAt: "2026-07-24T12:00:00.000Z",
-      },
-      {
-        _id: "monty-added",
-        type: "added",
-        title: "Added to the garden",
-        details: "Monty joined your PotBuddy collection.",
-        occurredAt: "2026-07-05T16:00:00.000Z",
-      },
-    ],
-  },
-  "3": {
-    _id: "3",
-    nickname: "Lily",
-    species: {
-      commonName: "Peace Lily",
-      scientificName: "Spathiphyllum",
-    },
-    healthStatus: "Needs attention",
-    healthScore: 64,
-    lastWateredAt: "2026-07-20T12:00:00.000Z",
-    nextWateringAt: "2026-07-23T12:00:00.000Z",
-    location: "Kitchen",
-    notes: "Check soil moisture and keep away from direct sunlight.",
-    careTimeline: [
-      {
-        _id: "lily-health",
-        type: "health",
-        title: "Health needs attention",
-        details: "Some leaves appear droopy.",
-        occurredAt: "2026-07-23T10:15:00.000Z",
-      },
-    ],
-  },
-};
+const healthOptions: Array<{
+  value: PlantHealthStatus;
+  label: string;
+}> = [
+  { value: "healthy", label: "Healthy" },
+  { value: "needs-attention", label: "Needs attention" },
+  { value: "sick", label: "Sick" },
+  { value: "recovering", label: "Recovering" },
+  { value: "dormant", label: "Dormant" },
+  { value: "dead", label: "Dead" },
+];
 
-function getPhotoSource(photo?: PlantPhoto | null): string | null {
+function normalizeCurrentUser(data: unknown): CurrentUser {
+  if (
+    typeof data === "object" &&
+    data !== null &&
+    "user" in data &&
+    typeof (data as { user?: unknown }).user === "object"
+  ) {
+    return (data as { user: CurrentUser }).user;
+  }
+
+  return data as CurrentUser;
+}
+
+function normalizePlantResponse(data: unknown): PlantDetailData {
+  if (
+    typeof data === "object" &&
+    data !== null &&
+    "plant" in data &&
+    typeof (data as { plant?: unknown }).plant === "object"
+  ) {
+    return (data as { plant: PlantDetailData }).plant;
+  }
+
+  if (
+    typeof data === "object" &&
+    data !== null &&
+    "userPlant" in data &&
+    typeof (data as { userPlant?: unknown }).userPlant === "object"
+  ) {
+    return (data as { userPlant: PlantDetailData }).userPlant;
+  }
+
+  return data as PlantDetailData;
+}
+
+function normalizeJournalEntries(data: unknown): JournalEntryApi[] {
+  if (Array.isArray(data)) {
+    return data as JournalEntryApi[];
+  }
+
+  if (
+    typeof data === "object" &&
+    data !== null &&
+    "entries" in data &&
+    Array.isArray((data as { entries?: unknown }).entries)
+  ) {
+    return (data as { entries: JournalEntryApi[] }).entries;
+  }
+
+  if (
+    typeof data === "object" &&
+    data !== null &&
+    "journalEntries" in data &&
+    Array.isArray((data as { journalEntries?: unknown }).journalEntries)
+  ) {
+    return (data as { journalEntries: JournalEntryApi[] }).journalEntries;
+  }
+
+  return [];
+}
+
+async function readJson(response: Response): Promise<unknown> {
+  const contentType = response.headers.get("content-type");
+
+  if (!contentType?.includes("application/json")) {
+    throw new Error("The server returned a webpage instead of JSON data.");
+  }
+
+  return response.json();
+}
+
+function normalizeHealthStatus(
+  healthStatus?:
+    | PlantHealthStatus
+    | LegacyPlantHealthStatus
+    | null,
+): PlantHealthStatus {
+  const legacyMap: Record<
+    LegacyPlantHealthStatus,
+    PlantHealthStatus
+  > = {
+    Healthy: "healthy",
+    "Needs attention": "needs-attention",
+    "Needs Attention": "needs-attention",
+    Sick: "sick",
+    Recovering: "recovering",
+    Dormant: "dormant",
+    Dead: "dead",
+  };
+
+  if (!healthStatus) {
+    return "healthy";
+  }
+
+  if (healthStatus in legacyMap) {
+    return legacyMap[healthStatus as LegacyPlantHealthStatus];
+  }
+
+  return healthStatus as PlantHealthStatus;
+}
+
+function healthLabel(
+  healthStatus?:
+    | PlantHealthStatus
+    | LegacyPlantHealthStatus
+    | null,
+): string {
+  const normalizedHealthStatus =
+    normalizeHealthStatus(healthStatus);
+
+  return (
+    healthOptions.find(
+      (option) => option.value === normalizedHealthStatus,
+    )?.label ?? normalizedHealthStatus
+  );
+}
+
+function getPlantSpecies(
+  plant?: PlantDetailData | null,
+): PlantSpecies | null {
+  if (!plant) {
+    return null;
+  }
+
+  if (
+    plant.speciesId &&
+    typeof plant.speciesId === "object"
+  ) {
+    return plant.speciesId;
+  }
+
+  return plant.species ?? null;
+}
+
+function getPhotoSource(
+  photo?: PlantPicture | null,
+): string | null {
   if (photo?.url) {
     return photo.url;
   }
 
-  if (photo?.fileId) {
-    return `/api/photos/${photo.fileId}`;
-  }
-
-  return null;
+  return photo?.fileId
+    ? `/api/photos/${photo.fileId}`
+    : null;
 }
 
 function toDateInputValue(date?: string | null): string {
@@ -165,11 +301,18 @@ function toDateInputValue(date?: string | null): string {
     return "";
   }
 
-  return parsedDate.toISOString().slice(0, 10);
+  const timezoneOffset =
+    parsedDate.getTimezoneOffset() * 60_000;
+
+  return new Date(parsedDate.getTime() - timezoneOffset)
+    .toISOString()
+    .slice(0, 10);
 }
 
 function dateInputToIso(date: string): string | null {
-  return date ? new Date(`${date}T12:00:00`).toISOString() : null;
+  return date
+    ? new Date(`${date}T12:00:00`).toISOString()
+    : null;
 }
 
 function formatDate(date?: string | null): string {
@@ -213,56 +356,218 @@ function getTimelineIcon(type: CareEventType): string {
     journal: "📖",
     health: "🌿",
     added: "🪴",
-    edited: "✏️",
-    other: "•",
   };
 
   return icons[type];
 }
 
-function normalizePlantResponse(data: unknown): PlantDetailData {
-  if (
-    typeof data === "object" &&
-    data !== null &&
-    "plant" in data &&
-    typeof (data as { plant?: unknown }).plant === "object"
-  ) {
-    return (data as { plant: PlantDetailData }).plant;
+function getJournalPlantId(
+  entry: JournalEntryApi,
+): string {
+  const plantReference =
+    entry.userPlantId ?? entry.plantId;
+
+  if (!plantReference) {
+    return "";
   }
 
-  return data as PlantDetailData;
+  return typeof plantReference === "string"
+    ? plantReference
+    : plantReference._id;
 }
 
-function createEditDraft(plant: PlantDetailData): PlantEditDraft {
+function getJournalDate(
+  entry: JournalEntryApi,
+): string | null {
+  return (
+    entry.entryDate ??
+    entry.occurredAt ??
+    entry.createdAt ??
+    entry.updatedAt ??
+    null
+  );
+}
+
+function createTimeline(
+  plant: PlantDetailData,
+  entries: JournalEntryApi[],
+): CareEvent[] {
+  const events: CareEvent[] = entries
+    .filter(
+      (entry) => getJournalPlantId(entry) === plant._id,
+    )
+    .flatMap((entry, index): CareEvent[] => {
+      const occurredAt = getJournalDate(entry);
+
+      if (!occurredAt) {
+        return [];
+      }
+
+      const normalizedHealthStatus =
+        entry.healthStatus ?? entry.health;
+      const hasPhotos =
+        Array.isArray(entry.photos) &&
+        entry.photos.length > 0;
+
+      let type: CareEventType = "journal";
+
+      if (entry.watered) {
+        type = "watered";
+      } else if (hasPhotos) {
+        type = "photo";
+      } else if (normalizedHealthStatus) {
+        type = "health";
+      }
+
+      const defaultTitle =
+        type === "watered"
+          ? "Plant watered"
+          : type === "photo"
+            ? "Photo added"
+            : type === "health"
+              ? `Health: ${healthLabel(
+                  normalizedHealthStatus,
+                )}`
+              : "Journal entry";
+
+      return [
+        {
+          _id:
+            entry._id ??
+            entry.id ??
+            `journal-${occurredAt}-${index}`,
+          type,
+          title: entry.title?.trim() || defaultTitle,
+          details:
+            entry.body?.trim() ||
+            entry.notes?.trim() ||
+            undefined,
+          occurredAt,
+        },
+      ];
+    });
+
+  if (plant.createdAt) {
+    events.push({
+      _id: `plant-added-${plant._id}`,
+      type: "added",
+      title: "Added to the garden",
+      details: `${plant.nickname} joined your PotBuddy collection.`,
+      occurredAt: plant.createdAt,
+    });
+  }
+
+  if (plant.lastWateredAt) {
+    const lastWateredTime =
+      new Date(plant.lastWateredAt).getTime();
+
+    const alreadyRecorded = events.some((event) => {
+      if (event.type !== "watered") {
+        return false;
+      }
+
+      const eventTime =
+        new Date(event.occurredAt).getTime();
+
+      return (
+        Number.isFinite(eventTime) &&
+        Number.isFinite(lastWateredTime) &&
+        Math.abs(eventTime - lastWateredTime) <
+          60 * 60 * 1000
+      );
+    });
+
+    if (!alreadyRecorded) {
+      events.push({
+        _id: `last-watered-${plant._id}`,
+        type: "watered",
+        title: "Plant watered",
+        details: `Last watering recorded for ${plant.nickname}.`,
+        occurredAt: plant.lastWateredAt,
+      });
+    }
+  }
+
+  return events.sort(
+    (firstEvent, secondEvent) =>
+      new Date(secondEvent.occurredAt).getTime() -
+      new Date(firstEvent.occurredAt).getTime(),
+  );
+}
+
+function createEditDraft(
+  plant: PlantDetailData,
+): PlantEditDraft {
+  const notificationSettings =
+    plant.notificationSettings;
+
   return {
     nickname: plant.nickname,
-    healthStatus: plant.healthStatus ?? "",
-    healthScore:
-      typeof plant.healthScore === "number" ? String(plant.healthScore) : "",
+    healthStatus: normalizeHealthStatus(
+      plant.healthStatus,
+    ),
+    healthNotes:
+      plant.healthNotes ?? plant.notes ?? "",
     location: plant.location ?? "",
-    lastWateredAt: toDateInputValue(plant.lastWateredAt),
-    nextWateringAt: toDateInputValue(plant.nextWateringAt),
-    notes: plant.notes ?? "",
+    acquiredAt: toDateInputValue(plant.acquiredAt),
+    lastWateredAt: toDateInputValue(
+      plant.lastWateredAt,
+    ),
+    nextWateringAt: toDateInputValue(
+      plant.nextWateringAt,
+    ),
+    wateringRemindersEnabled:
+      plant.wateringRemindersEnabled ?? true,
+    notificationEnabled:
+      notificationSettings?.enabled ?? true,
+    reminderTime:
+      notificationSettings?.reminderTime ?? "09:00",
+    reminderDaysBefore: String(
+      notificationSettings?.reminderDaysBefore ?? 0,
+    ),
   };
 }
 
 function PlantDetail() {
   const navigate = useNavigate();
-  const { plantId } = useParams<{ plantId: string }>();
-  const photoInputRef = useRef<HTMLInputElement>(null);
+  const { plantId } =
+    useParams<{ plantId: string }>();
+  const photoInputRef =
+    useRef<HTMLInputElement>(null);
 
-  const [plant, setPlant] = useState<PlantDetailData | null>(null);
+  const [currentUser, setCurrentUser] =
+    useState<CurrentUser | null>(null);
+  const [plant, setPlant] =
+    useState<PlantDetailData | null>(null);
+  const [journalEntries, setJournalEntries] =
+    useState<JournalEntryApi[]>([]);
   const [loading, setLoading] = useState(true);
   const [pageError, setPageError] = useState("");
-  const [actionMessage, setActionMessage] = useState("");
+  const [timelineError, setTimelineError] =
+    useState("");
+  const [actionMessage, setActionMessage] =
+    useState("");
   const [watering, setWatering] = useState(false);
-  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [uploadingPhoto, setUploadingPhoto] =
+    useState(false);
   const [deleting, setDeleting] = useState(false);
   const [editing, setEditing] = useState(false);
-  const [savingEdit, setSavingEdit] = useState(false);
-  const [editDraft, setEditDraft] = useState<PlantEditDraft | null>(null);
+  const [savingEdit, setSavingEdit] =
+    useState(false);
+  const [editDraft, setEditDraft] =
+    useState<PlantEditDraft | null>(null);
 
-  const isPreviewPlant = Boolean(plantId && previewPlants[plantId]);
+  const redirectOnUnauthorized = useCallback(
+    (response: Response): boolean => {
+      if (response.status === 401) {
+        navigate("/login", { replace: true });
+        return true;
+      }
+
+      return false;
+    },
+    [navigate],
+  );
 
   const loadPlant = useCallback(
     async (signal?: AbortSignal): Promise<void> => {
@@ -272,112 +577,188 @@ function PlantDetail() {
         return;
       }
 
-      const previewPlant = previewPlants[plantId];
+      const response = await fetch(
+        `/api/user-plants/${plantId}`,
+        {
+          credentials: "include",
+          signal,
+        },
+      );
 
-      if (previewPlant) {
-        setPlant(previewPlant);
-        setPageError("");
+      if (redirectOnUnauthorized(response)) {
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          response.status === 404
+            ? "This plant could not be found."
+            : "The plant details could not be loaded.",
+        );
+      }
+
+      setPlant(
+        normalizePlantResponse(
+          await readJson(response),
+        ),
+      );
+    },
+    [plantId, redirectOnUnauthorized],
+  );
+
+  const loadJournalEntries = useCallback(
+    async (
+      signal?: AbortSignal,
+    ): Promise<void> => {
+      try {
+        setTimelineError("");
+
+        const response = await fetch(
+          "/api/journal-entries",
+          {
+            credentials: "include",
+            signal,
+          },
+        );
+
+        if (redirectOnUnauthorized(response)) {
+          return;
+        }
+
+        if (
+          response.status === 404 ||
+          response.status === 405
+        ) {
+          setJournalEntries([]);
+          setTimelineError(
+            "Journal history is not available from the API yet.",
+          );
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error(
+            "Recent plant activity could not be loaded.",
+          );
+        }
+
+        setJournalEntries(
+          normalizeJournalEntries(
+            await readJson(response),
+          ),
+        );
+      } catch (error) {
+        if (
+          error instanceof DOMException &&
+          error.name === "AbortError"
+        ) {
+          return;
+        }
+
+        setJournalEntries([]);
+        setTimelineError(
+          error instanceof Error
+            ? error.message
+            : "Recent plant activity could not be loaded.",
+        );
+      }
+    },
+    [redirectOnUnauthorized],
+  );
+
+  const loadPage = useCallback(
+    async (signal?: AbortSignal): Promise<void> => {
+      if (!plantId) {
+        setPageError("No plant was selected.");
         setLoading(false);
         return;
       }
 
       try {
+        setLoading(true);
         setPageError("");
 
-        const response = await fetch(`/api/user-plants/${plantId}`, {
-          credentials: "include",
-          signal,
-        });
+        const userResponse = await fetch(
+          "/api/auth/me",
+          {
+            credentials: "include",
+            signal,
+          },
+        );
 
-        if (!response.ok) {
+        if (redirectOnUnauthorized(userResponse)) {
+          return;
+        }
+
+        if (!userResponse.ok) {
           throw new Error(
-            response.status === 404
-              ? "This plant could not be found."
-              : "The plant details could not be loaded.",
+            "Your account could not be loaded.",
           );
         }
 
-        const contentType = response.headers.get("content-type");
+        setCurrentUser(
+          normalizeCurrentUser(
+            await readJson(userResponse),
+          ),
+        );
 
-        if (!contentType?.includes("application/json")) {
-          throw new Error(
-            "The plant API returned a webpage instead of plant data.",
-          );
-        }
-
-        const data: unknown = await response.json();
-        setPlant(normalizePlantResponse(data));
-      } catch (requestError) {
+        await Promise.all([
+          loadPlant(signal),
+          loadJournalEntries(signal),
+        ]);
+      } catch (error) {
         if (
-          requestError instanceof DOMException &&
-          requestError.name === "AbortError"
+          error instanceof DOMException &&
+          error.name === "AbortError"
         ) {
           return;
         }
 
         setPageError(
-          requestError instanceof Error
-            ? requestError.message
-            : "Something went wrong while loading this plant.",
+          error instanceof Error
+            ? error.message
+            : "This plant could not be loaded.",
         );
       } finally {
         setLoading(false);
       }
     },
-    [plantId],
+    [
+      loadJournalEntries,
+      loadPlant,
+      plantId,
+      redirectOnUnauthorized,
+    ],
   );
 
   useEffect(() => {
     const controller = new AbortController();
-    void loadPlant(controller.signal);
+
+    void loadPage(controller.signal);
 
     return () => controller.abort();
-  }, [loadPlant]);
+  }, [loadPage]);
 
-  const featuredPhoto = useMemo(() => {
-    const primaryPhoto = getPhotoSource(plant?.picture);
+  const species = useMemo(
+    () => getPlantSpecies(plant),
+    [plant],
+  );
 
-    if (primaryPhoto) {
-      return primaryPhoto;
-    }
+  const featuredPhoto = useMemo(
+    () => getPhotoSource(plant?.picture),
+    [plant?.picture],
+  );
 
-    return getPhotoSource(plant?.photos?.[0]);
-  }, [plant]);
-
-  const careTimeline = useMemo(() => {
-    return [...(plant?.careTimeline ?? [])].sort(
-      (firstEvent, secondEvent) =>
-        new Date(secondEvent.occurredAt).getTime() -
-        new Date(firstEvent.occurredAt).getTime(),
-    );
-  }, [plant?.careTimeline]);
+  const careTimeline = useMemo(
+    () =>
+      plant
+        ? createTimeline(plant, journalEntries)
+        : [],
+    [journalEntries, plant],
+  );
 
   async function handleWaterPlant(): Promise<void> {
     if (!plantId || !plant || watering) {
-      return;
-    }
-
-    const wateredAt = new Date().toISOString();
-
-    if (isPreviewPlant) {
-      const updatedPlant: PlantDetailData = {
-        ...plant,
-        lastWateredAt: wateredAt,
-        careTimeline: [
-          {
-            _id: `preview-watered-${Date.now()}`,
-            type: "watered",
-            title: "Plant watered",
-            details: `Watering was recorded for ${plant.nickname}.`,
-            occurredAt: wateredAt,
-          },
-          ...(plant.careTimeline ?? []),
-        ],
-      };
-
-      previewPlants[plantId] = updatedPlant;
-      setPlant(updatedPlant);
-      setActionMessage("Watering recorded for this preview.");
       return;
     }
 
@@ -385,25 +766,40 @@ function PlantDetail() {
       setWatering(true);
       setActionMessage("");
 
-      const response = await fetch(`/api/user-plants/${plantId}/water`, {
-        method: "PATCH",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `/api/user-plants/${plantId}/water`,
+        {
+          method: "PATCH",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            wateredAt: new Date().toISOString(),
+          }),
         },
-        body: JSON.stringify({ wateredAt }),
-      });
+      );
 
-      if (!response.ok) {
-        throw new Error("The watering update could not be saved.");
+      if (redirectOnUnauthorized(response)) {
+        return;
       }
 
-      await loadPlant();
+      if (!response.ok) {
+        throw new Error(
+          "The watering update could not be saved.",
+        );
+      }
+
+      await Promise.all([
+        loadPlant(),
+        loadJournalEntries(),
+      ]);
+
       setActionMessage("Watering recorded.");
-    } catch (requestError) {
+    } catch (error) {
       setActionMessage(
-        requestError instanceof Error
-          ? requestError.message
+        error instanceof Error
+          ? error.message
           : "The watering update could not be saved.",
       );
     } finally {
@@ -413,7 +809,11 @@ function PlantDetail() {
 
   function handleJournalEntry(): void {
     if (plantId) {
-      navigate(`/journal?plantId=${encodeURIComponent(plantId)}`);
+      navigate(
+        `/journal?plantId=${encodeURIComponent(
+          plantId,
+        )}`,
+      );
     }
   }
 
@@ -424,79 +824,79 @@ function PlantDetail() {
   async function handlePhotoSelected(
     event: ChangeEvent<HTMLInputElement>,
   ): Promise<void> {
-    const selectedFile = event.target.files?.[0];
+    const selectedFile =
+      event.target.files?.[0];
 
-    if (!selectedFile || !plantId || !plant) {
+    if (!selectedFile || !plantId) {
       return;
     }
 
     if (!selectedFile.type.startsWith("image/")) {
-      setActionMessage("Please choose an image file.");
+      setActionMessage(
+        "Please choose an image file.",
+      );
       event.target.value = "";
       return;
     }
 
-    const maximumFileSize = 10 * 1024 * 1024;
-
-    if (selectedFile.size > maximumFileSize) {
-      setActionMessage("Please choose an image smaller than 10 MB.");
+    if (selectedFile.size > 10 * 1024 * 1024) {
+      setActionMessage(
+        "Please choose an image smaller than 10 MB.",
+      );
       event.target.value = "";
       return;
     }
 
-    if (isPreviewPlant) {
-      const localPhotoUrl = URL.createObjectURL(selectedFile);
-      const newPhoto: PlantPhoto = {
-        url: localPhotoUrl,
-        alt: `${plant.nickname} plant`,
-      };
+    const createPhotoFormData = (): FormData => {
+      const formData = new FormData();
+      formData.append("photo", selectedFile);
 
-      const updatedPlant: PlantDetailData = {
-        ...plant,
-        picture: newPhoto,
-        photos: [newPhoto, ...(plant.photos ?? [])],
-        careTimeline: [
-          {
-            _id: `preview-photo-${Date.now()}`,
-            type: "photo",
-            title: "Photo added",
-            details: `${selectedFile.name} was added to this preview plant.`,
-            occurredAt: new Date().toISOString(),
-          },
-          ...(plant.careTimeline ?? []),
-        ],
-      };
-
-      previewPlants[plantId] = updatedPlant;
-      setPlant(updatedPlant);
-      setActionMessage("Photo added for this preview.");
-      event.target.value = "";
-      return;
-    }
+      return formData;
+    };
 
     try {
       setUploadingPhoto(true);
       setActionMessage("");
 
-      const formData = new FormData();
-      formData.append("photo", selectedFile);
+      let response = await fetch(
+        `/api/user-plants/${plantId}/photos`,
+        {
+          method: "POST",
+          credentials: "include",
+          body: createPhotoFormData(),
+        },
+      );
 
-      const response = await fetch(`/api/user-plants/${plantId}/photos`, {
-        method: "POST",
-        credentials: "include",
-        body: formData,
-      });
+      if (
+        response.status === 404 ||
+        response.status === 405
+      ) {
+        response = await fetch(
+          `/api/user-plants/${plantId}/picture`,
+          {
+            method: "POST",
+            credentials: "include",
+            body: createPhotoFormData(),
+          },
+        );
+      }
+
+      if (redirectOnUnauthorized(response)) {
+        return;
+      }
 
       if (!response.ok) {
-        throw new Error("The photo could not be uploaded.");
+        throw new Error(
+          "The photo could not be uploaded.",
+        );
       }
 
       await loadPlant();
-      setActionMessage("Photo added.");
-    } catch (requestError) {
+      setActionMessage("Plant photo saved.");
+    } catch (error) {
       setActionMessage(
-        requestError instanceof Error
-          ? requestError.message
+        error instanceof Error
+          ? error.message
           : "The photo could not be uploaded.",
       );
     } finally {
@@ -525,88 +925,118 @@ function PlantDetail() {
   ): Promise<void> {
     event.preventDefault();
 
-    if (!plantId || !plant || !editDraft || savingEdit) {
+    if (
+      !plantId ||
+      !plant ||
+      !editDraft ||
+      savingEdit
+    ) {
       return;
     }
 
-    const trimmedNickname = editDraft.nickname.trim();
+    const nickname = editDraft.nickname.trim();
+    const reminderDaysBefore = Number(
+      editDraft.reminderDaysBefore,
+    );
 
-    if (!trimmedNickname) {
+    if (!nickname) {
       setActionMessage("Plant name is required.");
       return;
     }
 
-    const parsedHealthScore =
-      editDraft.healthScore === ""
-        ? null
-        : Number(editDraft.healthScore);
+    if (
+      !/^([01]\d|2[0-3]):[0-5]\d$/.test(
+        editDraft.reminderTime,
+      )
+    ) {
+      setActionMessage(
+        "Reminder time must use HH:MM format.",
+      );
+      return;
+    }
 
     if (
-      parsedHealthScore !== null &&
-      (!Number.isFinite(parsedHealthScore) ||
-        parsedHealthScore < 0 ||
-        parsedHealthScore > 100)
+      !Number.isFinite(reminderDaysBefore) ||
+      reminderDaysBefore < 0
     ) {
-      setActionMessage("Health percentage must be between 0 and 100.");
+      setActionMessage(
+        "Reminder days must be zero or greater.",
+      );
       return;
     }
+
+    const healthNotes =
+      editDraft.healthNotes.trim() || null;
 
     const updatePayload = {
-      nickname: trimmedNickname,
-      healthStatus: editDraft.healthStatus.trim() || null,
-      healthScore: parsedHealthScore,
-      location: editDraft.location.trim() || null,
-      lastWateredAt: dateInputToIso(editDraft.lastWateredAt),
-      nextWateringAt: dateInputToIso(editDraft.nextWateringAt),
-      notes: editDraft.notes.trim() || null,
+      nickname,
+      healthStatus: editDraft.healthStatus,
+      health: healthLabel(
+        editDraft.healthStatus,
+      ),
+
+      healthNotes,
+      notes: healthNotes,
+
+      location:
+        editDraft.location.trim() || null,
+      acquiredAt: dateInputToIso(
+        editDraft.acquiredAt,
+      ),
+      lastWateredAt: dateInputToIso(
+        editDraft.lastWateredAt,
+      ),
+      nextWateringAt: dateInputToIso(
+        editDraft.nextWateringAt,
+      ),
+
+      wateringRemindersEnabled:
+        editDraft.wateringRemindersEnabled,
+
+      notificationSettings: {
+        enabled: editDraft.notificationEnabled,
+        reminderTime: editDraft.reminderTime,
+        reminderDaysBefore,
+      },
     };
-
-    if (isPreviewPlant) {
-      const updatedPlant: PlantDetailData = {
-        ...plant,
-        ...updatePayload,
-        careTimeline: [
-          {
-            _id: `preview-edited-${Date.now()}`,
-            type: "edited",
-            title: "Plant details updated",
-            details: `Details for ${trimmedNickname} were edited.`,
-            occurredAt: new Date().toISOString(),
-          },
-          ...(plant.careTimeline ?? []),
-        ],
-      };
-
-      previewPlants[plantId] = updatedPlant;
-      setPlant(updatedPlant);
-      setEditing(false);
-      setEditDraft(null);
-      setActionMessage("Plant details updated for this preview.");
-      return;
-    }
 
     try {
       setSavingEdit(true);
       setActionMessage("");
 
-      const response = await fetch(`/api/user-plants/${plantId}`, {
-        method: "PATCH",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `/api/user-plants/${plantId}`,
+        {
+          method: "PATCH",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatePayload),
         },
-        body: JSON.stringify(updatePayload),
-      });
+      );
 
-      if (!response.ok) {
-        throw new Error("The plant changes could not be saved.");
+      if (redirectOnUnauthorized(response)) {
+        return;
       }
 
-      const contentType = response.headers.get("content-type");
+      if (!response.ok) {
+        throw new Error(
+          "The plant changes could not be saved.",
+        );
+      }
 
-      if (contentType?.includes("application/json")) {
-        const data: unknown = await response.json();
-        setPlant(normalizePlantResponse(data));
+      const contentType =
+        response.headers.get("content-type");
+
+      if (
+        contentType?.includes("application/json")
+      ) {
+        setPlant(
+          normalizePlantResponse(
+            await response.json(),
+          ),
+        );
       } else {
         await loadPlant();
       }
@@ -614,10 +1044,10 @@ function PlantDetail() {
       setEditing(false);
       setEditDraft(null);
       setActionMessage("Plant details updated.");
-    } catch (requestError) {
+    } catch (error) {
       setActionMessage(
-        requestError instanceof Error
-          ? requestError.message
+        error instanceof Error
+          ? error.message
           : "The plant changes could not be saved.",
       );
     } finally {
@@ -638,29 +1068,33 @@ function PlantDetail() {
       return;
     }
 
-    if (isPreviewPlant) {
-      navigate("/garden");
-      return;
-    }
-
     try {
       setDeleting(true);
       setActionMessage("");
 
-      const response = await fetch(`/api/user-plants/${plantId}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
+      const response = await fetch(
+        `/api/user-plants/${plantId}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        },
+      );
 
-      if (!response.ok) {
-        throw new Error("The plant could not be deleted.");
+      if (redirectOnUnauthorized(response)) {
+        return;
       }
 
-      navigate("/garden");
-    } catch (requestError) {
+      if (!response.ok) {
+        throw new Error(
+          "The plant could not be deleted.",
+        );
+      }
+
+      navigate("/plants");
+    } catch (error) {
       setActionMessage(
-        requestError instanceof Error
-          ? requestError.message
+        error instanceof Error
+          ? error.message
           : "The plant could not be deleted.",
       );
       setDeleting(false);
@@ -670,12 +1104,21 @@ function PlantDetail() {
   if (loading) {
     return (
       <div className="plant-detail-page">
-        <main className="plant-detail-state" aria-live="polite">
-          <span className="plant-detail-state__icon" aria-hidden="true">
+        <main
+          className="plant-detail-state"
+          aria-live="polite"
+        >
+          <span
+            className="plant-detail-state__icon"
+            aria-hidden="true"
+          >
             🌱
           </span>
           <h1>Loading plant…</h1>
-          <p>Gathering care details and recent activity.</p>
+          <p>
+            Gathering plant details and journal
+            history.
+          </p>
         </main>
       </div>
     );
@@ -685,23 +1128,33 @@ function PlantDetail() {
     return (
       <div className="plant-detail-page">
         <main className="plant-detail-state">
-          <span className="plant-detail-state__icon" aria-hidden="true">
+          <span
+            className="plant-detail-state__icon"
+            aria-hidden="true"
+          >
             🪴
           </span>
           <h1>Plant unavailable</h1>
-          <p>{pageError || "This plant could not be loaded."}</p>
-          <button type="button" onClick={() => navigate("/garden")}>
-            Back to garden
+          <p>
+            {pageError ||
+              "This plant could not be loaded."}
+          </p>
+          <button
+            type="button"
+            onClick={() => navigate("/plants")}
+          >
+            Back to my plants
           </button>
         </main>
       </div>
     );
   }
 
-  const healthText =
-    typeof plant.healthScore === "number"
-      ? `${Math.round(plant.healthScore)}%`
-      : plant.healthStatus || "Not recorded";
+  const reminderSettings =
+    plant.notificationSettings;
+  const remindersOn =
+    plant.wateringRemindersEnabled !== false &&
+    reminderSettings?.enabled !== false;
 
   return (
     <div className="plant-detail-page">
@@ -709,8 +1162,8 @@ function PlantDetail() {
         <button
           className="plant-detail-header__button"
           type="button"
-          aria-label="Back to garden"
-          onClick={() => navigate("/garden")}
+          aria-label="Back to my plants"
+          onClick={() => navigate("/plants")}
         >
           ←
         </button>
@@ -723,7 +1176,11 @@ function PlantDetail() {
         <button
           className="plant-detail-header__button"
           type="button"
-          aria-label="Open profile"
+          aria-label={
+            currentUser
+              ? `Open ${currentUser.username}'s profile`
+              : "Open profile"
+          }
           onClick={() => navigate("/profile")}
         >
           🪴
@@ -736,9 +1193,14 @@ function PlantDetail() {
             {featuredPhoto ? (
               <img
                 src={featuredPhoto}
-                alt={`${plant.nickname} plant`}
+                alt={
+                  plant.picture?.altText ||
+                  plant.picture?.alt ||
+                  `${plant.nickname} plant`
+                }
                 onError={(event) => {
-                  event.currentTarget.style.display = "none";
+                  event.currentTarget.style.display =
+                    "none";
                   event.currentTarget.nextElementSibling?.removeAttribute(
                     "hidden",
                   );
@@ -752,7 +1214,10 @@ function PlantDetail() {
             >
               <span aria-hidden="true">🪴</span>
               <strong>No plant photo yet</strong>
-              <button type="button" onClick={openPhotoPicker}>
+              <button
+                type="button"
+                onClick={openPhotoPicker}
+              >
                 Add the first photo
               </button>
             </div>
@@ -762,15 +1227,22 @@ function PlantDetail() {
             {editing && editDraft ? (
               <form
                 className="plant-detail-edit-form"
-                onSubmit={(event) => void handleEditSubmit(event)}
+                onSubmit={(event) =>
+                  void handleEditSubmit(event)
+                }
               >
                 <div className="plant-detail-edit-form__heading">
                   <div>
-                    <p className="plant-detail-eyebrow">Editing</p>
+                    <p className="plant-detail-eyebrow">
+                      Editing
+                    </p>
                     <h1>Edit plant details</h1>
                   </div>
 
-                  <button type="button" onClick={cancelEditing}>
+                  <button
+                    type="button"
+                    onClick={cancelEditing}
+                  >
                     Cancel
                   </button>
                 </div>
@@ -780,83 +1252,69 @@ function PlantDetail() {
                   <input
                     type="text"
                     value={editDraft.nickname}
-                    maxLength={60}
+                    maxLength={100}
                     required
                     onChange={(event) =>
-                      setEditDraft((currentDraft) =>
-                        currentDraft
-                          ? {
-                              ...currentDraft,
-                              nickname: event.target.value,
-                            }
-                          : currentDraft,
+                      setEditDraft(
+                        (currentDraft) =>
+                          currentDraft
+                            ? {
+                                ...currentDraft,
+                                nickname:
+                                  event.target.value,
+                              }
+                            : currentDraft,
                       )
                     }
                   />
                 </label>
 
-                <div className="plant-detail-edit-form__row">
-                  <label>
-                    Health status
-                    <select
-                      value={editDraft.healthStatus}
-                      onChange={(event) =>
-                        setEditDraft((currentDraft) =>
+                <label>
+                  Health status
+                  <select
+                    value={editDraft.healthStatus}
+                    onChange={(event) =>
+                      setEditDraft(
+                        (currentDraft) =>
                           currentDraft
                             ? {
                                 ...currentDraft,
-                                healthStatus: event.target.value,
+                                healthStatus:
+                                  event.target
+                                    .value as PlantHealthStatus,
                               }
                             : currentDraft,
-                        )
-                      }
-                    >
-                      <option value="">Not recorded</option>
-                      <option value="Healthy">Healthy</option>
-                      <option value="Needs attention">
-                        Needs attention
+                      )
+                    }
+                  >
+                    {healthOptions.map((option) => (
+                      <option
+                        value={option.value}
+                        key={option.value}
+                      >
+                        {option.label}
                       </option>
-                      <option value="Recovering">Recovering</option>
-                    </select>
-                  </label>
-
-                  <label>
-                    Health percentage
-                    <input
-                      type="number"
-                      min="0"
-                      max="100"
-                      value={editDraft.healthScore}
-                      placeholder="0–100"
-                      onChange={(event) =>
-                        setEditDraft((currentDraft) =>
-                          currentDraft
-                            ? {
-                                ...currentDraft,
-                                healthScore: event.target.value,
-                              }
-                            : currentDraft,
-                        )
-                      }
-                    />
-                  </label>
-                </div>
+                    ))}
+                  </select>
+                </label>
 
                 <label>
                   Location
                   <input
                     type="text"
                     value={editDraft.location}
-                    maxLength={80}
+                    maxLength={200}
                     placeholder="Living room, kitchen, bedroom..."
                     onChange={(event) =>
-                      setEditDraft((currentDraft) =>
-                        currentDraft
-                          ? {
-                              ...currentDraft,
-                              location: event.target.value,
-                            }
-                          : currentDraft,
+                      setEditDraft(
+                        (currentDraft) =>
+                          currentDraft
+                            ? {
+                                ...currentDraft,
+                                location:
+                                  event.target.value,
+                              }
+                            : currentDraft,
                       )
                     }
                   />
@@ -864,36 +1322,42 @@ function PlantDetail() {
 
                 <div className="plant-detail-edit-form__row">
                   <label>
-                    Last watered
+                    Acquired date
                     <input
                       type="date"
-                      value={editDraft.lastWateredAt}
+                      value={editDraft.acquiredAt}
                       onChange={(event) =>
-                        setEditDraft((currentDraft) =>
-                          currentDraft
-                            ? {
-                                ...currentDraft,
-                                lastWateredAt: event.target.value,
-                              }
-                            : currentDraft,
+                        setEditDraft(
+                          (currentDraft) =>
+                            currentDraft
+                              ? {
+                                  ...currentDraft,
+                                  acquiredAt:
+                                    event.target.value,
+                                }
+                              : currentDraft,
                         )
                       }
                     />
                   </label>
 
                   <label>
-                    Next watering
+                    Last watered
                     <input
                       type="date"
-                      value={editDraft.nextWateringAt}
+                      value={
+                        editDraft.lastWateredAt
+                      }
                       onChange={(event) =>
-                        setEditDraft((currentDraft) =>
-                          currentDraft
-                            ? {
-                                ...currentDraft,
-                                nextWateringAt: event.target.value,
-                              }
-                            : currentDraft,
+                        setEditDraft(
+                          (currentDraft) =>
+                            currentDraft
+                              ? {
+                                  ...currentDraft,
+                                  lastWateredAt:
+                                    event.target.value,
+                                }
+                              : currentDraft,
                         )
                       }
                     />
@@ -901,61 +1365,210 @@ function PlantDetail() {
                 </div>
 
                 <label>
-                  Notes
-                  <textarea
-                    value={editDraft.notes}
-                    rows={5}
-                    maxLength={1000}
-                    placeholder="Add care notes or anything useful to remember..."
+                  Next watering
+                  <input
+                    type="date"
+                    value={editDraft.nextWateringAt}
                     onChange={(event) =>
-                      setEditDraft((currentDraft) =>
-                        currentDraft
-                          ? {
-                              ...currentDraft,
-                              notes: event.target.value,
-                            }
-                          : currentDraft,
+                      setEditDraft(
+                        (currentDraft) =>
+                          currentDraft
+                            ? {
+                                ...currentDraft,
+                                nextWateringAt:
+                                  event.target.value,
+                              }
+                            : currentDraft,
                       )
                     }
                   />
                 </label>
+
+                <label>
+                  Health notes
+                  <textarea
+                    value={editDraft.healthNotes}
+                    rows={5}
+                    maxLength={3000}
+                    placeholder="Add health notes or anything useful to remember..."
+                    onChange={(event) =>
+                      setEditDraft(
+                        (currentDraft) =>
+                          currentDraft
+                            ? {
+                                ...currentDraft,
+                                healthNotes:
+                                  event.target.value,
+                              }
+                            : currentDraft,
+                      )
+                    }
+                  />
+                </label>
+
+                <label className="plant-detail-edit-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={
+                      editDraft.wateringRemindersEnabled
+                    }
+                    onChange={(event) =>
+                      setEditDraft(
+                        (currentDraft) =>
+                          currentDraft
+                            ? {
+                                ...currentDraft,
+                                wateringRemindersEnabled:
+                                  event.target.checked,
+                              }
+                            : currentDraft,
+                      )
+                    }
+                  />
+                  <span>
+                    Enable watering reminders
+                  </span>
+                </label>
+
+                <label className="plant-detail-edit-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={
+                      editDraft.notificationEnabled
+                    }
+                    onChange={(event) =>
+                      setEditDraft(
+                        (currentDraft) =>
+                          currentDraft
+                            ? {
+                                ...currentDraft,
+                                notificationEnabled:
+                                  event.target.checked,
+                              }
+                            : currentDraft,
+                      )
+                    }
+                  />
+                  <span>
+                    Enable watering notifications
+                  </span>
+                </label>
+
+                <div className="plant-detail-edit-form__row">
+                  <label>
+                    Reminder time
+                    <input
+                      type="time"
+                      value={editDraft.reminderTime}
+                      required
+                      onChange={(event) =>
+                        setEditDraft(
+                          (currentDraft) =>
+                            currentDraft
+                              ? {
+                                  ...currentDraft,
+                                  reminderTime:
+                                    event.target.value,
+                                }
+                              : currentDraft,
+                        )
+                      }
+                    />
+                  </label>
+
+                  <label>
+                    Days before
+                    <input
+                      type="number"
+                      min="0"
+                      step="1"
+                      value={
+                        editDraft.reminderDaysBefore
+                      }
+                      required
+                      onChange={(event) =>
+                        setEditDraft(
+                          (currentDraft) =>
+                            currentDraft
+                              ? {
+                                  ...currentDraft,
+                                  reminderDaysBefore:
+                                    event.target.value,
+                                }
+                              : currentDraft,
+                        )
+                      }
+                    />
+                  </label>
+                </div>
 
                 <button
                   className="plant-detail-edit-form__save"
                   type="submit"
                   disabled={savingEdit}
                 >
-                  {savingEdit ? "Saving…" : "Save changes"}
+                  {savingEdit
+                    ? "Saving…"
+                    : "Save changes"}
                 </button>
               </form>
             ) : (
               <>
                 <div className="plant-detail-title">
                   <p className="plant-detail-eyebrow">
-                    {plant.species?.commonName || "Your plant"}
+                    {species?.commonName ||
+                      "Your plant"}
                   </p>
                   <h1>{plant.nickname}</h1>
-                  {plant.species?.scientificName && (
+
+                  {species?.scientificName && (
                     <p className="plant-detail-scientific-name">
-                      {plant.species.scientificName}
+                      {species.scientificName}
                     </p>
                   )}
                 </div>
 
                 <dl className="plant-detail-facts">
                   <div>
+                    <dt>Health</dt>
+                    <dd>
+                      {healthLabel(
+                        plant.healthStatus,
+                      )}
+                    </dd>
+                  </div>
+
+                  <div>
                     <dt>Last watered</dt>
-                    <dd>{formatDate(plant.lastWateredAt)}</dd>
+                    <dd>
+                      {formatDate(
+                        plant.lastWateredAt,
+                      )}
+                    </dd>
                   </div>
 
                   <div>
                     <dt>Next watering</dt>
-                    <dd>{formatDate(plant.nextWateringAt)}</dd>
+                    <dd>
+                      {formatDate(
+                        plant.nextWateringAt,
+                      )}
+                    </dd>
                   </div>
 
                   <div>
-                    <dt>Health</dt>
-                    <dd>{healthText}</dd>
+                    <dt>Reminders</dt>
+                    <dd>
+                      {remindersOn
+                        ? `${
+                            reminderSettings?.reminderTime ??
+                            "09:00"
+                          }, ${
+                            reminderSettings?.reminderDaysBefore ??
+                            0
+                          } day(s) before`
+                        : "Off"}
+                    </dd>
                   </div>
 
                   {plant.location && (
@@ -964,20 +1577,40 @@ function PlantDetail() {
                       <dd>{plant.location}</dd>
                     </div>
                   )}
+
+                  {plant.acquiredAt && (
+                    <div>
+                      <dt>Acquired</dt>
+                      <dd>
+                        {formatDate(
+                          plant.acquiredAt,
+                        )}
+                      </dd>
+                    </div>
+                  )}
                 </dl>
               </>
             )}
           </div>
         </section>
 
-        <section className="plant-detail-actions" aria-label="Plant actions">
+        <section
+          className="plant-detail-actions"
+          aria-label="Plant actions"
+        >
           <button
             type="button"
-            onClick={() => void handleWaterPlant()}
+            onClick={() =>
+              void handleWaterPlant()
+            }
             disabled={watering || editing}
           >
             <span aria-hidden="true">💧</span>
-            <span>{watering ? "Saving…" : "Water plant"}</span>
+            <span>
+              {watering
+                ? "Saving…"
+                : "Water plant"}
+            </span>
           </button>
 
           <button
@@ -992,10 +1625,16 @@ function PlantDetail() {
           <button
             type="button"
             onClick={openPhotoPicker}
-            disabled={uploadingPhoto || editing}
+            disabled={
+              uploadingPhoto || editing
+            }
           >
             <span aria-hidden="true">📷</span>
-            <span>{uploadingPhoto ? "Uploading…" : "Add photo"}</span>
+            <span>
+              {uploadingPhoto
+                ? "Uploading…"
+                : "Add photo"}
+            </span>
           </button>
 
           <input
@@ -1003,12 +1642,17 @@ function PlantDetail() {
             className="plant-detail-hidden-input"
             type="file"
             accept="image/*"
-            onChange={(event) => void handlePhotoSelected(event)}
+            onChange={(event) =>
+              void handlePhotoSelected(event)
+            }
           />
         </section>
 
         {actionMessage && (
-          <p className="plant-detail-message" role="status">
+          <p
+            className="plant-detail-message"
+            role="status"
+          >
             {actionMessage}
           </p>
         )}
@@ -1016,12 +1660,20 @@ function PlantDetail() {
         <section className="plant-detail-timeline">
           <div className="plant-detail-section-heading">
             <div>
-              <p className="plant-detail-eyebrow">History</p>
+              <p className="plant-detail-eyebrow">
+                History
+              </p>
               <h2>Care timeline</h2>
             </div>
 
             <span>{careTimeline.length}</span>
           </div>
+
+          {timelineError && (
+            <p className="plant-detail-message">
+              {timelineError}
+            </p>
+          )}
 
           {careTimeline.length > 0 ? (
             <ol className="plant-detail-timeline__list">
@@ -1037,12 +1689,18 @@ function PlantDetail() {
                   <article>
                     <div>
                       <h3>{event.title}</h3>
-                      <time dateTime={event.occurredAt}>
-                        {formatTimelineDate(event.occurredAt)}
+                      <time
+                        dateTime={event.occurredAt}
+                      >
+                        {formatTimelineDate(
+                          event.occurredAt,
+                        )}
                       </time>
                     </div>
 
-                    {event.details && <p>{event.details}</p>}
+                    {event.details && (
+                      <p>{event.details}</p>
+                    )}
                   </article>
                 </li>
               ))}
@@ -1052,36 +1710,52 @@ function PlantDetail() {
               <span aria-hidden="true">🌿</span>
               <h3>No care activity yet</h3>
               <p>
-                Watering, journal entries, health updates, and photos will
-                appear here.
+                Watering and journal entries for
+                this plant will appear here.
               </p>
             </div>
           )}
         </section>
 
-        {plant.notes && !editing && (
-          <section className="plant-detail-notes">
-            <p className="plant-detail-eyebrow">Notes</p>
-            <h2>About {plant.nickname}</h2>
-            <p>{plant.notes}</p>
-          </section>
-        )}
+        {(plant.healthNotes || plant.notes) &&
+          !editing && (
+            <section className="plant-detail-notes">
+              <p className="plant-detail-eyebrow">
+                Health notes
+              </p>
+              <h2>About {plant.nickname}</h2>
+              <p>
+                {plant.healthNotes ||
+                  plant.notes}
+              </p>
+            </section>
+          )}
 
         <section className="plant-detail-management">
           <button
             type="button"
-            onClick={editing ? cancelEditing : startEditing}
+            onClick={
+              editing
+                ? cancelEditing
+                : startEditing
+            }
           >
-            {editing ? "Cancel editing" : "Edit plant"}
+            {editing
+              ? "Cancel editing"
+              : "Edit plant"}
           </button>
 
           <button
             className="plant-detail-delete-button"
             type="button"
-            onClick={() => void handleDeletePlant()}
+            onClick={() =>
+              void handleDeletePlant()
+            }
             disabled={deleting || editing}
           >
-            {deleting ? "Deleting…" : "Delete plant"}
+            {deleting
+              ? "Deleting…"
+              : "Delete plant"}
           </button>
         </section>
       </main>
