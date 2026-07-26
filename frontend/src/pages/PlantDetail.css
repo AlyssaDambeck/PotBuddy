@@ -643,3 +643,28 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+.plant-detail-edit-checkbox {
+  display: flex !important;
+  min-height: 2.75rem;
+  padding: 0.65rem 0.8rem;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.65rem !important;
+  border: 1px solid var(--plant-border);
+  border-radius: 0.85rem;
+  background: var(--plant-cream);
+  cursor: pointer;
+}
+
+.plant-detail-edit-checkbox input {
+  width: 1.1rem;
+  min-height: auto;
+  height: 1.1rem;
+  margin: 0;
+  padding: 0;
+  accent-color: var(--plant-green-800);
+}
+
+.plant-detail-edit-checkbox span {
+  line-height: 1.35;
+}
