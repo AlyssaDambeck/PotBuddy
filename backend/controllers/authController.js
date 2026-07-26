@@ -1,3 +1,4 @@
+const { ObjectId } = require("mongodb");
 const crypto = require("crypto");
 const sendVerificationEmail = require("../utils/sendVerificationEmail");
 const bcrypt = require("bcrypt");
@@ -299,10 +300,47 @@ async function resendVerification(req, res) {
     });
   }
 }
+async function getCurrentUser(req, res) {
+  try {
+    if (!ObjectId.isValid(req.userId)) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid authentication token",
+      });
+    }
+
+    const user = await usersCollection().findOne({
+      _id: new ObjectId(req.userId),
+    });
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "User account was not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        user: safeUser(user),
+      },
+    });
+  } catch (error) {
+    console.error("Current user error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Unable to retrieve current user",
+    });
+  }
+}
+
 module.exports = {
   register,
   login,
   verifyEmail,
   resendVerification,
+  getCurrentUser,
 };
 

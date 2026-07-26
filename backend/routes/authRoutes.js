@@ -5,7 +5,11 @@ const {
   login,
   verifyEmail,
   resendVerification,
+  getCurrentUser,
 } = require("../controllers/authController");
+
+const authenticateToken =
+  require("../middleware/authenticateToken");
 
 const {
   googleLogin,
@@ -18,5 +22,5 @@ router.post("/login", login);
 router.get("/verify-email", verifyEmail);
 router.post("/resend-verification", resendVerification);
 router.post("/google", googleLogin);
-
+router.get("/me", authenticateToken, getCurrentUser);
 module.exports = router;
