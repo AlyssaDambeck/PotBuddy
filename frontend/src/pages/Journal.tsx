@@ -51,16 +51,42 @@ type JournalPhoto = {
   caption?: string | null;
 };
 
+type LegacyPlantHealthStatus =
+  | "Healthy"
+  | "Needs attention"
+  | "Needs Attention"
+  | "Sick"
+  | "Recovering"
+  | "Dormant"
+  | "Dead";
+
 type JournalEntryApi = {
-  _id: string;
+  _id?: string;
+  id?: string;
   ownerId?: string;
-  userPlantId: PopulatedJournalPlant | string;
+
+  userPlantId?: PopulatedJournalPlant | string;
+  plantId?: PopulatedJournalPlant | string;
+
   title?: string | null;
-  body: string;
-  healthStatus?: PlantHealthStatus | null;
-  watered: boolean;
-  entryDate: string;
-  photos: JournalPhoto[];
+
+  body?: string;
+  notes?: string;
+
+  healthStatus?: PlantHealthStatus | LegacyPlantHealthStatus | null;
+  health?: PlantHealthStatus | LegacyPlantHealthStatus | null;
+
+  watered?: boolean;
+
+  entryDate?: string;
+  occurredAt?: string;
+  date?: string;
+
+  photos?: JournalPhoto[];
+
+  plantName?: string;
+  species?: string;
+
   createdAt?: string;
   updatedAt?: string;
 };
@@ -208,9 +234,19 @@ function getPlantSpecies(
   return plant.speciesId;
 }
 
+function getEntryPlantReference(
+  entry: JournalEntryApi,
+): PopulatedJournalPlant | string | null {
+  return entry.userPlantId ?? entry.plantId ?? null;
+}
+
 function getUserPlantId(
-  userPlant: PopulatedJournalPlant | string,
+  userPlant: PopulatedJournalPlant | string | null,
 ): string {
+  if (!userPlant) {
+    return "";
+  }
+
   return typeof userPlant === "string" ? userPlant : userPlant._id;
 }
 
@@ -218,14 +254,24 @@ function getEntryPlant(
   entry: JournalEntryApi,
   plantsById: Map<string, UserPlant>,
 ): UserPlant | PopulatedJournalPlant | null {
-  if (typeof entry.userPlantId === "object") {
-    return entry.userPlantId;
+  const plantReference = getEntryPlantReference(entry);
+
+  if (!plantReference) {
+    return null;
   }
 
-  return plantsById.get(entry.userPlantId) ?? null;
+  if (typeof plantReference === "object") {
+    return plantReference;
+  }
+
+  return plantsById.get(plantReference) ?? null;
 }
 
-function isoDateToInputDate(value: string): string {
+function isoDateToInputDate(value?: string): string {
+  if (!value) {
+    return todayInputValue();
+  }
+
   const parsedDate = new Date(value);
 
   if (Number.isNaN(parsedDate.getTime())) {
@@ -243,20 +289,32 @@ function toJournalEntry(
   entry: JournalEntryApi,
   plantsById: Map<string, UserPlant>,
 ): JournalEntry {
+  const plantReference = getEntryPlantReference(entry);
   const plant = getEntryPlant(entry, plantsById);
   const species = getPlantSpecies(plant);
+  const entryDate =
+    entry.entryDate ??
+    entry.occurredAt ??
+    entry.date ??
+    entry.createdAt ??
+    new Date().toISOString();
 
   return {
-    id: entry._id,
-    userPlantId: getUserPlantId(entry.userPlantId),
-    date: isoDateToInputDate(entry.entryDate),
-    entryDate: entry.entryDate,
+    id: entry._id ?? entry.id ?? `${getUserPlantId(plantReference)}-${entryDate}`,
+    userPlantId: getUserPlantId(plantReference),
+    date: isoDateToInputDate(entryDate),
+    entryDate,
     title: entry.title?.trim() || "Untitled entry",
-    plantName: plant?.nickname || "Unknown plant",
-    species: species?.commonName || "Plant species not recorded",
-    healthStatus: entry.healthStatus ?? null,
-    notes: entry.body,
-    watered: entry.watered,
+    plantName: plant?.nickname || entry.plantName || "Unknown plant",
+    species:
+      species?.commonName ||
+      entry.species ||
+      "Plant species not recorded",
+    healthStatus: normalizeHealthStatus(
+      entry.healthStatus ?? entry.health,
+    ),
+    notes: entry.body ?? entry.notes ?? "",
+    watered: Boolean(entry.watered),
   };
 }
 
@@ -275,16 +333,55 @@ function formatDate(date: string): string {
   }).format(parsedDate);
 }
 
-function healthLabel(
-  healthStatus: PlantHealthStatus | null,
-): string {
+function normalizeHealthStatus(
+  healthStatus?:
+    | PlantHealthStatus
+    | LegacyPlantHealthStatus
+    | null,
+): PlantHealthStatus | null {
+  const legacyHealthMap: Record<
+    LegacyPlantHealthStatus,
+    PlantHealthStatus
+  > = {
+    Healthy: "healthy",
+    "Needs attention": "needs-attention",
+    "Needs Attention": "needs-attention",
+    Sick: "sick",
+    Recovering: "recovering",
+    Dormant: "dormant",
+    Dead: "dead",
+  };
+
   if (!healthStatus) {
+    return null;
+  }
+
+  if (healthStatus in legacyHealthMap) {
+    return legacyHealthMap[
+      healthStatus as LegacyPlantHealthStatus
+    ];
+  }
+
+  return healthStatus as PlantHealthStatus;
+}
+
+function healthLabel(
+  healthStatus?:
+    | PlantHealthStatus
+    | LegacyPlantHealthStatus
+    | null,
+): string {
+  const normalizedHealthStatus =
+    normalizeHealthStatus(healthStatus);
+
+  if (!normalizedHealthStatus) {
     return "Not recorded";
   }
 
   return (
-    healthOptions.find((option) => option.value === healthStatus)?.label ??
-    healthStatus
+    healthOptions.find(
+      (option) => option.value === normalizedHealthStatus,
+    )?.label ?? normalizedHealthStatus
   );
 }
 
@@ -498,12 +595,22 @@ function Journal() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          plantId: draft.userPlantId,
           userPlantId: draft.userPlantId,
+
           title: draft.title.trim(),
+
+          notes: draft.notes.trim(),
           body: draft.notes.trim(),
+
+          health: healthLabel(draft.healthStatus),
           healthStatus: draft.healthStatus,
+
           watered: draft.watered,
+
+          occurredAt: entryDate,
           entryDate,
+
           photos: [],
         }),
       });
