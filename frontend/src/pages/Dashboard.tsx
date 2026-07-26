@@ -260,7 +260,11 @@ function wateringText(nextWateringAt?: string | null): string {
 }
 
 function normalizeHealthStatus(
-  healthStatus?: PlantHealthStatus | LegacyPlantHealthStatus | null,
+  healthStatus?:
+    | PlantHealthStatus
+    | LegacyPlantHealthStatus
+    | ""
+    | null,
 ): PlantHealthStatus | null {
   const normalizedHealthStatuses: Record<
     LegacyPlantHealthStatus,
@@ -289,7 +293,11 @@ function normalizeHealthStatus(
 }
 
 function healthLabel(
-  healthStatus?: PlantHealthStatus | LegacyPlantHealthStatus | null,
+  healthStatus?:
+    | PlantHealthStatus
+    | LegacyPlantHealthStatus
+    | ""
+    | null,
 ): string {
   const normalizedHealthStatus = normalizeHealthStatus(healthStatus);
 
