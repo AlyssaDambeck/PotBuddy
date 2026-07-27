@@ -46,7 +46,8 @@ type PlantHealthStatus =
   | "dead";
 
 type CurrentUser = {
-  _id: string;
+  _id?: string;
+  id?: string;
   username: string;
   email: string;
 };
@@ -99,8 +100,15 @@ type JournalEntryApi = {
   body?: string;
   notes?: string;
 
-  healthStatus?: PlantHealthStatus | LegacyPlantHealthStatus | null;
-  health?: PlantHealthStatus | LegacyPlantHealthStatus | null;
+  healthStatus?:
+    | PlantHealthStatus
+    | LegacyPlantHealthStatus
+    | null;
+
+  health?:
+    | PlantHealthStatus
+    | LegacyPlantHealthStatus
+    | null;
 
   watered?: boolean;
 
@@ -143,24 +151,48 @@ const healthOptions: Array<{
   value: PlantHealthStatus;
   label: string;
 }> = [
-  { value: "healthy", label: "Healthy" },
-  { value: "needs-attention", label: "Needs attention" },
-  { value: "sick", label: "Sick" },
-  { value: "recovering", label: "Recovering" },
-  { value: "dormant", label: "Dormant" },
-  { value: "dead", label: "Dead" },
+  {
+    value: "healthy",
+    label: "Healthy",
+  },
+  {
+    value: "needs-attention",
+    label: "Needs attention",
+  },
+  {
+    value: "sick",
+    label: "Sick",
+  },
+  {
+    value: "recovering",
+    label: "Recovering",
+  },
+  {
+    value: "dormant",
+    label: "Dormant",
+  },
+  {
+    value: "dead",
+    label: "Dead",
+  },
 ];
 
 function todayInputValue(): string {
   const now = new Date();
-  const timezoneOffset = now.getTimezoneOffset() * 60_000;
 
-  return new Date(now.getTime() - timezoneOffset)
+  const timezoneOffset =
+    now.getTimezoneOffset() * 60_000;
+
+  return new Date(
+    now.getTime() - timezoneOffset,
+  )
     .toISOString()
     .slice(0, 10);
 }
 
-function createEmptyDraft(userPlantId = ""): JournalDraft {
+function createEmptyDraft(
+  userPlantId = "",
+): JournalDraft {
   return {
     date: todayInputValue(),
     title: "",
@@ -171,94 +203,283 @@ function createEmptyDraft(userPlantId = ""): JournalDraft {
   };
 }
 
-function normalizeCurrentUser(data: unknown): CurrentUser {
+function normalizeCurrentUser(
+  data: unknown,
+): CurrentUser {
   if (
     typeof data === "object" &&
     data !== null &&
     "data" in data &&
-    typeof (data as { data?: unknown }).data === "object" &&
-    (data as { data: { user?: unknown } }).data !== null &&
-    typeof (data as { data: { user?: unknown } }).data.user === "object"
+    typeof (
+      data as {
+        data?: unknown;
+      }
+    ).data === "object" &&
+    (
+      data as {
+        data: {
+          user?: unknown;
+        };
+      }
+    ).data !== null &&
+    typeof (
+      data as {
+        data: {
+          user?: unknown;
+        };
+      }
+    ).data.user === "object"
   ) {
-    return (data as { data: { user: CurrentUser } }).data.user;
+    return (
+      data as {
+        data: {
+          user: CurrentUser;
+        };
+      }
+    ).data.user;
   }
 
   if (
     typeof data === "object" &&
     data !== null &&
     "user" in data &&
-    typeof (data as { user?: unknown }).user === "object"
+    typeof (
+      data as {
+        user?: unknown;
+      }
+    ).user === "object"
   ) {
-    return (data as { user: CurrentUser }).user;
+    return (
+      data as {
+        user: CurrentUser;
+      }
+    ).user;
   }
 
   return data as CurrentUser;
 }
 
-function normalizePlants(data: unknown): UserPlant[] {
+function normalizePlants(
+  data: unknown,
+): UserPlant[] {
   if (Array.isArray(data)) {
     return data as UserPlant[];
   }
 
   if (
-    typeof data === "object" &&
-    data !== null &&
-    "plants" in data &&
-    Array.isArray((data as { plants?: unknown }).plants)
+    typeof data !== "object" ||
+    data === null
   ) {
-    return (data as { plants: UserPlant[] }).plants;
+    return [];
   }
 
   if (
-    typeof data === "object" &&
-    data !== null &&
-    "userPlants" in data &&
-    Array.isArray((data as { userPlants?: unknown }).userPlants)
+    "plants" in data &&
+    Array.isArray(
+      (
+        data as {
+          plants?: unknown;
+        }
+      ).plants,
+    )
   ) {
-    return (data as { userPlants: UserPlant[] }).userPlants;
+    return (
+      data as {
+        plants: UserPlant[];
+      }
+    ).plants;
+  }
+
+  if (
+    "userPlants" in data &&
+    Array.isArray(
+      (
+        data as {
+          userPlants?: unknown;
+        }
+      ).userPlants,
+    )
+  ) {
+    return (
+      data as {
+        userPlants: UserPlant[];
+      }
+    ).userPlants;
+  }
+
+  if (
+    "data" in data &&
+    typeof (
+      data as {
+        data?: unknown;
+      }
+    ).data === "object" &&
+    (
+      data as {
+        data?: unknown;
+      }
+    ).data !== null
+  ) {
+    return normalizePlants(
+      (
+        data as {
+          data: unknown;
+        }
+      ).data,
+    );
   }
 
   return [];
 }
 
-function normalizeJournalEntries(data: unknown): JournalEntryApi[] {
+function normalizeJournalEntries(
+  data: unknown,
+): JournalEntryApi[] {
   if (Array.isArray(data)) {
     return data as JournalEntryApi[];
   }
 
   if (
-    typeof data === "object" &&
-    data !== null &&
-    "entries" in data &&
-    Array.isArray((data as { entries?: unknown }).entries)
+    typeof data !== "object" ||
+    data === null
   ) {
-    return (data as { entries: JournalEntryApi[] }).entries;
+    return [];
   }
 
   if (
-    typeof data === "object" &&
-    data !== null &&
-    "journalEntries" in data &&
-    Array.isArray((data as { journalEntries?: unknown }).journalEntries)
+    "entries" in data &&
+    Array.isArray(
+      (
+        data as {
+          entries?: unknown;
+        }
+      ).entries,
+    )
   ) {
-    return (data as { journalEntries: JournalEntryApi[] }).journalEntries;
+    return (
+      data as {
+        entries: JournalEntryApi[];
+      }
+    ).entries;
+  }
+
+  if (
+    "journalEntries" in data &&
+    Array.isArray(
+      (
+        data as {
+          journalEntries?: unknown;
+        }
+      ).journalEntries,
+    )
+  ) {
+    return (
+      data as {
+        journalEntries: JournalEntryApi[];
+      }
+    ).journalEntries;
+  }
+
+  if (
+    "data" in data &&
+    typeof (
+      data as {
+        data?: unknown;
+      }
+    ).data === "object" &&
+    (
+      data as {
+        data?: unknown;
+      }
+    ).data !== null
+  ) {
+    return normalizeJournalEntries(
+      (
+        data as {
+          data: unknown;
+        }
+      ).data,
+    );
   }
 
   return [];
 }
 
-async function readJson(response: Response): Promise<unknown> {
-  const contentType = response.headers.get("content-type");
+async function readJson(
+  response: Response,
+): Promise<unknown> {
+  const contentType =
+    response.headers.get(
+      "content-type",
+    );
 
-  if (!contentType?.includes("application/json")) {
-    throw new Error("The server returned a webpage instead of JSON data.");
+  if (
+    !contentType?.includes(
+      "application/json",
+    )
+  ) {
+    throw new Error(
+      "The server returned a webpage instead of JSON data.",
+    );
   }
 
   return response.json();
 }
 
+async function responseError(
+  response: Response,
+  fallbackMessage: string,
+): Promise<string> {
+  try {
+    const data =
+      (await response.json()) as unknown;
+
+    if (
+      typeof data === "object" &&
+      data !== null
+    ) {
+      if (
+        "message" in data &&
+        typeof (
+          data as {
+            message?: unknown;
+          }
+        ).message === "string"
+      ) {
+        return (
+          data as {
+            message: string;
+          }
+        ).message;
+      }
+
+      if (
+        "error" in data &&
+        typeof (
+          data as {
+            error?: unknown;
+          }
+        ).error === "string"
+      ) {
+        return (
+          data as {
+            error: string;
+          }
+        ).error;
+      }
+    }
+  } catch {
+    return fallbackMessage;
+  }
+
+  return fallbackMessage;
+}
+
 function getPlantSpecies(
-  plant?: UserPlant | PopulatedJournalPlant | null,
+  plant?:
+    | UserPlant
+    | PopulatedJournalPlant
+    | null,
 ): PlantSpecies | null {
   if (
     !plant ||
@@ -274,61 +495,108 @@ function getPlantSpecies(
 function getEntryPlantReference(
   entry: JournalEntryApi,
 ): PopulatedJournalPlant | string | null {
-  return entry.userPlantId ?? entry.plantId ?? null;
+  return (
+    entry.userPlantId ??
+    entry.plantId ??
+    null
+  );
 }
 
 function getUserPlantId(
-  userPlant: PopulatedJournalPlant | string | null,
+  userPlant:
+    | PopulatedJournalPlant
+    | string
+    | null,
 ): string {
   if (!userPlant) {
     return "";
   }
 
-  return typeof userPlant === "string" ? userPlant : userPlant._id;
+  return typeof userPlant === "string"
+    ? userPlant
+    : userPlant._id;
 }
 
 function getEntryPlant(
   entry: JournalEntryApi,
-  plantsById: Map<string, UserPlant>,
-): UserPlant | PopulatedJournalPlant | null {
-  const plantReference = getEntryPlantReference(entry);
+  plantsById: Map<
+    string,
+    UserPlant
+  >,
+):
+  | UserPlant
+  | PopulatedJournalPlant
+  | null {
+  const plantReference =
+    getEntryPlantReference(entry);
 
   if (!plantReference) {
     return null;
   }
 
-  if (typeof plantReference === "object") {
+  if (
+    typeof plantReference ===
+    "object"
+  ) {
     return plantReference;
   }
 
-  return plantsById.get(plantReference) ?? null;
+  return (
+    plantsById.get(
+      plantReference,
+    ) ?? null
+  );
 }
 
-function isoDateToInputDate(value?: string): string {
+function isoDateToInputDate(
+  value?: string,
+): string {
   if (!value) {
     return todayInputValue();
   }
 
-  const parsedDate = new Date(value);
+  const parsedDate =
+    new Date(value);
 
-  if (Number.isNaN(parsedDate.getTime())) {
+  if (
+    Number.isNaN(
+      parsedDate.getTime(),
+    )
+  ) {
     return todayInputValue();
   }
 
-  const timezoneOffset = parsedDate.getTimezoneOffset() * 60_000;
+  const timezoneOffset =
+    parsedDate.getTimezoneOffset() *
+    60_000;
 
-  return new Date(parsedDate.getTime() - timezoneOffset)
+  return new Date(
+    parsedDate.getTime() -
+      timezoneOffset,
+  )
     .toISOString()
     .slice(0, 10);
 }
 
 function toJournalEntry(
   entry: JournalEntryApi,
-  plantsById: Map<string, UserPlant>,
+  plantsById: Map<
+    string,
+    UserPlant
+  >,
 ): JournalEntry {
-  const plantReference = getEntryPlantReference(entry);
-  const plant = getEntryPlant(entry, plantsById);
-  const species = getPlantSpecies(plant);
+  const plantReference =
+    getEntryPlantReference(entry);
+
+  const plant =
+    getEntryPlant(
+      entry,
+      plantsById,
+    );
+
+  const species =
+    getPlantSpecies(plant);
+
   const entryDate =
     entry.entryDate ??
     entry.occurredAt ??
@@ -337,37 +605,80 @@ function toJournalEntry(
     new Date().toISOString();
 
   return {
-    id: entry._id ?? entry.id ?? `${getUserPlantId(plantReference)}-${entryDate}`,
-    userPlantId: getUserPlantId(plantReference),
-    date: isoDateToInputDate(entryDate),
+    id:
+      entry._id ??
+      entry.id ??
+      `${getUserPlantId(
+        plantReference,
+      )}-${entryDate}`,
+
+    userPlantId:
+      getUserPlantId(
+        plantReference,
+      ),
+
+    date:
+      isoDateToInputDate(
+        entryDate,
+      ),
+
     entryDate,
-    title: entry.title?.trim() || "Untitled entry",
-    plantName: plant?.nickname || entry.plantName || "Unknown plant",
+
+    title:
+      entry.title?.trim() ||
+      "Untitled entry",
+
+    plantName:
+      plant?.nickname ||
+      entry.plantName ||
+      "Unknown plant",
+
     species:
       species?.commonName ||
       entry.species ||
       "Plant species not recorded",
-    healthStatus: normalizeHealthStatus(
-      entry.healthStatus ?? entry.health,
-    ),
-    notes: entry.body ?? entry.notes ?? "",
-    watered: Boolean(entry.watered),
+
+    healthStatus:
+      normalizeHealthStatus(
+        entry.healthStatus ??
+          entry.health,
+      ),
+
+    notes:
+      entry.body ??
+      entry.notes ??
+      "",
+
+    watered:
+      Boolean(entry.watered),
   };
 }
 
-function formatDate(date: string): string {
-  const parsedDate = new Date(`${date}T12:00:00`);
+function formatDate(
+  date: string,
+): string {
+  const parsedDate =
+    new Date(
+      `${date}T12:00:00`,
+    );
 
-  if (Number.isNaN(parsedDate.getTime())) {
+  if (
+    Number.isNaN(
+      parsedDate.getTime(),
+    )
+  ) {
     return "Date unavailable";
   }
 
-  return new Intl.DateTimeFormat("en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  }).format(parsedDate);
+  return new Intl.DateTimeFormat(
+    "en-US",
+    {
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    },
+  ).format(parsedDate);
 }
 
 function normalizeHealthStatus(
@@ -381,8 +692,13 @@ function normalizeHealthStatus(
     PlantHealthStatus
   > = {
     Healthy: "healthy",
-    "Needs attention": "needs-attention",
-    "Needs Attention": "needs-attention",
+
+    "Needs attention":
+      "needs-attention",
+
+    "Needs Attention":
+      "needs-attention",
+
     Sick: "sick",
     Recovering: "recovering",
     Dormant: "dormant",
@@ -393,7 +709,10 @@ function normalizeHealthStatus(
     return null;
   }
 
-  if (healthStatus in legacyHealthMap) {
+  if (
+    healthStatus in
+    legacyHealthMap
+  ) {
     return legacyHealthMap[
       healthStatus as LegacyPlantHealthStatus
     ];
@@ -409,99 +728,273 @@ function healthLabel(
     | null,
 ): string {
   const normalizedHealthStatus =
-    normalizeHealthStatus(healthStatus);
+    normalizeHealthStatus(
+      healthStatus,
+    );
 
-  if (!normalizedHealthStatus) {
+  if (
+    !normalizedHealthStatus
+  ) {
     return "Not recorded";
   }
 
   return (
     healthOptions.find(
-      (option) => option.value === normalizedHealthStatus,
-    )?.label ?? normalizedHealthStatus
+      (option) =>
+        option.value ===
+        normalizedHealthStatus,
+    )?.label ??
+    normalizedHealthStatus
   );
 }
 
 function Journal() {
-  const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate =
+    useNavigate();
 
-  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
-  const [plants, setPlants] = useState<UserPlant[]>([]);
-  const [apiEntries, setApiEntries] = useState<JournalEntryApi[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [composerOpen, setComposerOpen] = useState(false);
-  const [draft, setDraft] = useState<JournalDraft>(createEmptyDraft());
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [pageError, setPageError] = useState("");
-  const [message, setMessage] = useState("");
+  const [
+    searchParams,
+    setSearchParams,
+  ] = useSearchParams();
 
-  const requestedPlantId = searchParams.get("plantId");
+  const [
+    currentUser,
+    setCurrentUser,
+  ] =
+    useState<CurrentUser | null>(
+      null,
+    );
 
-  const redirectOnUnauthorized = useCallback(
-    (response: Response): boolean => {
-      if (response.status === 401) {
-        navigate("/login", { replace: true });
-        return true;
-      }
-
-      return false;
-    },
-    [navigate],
+  const [
+    plants,
+    setPlants,
+  ] = useState<UserPlant[]>(
+    [],
   );
 
-  const loadJournal = useCallback(async (): Promise<void> => {
-    try {
-      setLoading(true);
-      setPageError("");
+  const [
+    apiEntries,
+    setApiEntries,
+  ] = useState<
+    JournalEntryApi[]
+  >([]);
 
-      const [userResponse, plantsResponse, entriesResponse] =
-        await Promise.all([
-          apiFetch("/auth/me"),
-          apiFetch("/user-plants"),
-          apiFetch("/journal-entries"),
-        ]);
+  const [
+    searchTerm,
+    setSearchTerm,
+  ] = useState("");
 
-      if (
-        redirectOnUnauthorized(userResponse) ||
-        redirectOnUnauthorized(plantsResponse) ||
-        redirectOnUnauthorized(entriesResponse)
-      ) {
-        return;
-      }
+  const [
+    composerOpen,
+    setComposerOpen,
+  ] = useState(false);
 
-      if (!userResponse.ok) {
-        throw new Error("Your account could not be loaded.");
-      }
+  const [
+    draft,
+    setDraft,
+  ] = useState<JournalDraft>(
+    createEmptyDraft(),
+  );
 
-      if (!plantsResponse.ok) {
-        throw new Error("Your plants could not be loaded.");
-      }
+  const [
+    loading,
+    setLoading,
+  ] = useState(true);
 
-      if (!entriesResponse.ok) {
-        throw new Error("Your journal entries could not be loaded.");
-      }
+  const [
+    saving,
+    setSaving,
+  ] = useState(false);
 
-      const [userData, plantsData, entriesData] = await Promise.all([
-        readJson(userResponse),
-        readJson(plantsResponse),
-        readJson(entriesResponse),
-      ]);
+  const [
+    pageError,
+    setPageError,
+  ] = useState("");
 
-      setCurrentUser(normalizeCurrentUser(userData));
-      setPlants(normalizePlants(plantsData));
-      setApiEntries(normalizeJournalEntries(entriesData));
-    } catch (error) {
-      setPageError(
-        error instanceof Error
-          ? error.message
-          : "Your journal could not be loaded.",
-      );
-    } finally {
-      setLoading(false);
-    }
-  }, [redirectOnUnauthorized]);
+  const [
+    message,
+    setMessage,
+  ] = useState("");
+
+  const requestedPlantId =
+    searchParams.get(
+      "plantId",
+    );
+
+  const redirectOnUnauthorized =
+    useCallback(
+      (
+        response: Response,
+      ): boolean => {
+        if (
+          response.status === 401
+        ) {
+          localStorage.removeItem(
+            "potbuddyToken",
+          );
+
+          localStorage.removeItem(
+            "potbuddyUser",
+          );
+
+          navigate(
+            "/login",
+            {
+              replace: true,
+            },
+          );
+
+          return true;
+        }
+
+        return false;
+      },
+      [navigate],
+    );
+
+  const loadJournal =
+    useCallback(
+      async (): Promise<void> => {
+        try {
+          setLoading(true);
+          setPageError("");
+
+          /*
+           * The working plant API is
+           * GET /api/plants.
+           *
+           * The previous Journal used
+           * /api/user-plants, which is
+           * not mounted in the backend.
+           */
+          const [
+            userResponse,
+            plantsResponse,
+            entriesResponse,
+          ] =
+            await Promise.all([
+              apiFetch(
+                "/auth/me",
+              ),
+
+              apiFetch(
+                "/plants",
+              ),
+
+              apiFetch(
+                "/journal-entries",
+              ),
+            ]);
+
+          if (
+            redirectOnUnauthorized(
+              userResponse,
+            ) ||
+            redirectOnUnauthorized(
+              plantsResponse,
+            ) ||
+            redirectOnUnauthorized(
+              entriesResponse,
+            )
+          ) {
+            return;
+          }
+
+          if (
+            !userResponse.ok
+          ) {
+            const errorMessage =
+              await responseError(
+                userResponse,
+
+                "Your account could not be loaded.",
+              );
+
+            throw new Error(
+              errorMessage,
+            );
+          }
+
+          if (
+            !plantsResponse.ok
+          ) {
+            const errorMessage =
+              await responseError(
+                plantsResponse,
+
+                "Your plants could not be loaded.",
+              );
+
+            throw new Error(
+              errorMessage,
+            );
+          }
+
+          if (
+            !entriesResponse.ok
+          ) {
+            const errorMessage =
+              await responseError(
+                entriesResponse,
+
+                "Your journal entries could not be loaded.",
+              );
+
+            throw new Error(
+              errorMessage,
+            );
+          }
+
+          const [
+            userData,
+            plantsData,
+            entriesData,
+          ] =
+            await Promise.all([
+              readJson(
+                userResponse,
+              ),
+
+              readJson(
+                plantsResponse,
+              ),
+
+              readJson(
+                entriesResponse,
+              ),
+            ]);
+
+          setCurrentUser(
+            normalizeCurrentUser(
+              userData,
+            ),
+          );
+
+          setPlants(
+            normalizePlants(
+              plantsData,
+            ),
+          );
+
+          setApiEntries(
+            normalizeJournalEntries(
+              entriesData,
+            ),
+          );
+        } catch (error) {
+          setPageError(
+            error instanceof Error
+              ? error.message
+              : "Your journal could not be loaded.",
+          );
+        } finally {
+          setLoading(false);
+        }
+      },
+      [
+        redirectOnUnauthorized,
+      ],
+    );
 
   useEffect(() => {
     void loadJournal();
@@ -511,14 +1004,29 @@ function Journal() {
     if (
       loading ||
       !requestedPlantId ||
-      !plants.some((plant) => plant._id === requestedPlantId)
+      !plants.some(
+        (plant) =>
+          plant._id ===
+          requestedPlantId,
+      )
     ) {
       return;
     }
 
-    setDraft(createEmptyDraft(requestedPlantId));
+    setDraft(
+      createEmptyDraft(
+        requestedPlantId,
+      ),
+    );
+
     setComposerOpen(true);
-    setSearchParams({}, { replace: true });
+
+    setSearchParams(
+      {},
+      {
+        replace: true,
+      },
+    );
   }, [
     loading,
     plants,
@@ -526,58 +1034,117 @@ function Journal() {
     setSearchParams,
   ]);
 
-  const plantsById = useMemo(
-    () => new Map(plants.map((plant) => [plant._id, plant])),
-    [plants],
-  );
+  const plantsById =
+    useMemo(
+      () =>
+        new Map(
+          plants.map(
+            (plant) => [
+              plant._id,
+              plant,
+            ],
+          ),
+        ),
+      [plants],
+    );
 
   const entries = useMemo(
     () =>
       apiEntries
-        .map((entry) => toJournalEntry(entry, plantsById))
+        .map((entry) =>
+          toJournalEntry(
+            entry,
+            plantsById,
+          ),
+        )
         .sort(
-          (firstEntry, secondEntry) =>
-            new Date(secondEntry.entryDate).getTime() -
-            new Date(firstEntry.entryDate).getTime(),
+          (
+            firstEntry,
+            secondEntry,
+          ) =>
+            new Date(
+              secondEntry.entryDate,
+            ).getTime() -
+            new Date(
+              firstEntry.entryDate,
+            ).getTime(),
         ),
-    [apiEntries, plantsById],
+    [
+      apiEntries,
+      plantsById,
+    ],
   );
 
-  const filteredEntries = useMemo(() => {
-    const normalizedSearch = searchTerm.trim().toLowerCase();
+  const filteredEntries =
+    useMemo(() => {
+      const normalizedSearch =
+        searchTerm
+          .trim()
+          .toLowerCase();
 
-    if (!normalizedSearch) {
-      return entries;
-    }
+      if (
+        !normalizedSearch
+      ) {
+        return entries;
+      }
 
-    return entries.filter((entry) =>
-      [
-        entry.title,
-        entry.plantName,
-        entry.species,
-        healthLabel(entry.healthStatus),
-        entry.notes,
-        formatDate(entry.date),
-      ]
-        .join(" ")
-        .toLowerCase()
-        .includes(normalizedSearch),
-    );
-  }, [entries, searchTerm]);
+      return entries.filter(
+        (entry) =>
+          [
+            entry.title,
+            entry.plantName,
+            entry.species,
 
-  const groupedEntries = useMemo(() => {
-    return filteredEntries.reduce<Record<string, JournalEntry[]>>(
-      (groups, entry) => {
-        groups[entry.date] ??= [];
-        groups[entry.date].push(entry);
+            healthLabel(
+              entry.healthStatus,
+            ),
 
-        return groups;
-      },
-      {},
-    );
-  }, [filteredEntries]);
+            entry.notes,
 
-  function openComposer(userPlantId?: string): void {
+            formatDate(
+              entry.date,
+            ),
+          ]
+            .join(" ")
+            .toLowerCase()
+            .includes(
+              normalizedSearch,
+            ),
+      );
+    }, [
+      entries,
+      searchTerm,
+    ]);
+
+  const groupedEntries =
+    useMemo(() => {
+      return filteredEntries.reduce<
+        Record<
+          string,
+          JournalEntry[]
+        >
+      >(
+        (
+          groups,
+          entry,
+        ) => {
+          groups[
+            entry.date
+          ] ??= [];
+
+          groups[
+            entry.date
+          ].push(entry);
+
+          return groups;
+        },
+        {},
+      );
+    }, [filteredEntries]);
+
+  function openComposer(
+    userPlantId?: string,
+  ): void {
     const selectedPlantId =
       userPlantId ||
       requestedPlantId ||
@@ -585,7 +1152,13 @@ function Journal() {
       "";
 
     setMessage("");
-    setDraft(createEmptyDraft(selectedPlantId));
+
+    setDraft(
+      createEmptyDraft(
+        selectedPlantId,
+      ),
+    );
+
     setComposerOpen(true);
   }
 
@@ -597,17 +1170,29 @@ function Journal() {
   }
 
   async function handleSubmit(
-    event: FormEvent<HTMLFormElement>,
+    event:
+      FormEvent<HTMLFormElement>,
   ): Promise<void> {
     event.preventDefault();
 
-    if (!draft.userPlantId) {
-      setMessage("Choose a plant.");
+    if (
+      !draft.userPlantId
+    ) {
+      setMessage(
+        "Choose a plant.",
+      );
+
       return;
     }
 
-    if (!draft.title.trim() || !draft.notes.trim()) {
-      setMessage("Add a title and notes.");
+    if (
+      !draft.title.trim() ||
+      !draft.notes.trim()
+    ) {
+      setMessage(
+        "Add a title and notes.",
+      );
+
       return;
     }
 
@@ -615,62 +1200,164 @@ function Journal() {
       setSaving(true);
       setMessage("");
 
-      const entryDate = new Date(
-        `${draft.date}T12:00:00`,
-      ).toISOString();
+      const entryDate =
+        new Date(
+          `${draft.date}T12:00:00`,
+        ).toISOString();
 
-      const response = await apiFetch("/journal-entries", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          plantId: draft.userPlantId,
-          userPlantId: draft.userPlantId,
+      const response =
+        await apiFetch(
+          "/journal-entries",
+          {
+            method: "POST",
 
-          title: draft.title.trim(),
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
 
-          notes: draft.notes.trim(),
-          body: draft.notes.trim(),
+            body: JSON.stringify(
+              {
+                plantId:
+                  draft.userPlantId,
 
-          health: healthLabel(draft.healthStatus),
-          healthStatus: draft.healthStatus,
+                userPlantId:
+                  draft.userPlantId,
 
-          watered: draft.watered,
+                title:
+                  draft.title.trim(),
 
-          occurredAt: entryDate,
-          entryDate,
+                notes:
+                  draft.notes.trim(),
 
-          photos: [],
-        }),
-      });
+                body:
+                  draft.notes.trim(),
 
-      if (redirectOnUnauthorized(response)) {
+                health:
+                  healthLabel(
+                    draft.healthStatus,
+                  ),
+
+                healthStatus:
+                  draft.healthStatus,
+
+                watered:
+                  draft.watered,
+
+                occurredAt:
+                  entryDate,
+
+                entryDate,
+
+                photos: [],
+              },
+            ),
+          },
+        );
+
+      if (
+        redirectOnUnauthorized(
+          response,
+        )
+      ) {
         return;
       }
 
       if (!response.ok) {
-        throw new Error("The journal entry could not be saved.");
+        const errorMessage =
+          await responseError(
+            response,
+
+            "The journal entry could not be saved.",
+          );
+
+        throw new Error(
+          errorMessage,
+        );
       }
 
-      const responseData = await readJson(response);
+      const responseData =
+        await readJson(
+          response,
+        );
 
       if (
-        typeof responseData === "object" &&
+        typeof responseData ===
+          "object" &&
         responseData !== null &&
-        "entry" in responseData
+        "entry" in
+          responseData
       ) {
-        setApiEntries((currentEntries) => [
-          (responseData as { entry: JournalEntryApi }).entry,
-          ...currentEntries,
-        ]);
+        setApiEntries(
+          (
+            currentEntries,
+          ) => [
+            (
+              responseData as {
+                entry: JournalEntryApi;
+              }
+            ).entry,
+
+            ...currentEntries,
+          ],
+        );
+      } else if (
+        typeof responseData ===
+          "object" &&
+        responseData !== null &&
+        "data" in
+          responseData &&
+        typeof (
+          responseData as {
+            data?: unknown;
+          }
+        ).data ===
+          "object" &&
+        (
+          responseData as {
+            data?: unknown;
+          }
+        ).data !== null &&
+        "entry" in
+          (
+            responseData as {
+              data: object;
+            }
+          ).data
+      ) {
+        const nestedEntry =
+          (
+            responseData as {
+              data: {
+                entry: JournalEntryApi;
+              };
+            }
+          ).data.entry;
+
+        setApiEntries(
+          (
+            currentEntries,
+          ) => [
+            nestedEntry,
+            ...currentEntries,
+          ],
+        );
       } else {
         await loadJournal();
       }
 
       setComposerOpen(false);
-      setDraft(createEmptyDraft(plants[0]?._id ?? ""));
-      setMessage("Journal entry saved.");
+
+      setDraft(
+        createEmptyDraft(
+          plants[0]?._id ??
+            "",
+        ),
+      );
+
+      setMessage(
+        "Journal entry saved.",
+      );
     } catch (error) {
       setMessage(
         error instanceof Error
@@ -682,13 +1369,20 @@ function Journal() {
     }
   }
 
-  const groupedEntryList = Object.entries(groupedEntries);
-  const emptyHeading = searchTerm
-    ? "No entries found"
-    : "No journal entries yet";
-  const emptyMessage = searchTerm
-    ? "Try searching for something else."
-    : "Add your first entry to begin your plant journal.";
+  const groupedEntryList =
+    Object.entries(
+      groupedEntries,
+    );
+
+  const emptyHeading =
+    searchTerm
+      ? "No entries found"
+      : "No journal entries yet";
+
+  const emptyMessage =
+    searchTerm
+      ? "Try searching for something else."
+      : "Add your first entry to begin your plant journal.";
 
   return (
     <div className="journal-page">
@@ -697,21 +1391,30 @@ function Journal() {
           className="journal-header__button"
           type="button"
           aria-label="Back to garden"
-          onClick={() => navigate("/garden")}
+          onClick={() =>
+            navigate("/garden")
+          }
         >
           ←
         </button>
 
         <div className="journal-header__title">
-          <span aria-hidden="true">📖</span>
-          <span>Journal</span>
+          <span aria-hidden="true">
+            📖
+          </span>
+
+          <span>
+            Journal
+          </span>
         </div>
 
         <button
           className="journal-header__button"
           type="button"
           aria-label="Open garden"
-          onClick={() => navigate("/garden")}
+          onClick={() =>
+            navigate("/garden")
+          }
         >
           🪴
         </button>
@@ -719,52 +1422,80 @@ function Journal() {
 
       <main className="journal-main">
         <section className="journal-intro">
-          <p className="journal-eyebrow">Plant memories</p>
+          <p className="journal-eyebrow">
+            Plant memories
+          </p>
+
           <h1>
             {currentUser
               ? `${currentUser.username}'s garden journal`
               : "Your garden journal"}
           </h1>
+
           <p>
-            Track growth, care, health changes, and the tiny victories that are
+            Track growth, care,
+            health changes, and the
+            tiny victories that are
             easy to forget.
           </p>
         </section>
 
         {message && (
-          <p className="journal-database-message" role="status">
+          <p
+            className="journal-database-message"
+            role="status"
+          >
             {message}
           </p>
         )}
 
         {pageError && (
-          <p className="journal-database-message journal-database-message--error">
+          <p
+            className="journal-database-message journal-database-message--error"
+            role="alert"
+          >
             {pageError}
           </p>
         )}
 
         <label className="journal-search">
-          <span aria-hidden="true">⌕</span>
+          <span aria-hidden="true">
+            ⌕
+          </span>
+
           <span className="journal-visually-hidden">
             Search journal entries
           </span>
+
           <input
             type="search"
             value={searchTerm}
             placeholder="Search entries..."
             disabled={loading}
-            onChange={(event) => setSearchTerm(event.target.value)}
+            onChange={(event) =>
+              setSearchTerm(
+                event.target.value,
+              )
+            }
           />
         </label>
 
         <button
           className="journal-add-card"
           type="button"
-          disabled={loading || plants.length === 0}
-          onClick={() => openComposer()}
+          disabled={
+            loading ||
+            plants.length === 0
+          }
+          onClick={() =>
+            openComposer()
+          }
         >
           <span>
-            <small>New memory</small>
+            <small>
+              New memory
+            </small>
+
             <strong>
               {plants.length > 0
                 ? "Add journal entry"
@@ -772,91 +1503,184 @@ function Journal() {
             </strong>
           </span>
 
-          <span className="journal-add-card__icon" aria-hidden="true">
+          <span
+            className="journal-add-card__icon"
+            aria-hidden="true"
+          >
             +
           </span>
         </button>
 
-        <section className="journal-notebook" aria-label="Journal entries">
-          <div className="journal-notebook__spine" aria-hidden="true">
-            {Array.from({ length: 8 }, (_, index) => (
-              <span key={index} />
-            ))}
+        <section
+          className="journal-notebook"
+          aria-label="Journal entries"
+        >
+          <div
+            className="journal-notebook__spine"
+            aria-hidden="true"
+          >
+            {Array.from(
+              {
+                length: 8,
+              },
+              (
+                _,
+                index,
+              ) => (
+                <span
+                  key={index}
+                />
+              ),
+            )}
           </div>
 
           <div className="journal-entry-list">
             {loading ? (
-              <div className="journal-empty-state" aria-live="polite">
-                <span aria-hidden="true">🌱</span>
-                <h2>Loading your journal…</h2>
-                <p>Gathering your plant memories.</p>
+              <div
+                className="journal-empty-state"
+                aria-live="polite"
+              >
+                <span aria-hidden="true">
+                  🌱
+                </span>
+
+                <h2>
+                  Loading your
+                  journal…
+                </h2>
+
+                <p>
+                  Gathering your
+                  plant memories.
+                </p>
               </div>
-            ) : groupedEntryList.length > 0 ? (
-              groupedEntryList.map(([date, dateEntries]) => (
-                <section className="journal-date-group" key={date}>
-                  <h2>{formatDate(date)}</h2>
+            ) : groupedEntryList.length >
+              0 ? (
+              groupedEntryList.map(
+                ([
+                  date,
+                  dateEntries,
+                ]) => (
+                  <section
+                    className="journal-date-group"
+                    key={date}
+                  >
+                    <h2>
+                      {formatDate(
+                        date,
+                      )}
+                    </h2>
 
-                  <div className="journal-date-group__entries">
-                    {dateEntries.map((entry) => (
-                      <article className="journal-entry-card" key={entry.id}>
-                        <div className="journal-entry-card__top">
-                          <div>
-                            <button
-                              className="journal-entry-card__plant-link"
-                              type="button"
-                              onClick={() =>
-                                navigate(`/plants/${entry.userPlantId}`)
-                              }
-                            >
-                              {entry.plantName}
-                            </button>
-
-                            <h3>{entry.title}</h3>
-                          </div>
-
-                          <span
-                            className={`journal-health journal-health--${
-                              entry.healthStatus ?? "not-recorded"
-                            }`}
-                          >
-                            {healthLabel(entry.healthStatus)}
-                          </span>
-                        </div>
-
-                        <p className="journal-entry-card__species">
-                          {entry.species}
-                        </p>
-
-                        <p className="journal-entry-card__notes">
-                          {entry.notes}
-                        </p>
-
-                        <div className="journal-entry-card__footer">
-                          <span>
-                            {entry.watered
-                              ? "💧 Watered"
-                              : "🌱 Observation"}
-                          </span>
-
-                          <button
-                            type="button"
-                            onClick={() =>
-                              navigate(`/plants/${entry.userPlantId}`)
+                    <div className="journal-date-group__entries">
+                      {dateEntries.map(
+                        (
+                          entry,
+                        ) => (
+                          <article
+                            className="journal-entry-card"
+                            key={
+                              entry.id
                             }
                           >
-                            View plant →
-                          </button>
-                        </div>
-                      </article>
-                    ))}
-                  </div>
-                </section>
-              ))
+                            <div className="journal-entry-card__top">
+                              <div>
+                                <button
+                                  className="journal-entry-card__plant-link"
+                                  type="button"
+                                  disabled={
+                                    !entry.userPlantId
+                                  }
+                                  onClick={() => {
+                                    if (
+                                      entry.userPlantId
+                                    ) {
+                                      navigate(
+                                        `/plants/${entry.userPlantId}`,
+                                      );
+                                    }
+                                  }}
+                                >
+                                  {
+                                    entry.plantName
+                                  }
+                                </button>
+
+                                <h3>
+                                  {
+                                    entry.title
+                                  }
+                                </h3>
+                              </div>
+
+                              <span
+                                className={`journal-health journal-health--${
+                                  entry.healthStatus ??
+                                  "not-recorded"
+                                }`}
+                              >
+                                {healthLabel(
+                                  entry.healthStatus,
+                                )}
+                              </span>
+                            </div>
+
+                            <p className="journal-entry-card__species">
+                              {
+                                entry.species
+                              }
+                            </p>
+
+                            <p className="journal-entry-card__notes">
+                              {
+                                entry.notes
+                              }
+                            </p>
+
+                            <div className="journal-entry-card__footer">
+                              <span>
+                                {entry.watered
+                                  ? "💧 Watered"
+                                  : "🌱 Observation"}
+                              </span>
+
+                              <button
+                                type="button"
+                                disabled={
+                                  !entry.userPlantId
+                                }
+                                onClick={() => {
+                                  if (
+                                    entry.userPlantId
+                                  ) {
+                                    navigate(
+                                      `/plants/${entry.userPlantId}`,
+                                    );
+                                  }
+                                }}
+                              >
+                                View plant →
+                              </button>
+                            </div>
+                          </article>
+                        ),
+                      )}
+                    </div>
+                  </section>
+                ),
+              )
             ) : (
               <div className="journal-empty-state">
-                <span aria-hidden="true">🌿</span>
-                <h2>{emptyHeading}</h2>
-                <p>{emptyMessage}</p>
+                <span aria-hidden="true">
+                  🌿
+                </span>
+
+                <h2>
+                  {emptyHeading}
+                </h2>
+
+                <p>
+                  {emptyMessage}
+                </p>
               </div>
             )}
           </div>
@@ -867,8 +1691,13 @@ function Journal() {
         <div
           className="journal-modal"
           role="presentation"
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget) {
+          onMouseDown={(
+            event,
+          ) => {
+            if (
+              event.target ===
+              event.currentTarget
+            ) {
               closeComposer();
             }
           }}
@@ -881,65 +1710,122 @@ function Journal() {
           >
             <div className="journal-composer__header">
               <div>
-                <p className="journal-eyebrow">New memory</p>
-                <h2 id="journal-composer-title">Add journal entry</h2>
+                <p className="journal-eyebrow">
+                  New memory
+                </p>
+
+                <h2 id="journal-composer-title">
+                  Add journal entry
+                </h2>
               </div>
 
               <button
                 type="button"
                 aria-label="Close journal entry form"
-                onClick={closeComposer}
+                onClick={
+                  closeComposer
+                }
               >
                 ×
               </button>
             </div>
 
             {message && (
-              <p className="journal-database-message" role="status">
+              <p
+                className="journal-database-message"
+                role="status"
+              >
                 {message}
               </p>
             )}
 
-            <form onSubmit={(event) => void handleSubmit(event)}>
+            <form
+              onSubmit={(event) =>
+                void handleSubmit(
+                  event,
+                )
+              }
+            >
               <div className="journal-form-row">
                 <label>
                   Plant
+
                   <select
-                    value={draft.userPlantId}
+                    value={
+                      draft.userPlantId
+                    }
                     required
-                    onChange={(event) =>
-                      setDraft((currentDraft) => ({
-                        ...currentDraft,
-                        userPlantId: event.target.value,
-                      }))
+                    onChange={(
+                      event,
+                    ) =>
+                      setDraft(
+                        (
+                          currentDraft,
+                        ) => ({
+                          ...currentDraft,
+
+                          userPlantId:
+                            event
+                              .target
+                              .value,
+                        }),
+                      )
                     }
                   >
-                    {plants.map((plant) => {
-                      const species = getPlantSpecies(plant);
+                    {plants.map(
+                      (plant) => {
+                        const species =
+                          getPlantSpecies(
+                            plant,
+                          );
 
-                      return (
-                        <option value={plant._id} key={plant._id}>
-                          {plant.nickname}
-                          {species?.commonName
-                            ? ` — ${species.commonName}`
-                            : ""}
-                        </option>
-                      );
-                    })}
+                        return (
+                          <option
+                            value={
+                              plant._id
+                            }
+                            key={
+                              plant._id
+                            }
+                          >
+                            {
+                              plant.nickname
+                            }
+
+                            {species?.commonName
+                              ? ` — ${species.commonName}`
+                              : ""}
+                          </option>
+                        );
+                      },
+                    )}
                   </select>
                 </label>
 
                 <label>
                   Date
+
                   <input
                     type="date"
-                    value={draft.date}
+                    value={
+                      draft.date
+                    }
                     required
-                    onChange={(event) =>
-                      setDraft((currentDraft) => ({
-                        ...currentDraft,
-                        date: event.target.value,
-                      }))
+                    onChange={(
+                      event,
+                    ) =>
+                      setDraft(
+                        (
+                          currentDraft,
+                        ) => ({
+                          ...currentDraft,
+
+                          date:
+                            event
+                              .target
+                              .value,
+                        }),
+                      )
                     }
                   />
                 </label>
@@ -947,53 +1833,103 @@ function Journal() {
 
               <label>
                 Entry title
+
                 <input
                   type="text"
-                  value={draft.title}
+                  value={
+                    draft.title
+                  }
                   placeholder="What happened today?"
                   required
                   maxLength={150}
-                  onChange={(event) =>
-                    setDraft((currentDraft) => ({
-                      ...currentDraft,
-                      title: event.target.value,
-                    }))
+                  onChange={(
+                    event,
+                  ) =>
+                    setDraft(
+                      (
+                        currentDraft,
+                      ) => ({
+                        ...currentDraft,
+
+                        title:
+                          event
+                            .target
+                            .value,
+                      }),
+                    )
                   }
                 />
               </label>
 
               <label>
                 Plant health
+
                 <select
-                  value={draft.healthStatus}
-                  onChange={(event) =>
-                    setDraft((currentDraft) => ({
-                      ...currentDraft,
-                      healthStatus: event.target.value as PlantHealthStatus,
-                    }))
+                  value={
+                    draft.healthStatus
+                  }
+                  onChange={(
+                    event,
+                  ) =>
+                    setDraft(
+                      (
+                        currentDraft,
+                      ) => ({
+                        ...currentDraft,
+
+                        healthStatus:
+                          event
+                            .target
+                            .value as PlantHealthStatus,
+                      }),
+                    )
                   }
                 >
-                  {healthOptions.map((option) => (
-                    <option value={option.value} key={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
+                  {healthOptions.map(
+                    (option) => (
+                      <option
+                        value={
+                          option.value
+                        }
+                        key={
+                          option.value
+                        }
+                      >
+                        {
+                          option.label
+                        }
+                      </option>
+                    ),
+                  )}
                 </select>
               </label>
 
               <label>
                 Notes
+
                 <textarea
-                  value={draft.notes}
+                  value={
+                    draft.notes
+                  }
                   placeholder="Record growth, care, changes, or anything you noticed..."
                   required
                   rows={6}
                   maxLength={10000}
-                  onChange={(event) =>
-                    setDraft((currentDraft) => ({
-                      ...currentDraft,
-                      notes: event.target.value,
-                    }))
+                  onChange={(
+                    event,
+                  ) =>
+                    setDraft(
+                      (
+                        currentDraft,
+                      ) => ({
+                        ...currentDraft,
+
+                        notes:
+                          event
+                            .target
+                            .value,
+                      }),
+                    )
                   }
                 />
               </label>
@@ -1001,16 +1937,31 @@ function Journal() {
               <label className="journal-checkbox">
                 <input
                   type="checkbox"
-                  checked={draft.watered}
-                  onChange={(event) =>
-                    setDraft((currentDraft) => ({
-                      ...currentDraft,
-                      watered: event.target.checked,
-                    }))
+                  checked={
+                    draft.watered
+                  }
+                  onChange={(
+                    event,
+                  ) =>
+                    setDraft(
+                      (
+                        currentDraft,
+                      ) => ({
+                        ...currentDraft,
+
+                        watered:
+                          event
+                            .target
+                            .checked,
+                      }),
+                    )
                   }
                 />
 
-                <span>I watered this plant today</span>
+                <span>
+                  I watered this
+                  plant today
+                </span>
               </label>
 
               <div className="journal-composer__actions">
@@ -1018,7 +1969,9 @@ function Journal() {
                   className="journal-secondary-button"
                   type="button"
                   disabled={saving}
-                  onClick={closeComposer}
+                  onClick={
+                    closeComposer
+                  }
                 >
                   Cancel
                 </button>
@@ -1028,7 +1981,9 @@ function Journal() {
                   type="submit"
                   disabled={saving}
                 >
-                  {saving ? "Saving…" : "Save entry"}
+                  {saving
+                    ? "Saving…"
+                    : "Save entry"}
                 </button>
               </div>
             </form>
