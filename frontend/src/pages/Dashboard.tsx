@@ -3,6 +3,32 @@ import type { ChangeEvent, FormEvent } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import "./Dashboard.css";
 
+const apiBaseUrl = (
+  import.meta.env.VITE_API_URL || "/api"
+).replace(/\/$/, "");
+
+function getAuthToken(): string | null {
+  return localStorage.getItem("token");
+}
+
+async function apiFetch(
+  path: string,
+  options: RequestInit = {},
+): Promise<Response> {
+  const headers = new Headers(options.headers);
+  const token = getAuthToken();
+
+  if (token) {
+    headers.set("Authorization", `Bearer ${token}`);
+  }
+
+  return fetch(`${apiBaseUrl}${path}`, {
+    ...options,
+    headers,
+    credentials: "include",
+  });
+}
+
 type CurrentUser = {
   _id: string;
   username: string;
@@ -130,6 +156,17 @@ function toIsoDate(value: string): string | null {
 }
 
 function normalizeCurrentUser(data: unknown): CurrentUser {
+  if (
+    typeof data === "object" &&
+    data !== null &&
+    "data" in data &&
+    typeof (data as { data?: unknown }).data === "object" &&
+    (data as { data: { user?: unknown } }).data !== null &&
+    typeof (data as { data: { user?: unknown } }).data.user === "object"
+  ) {
+    return (data as { data: { user: CurrentUser } }).data.user;
+  }
+
   if (
     typeof data === "object" &&
     data !== null &&
@@ -450,9 +487,7 @@ function Dashboard() {
   );
 
   const loadPlants = useCallback(async (): Promise<void> => {
-    const response = await fetch("/api/user-plants", {
-      credentials: "include",
-    });
+    const response = await apiFetch("/user-plants");
 
     if (redirectOnUnauthorized(response)) {
       return;
@@ -471,12 +506,8 @@ function Dashboard() {
       setPageError("");
 
       const [userResponse, plantsResponse] = await Promise.all([
-        fetch("/api/auth/me", {
-          credentials: "include",
-        }),
-        fetch("/api/user-plants", {
-          credentials: "include",
-        }),
+        apiFetch("/auth/me"),
+        apiFetch("/user-plants"),
       ]);
 
       if (
@@ -520,9 +551,7 @@ function Dashboard() {
     try {
       setSpeciesLoading(true);
 
-      const response = await fetch("/api/plant-species", {
-        credentials: "include",
-      });
+      const response = await apiFetch("/plant-species");
 
       if (redirectOnUnauthorized(response)) {
         return;
@@ -633,32 +662,15 @@ function Dashboard() {
   }
 
   async function handleLogout(): Promise<void> {
-    try {
-      setLoggingOut(true);
-      setMessage("");
-      setMenuOpen(false);
-      setNotificationsOpen(false);
+    setLoggingOut(true);
+    setMessage("");
+    setMenuOpen(false);
+    setNotificationsOpen(false);
 
-      const response = await fetch("/api/auth/logout", {
-        method: "POST",
-        credentials: "include",
-      });
-
-      if (!response.ok && response.status !== 401) {
-        throw new Error("You could not be logged out.");
-      }
-
-      setCurrentUser(null);
-      setPlants([]);
-      navigate("/login", { replace: true });
-    } catch (error) {
-      setMessage(
-        error instanceof Error
-          ? error.message
-          : "You could not be logged out.",
-      );
-      setLoggingOut(false);
-    }
+    localStorage.removeItem("token");
+    setCurrentUser(null);
+    setPlants([]);
+    navigate("/login", { replace: true });
   }
 
   function openModal(name: Exclude<ModalName, null>): void {
@@ -712,9 +724,8 @@ function Dashboard() {
       setSaving(true);
       setMessage("");
 
-      const response = await fetch("/api/user-plants", {
+      const response = await apiFetch("/user-plants", {
         method: "POST",
-        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           nickname: plantDraft.nickname.trim(),
@@ -799,21 +810,19 @@ function Dashboard() {
         return formData;
       };
 
-      let response = await fetch(
-        `/api/user-plants/${photoPlantId}/photos`,
+      let response = await apiFetch(
+        `/user-plants/${photoPlantId}/photos`,
         {
           method: "POST",
-          credentials: "include",
           body: createPhotoFormData(),
         },
       );
 
       if (response.status === 404 || response.status === 405) {
-        response = await fetch(
-          `/api/user-plants/${photoPlantId}/picture`,
+        response = await apiFetch(
+          `/user-plants/${photoPlantId}/picture`,
           {
             method: "POST",
-            credentials: "include",
             body: createPhotoFormData(),
           },
         );
@@ -879,20 +888,18 @@ function Dashboard() {
             : null,
       };
 
-      let response = await fetch(
-        `/api/user-plants/${careDraft.plantId}/care-events`,
+      let response = await apiFetch(
+        `/user-plants/${careDraft.plantId}/care-events`,
         {
           method: "POST",
-          credentials: "include",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(legacyPayload),
         },
       );
 
       if (response.status === 404 || response.status === 405) {
-        response = await fetch("/api/journal-entries", {
+        response = await apiFetch("/journal-entries", {
           method: "POST",
-          credentials: "include",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             plantId: careDraft.plantId,
@@ -943,9 +950,8 @@ function Dashboard() {
       setWateringPlantId(plantId);
       setMessage("");
 
-      const response = await fetch(`/api/user-plants/${plantId}/water`, {
+      const response = await apiFetch(`/user-plants/${plantId}/water`, {
         method: "PATCH",
-        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ wateredAt: new Date().toISOString() }),
       });
