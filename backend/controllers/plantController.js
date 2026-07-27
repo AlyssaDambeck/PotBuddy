@@ -2,7 +2,7 @@ const { ObjectId } = require("mongodb");
 const { client } = require("../config/db");
 
 function getPlantsCollection() {
-    return client.db().collection("user_plants");
+    return client.db().collection("userPlants");
 }
 
 // GET /api/plants
@@ -304,7 +304,7 @@ async function waterPlant(req, res) {
 
         const speciesCollection = client
             .db()
-            .collection("plant_species");
+            .collection("plantSpecies");
 
         const species = await speciesCollection.findOne({
             _id: plant.speciesId

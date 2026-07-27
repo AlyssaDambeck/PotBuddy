@@ -2,7 +2,7 @@ const { ObjectId } = require("mongodb");
 const { client } = require("../config/db");
 
 function getSpeciesCollection() {
-    return client.db().collection("plant_species");
+    return client.db().collection("plantSpecies");
 }
 
 // GET /api/species
