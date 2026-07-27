@@ -10,43 +10,69 @@ import {
 } from "react-router-dom";
 
 /*
- * Each page becomes a separate JavaScript chunk.
- * The browser downloads it only when that route is visited.
+ * Dashboard stays eager because /garden is
+ * the performance-critical route.
  */
-const Dashboard = lazy(
-  () => import("./pages/Dashboard"),
-);
+import Dashboard from "./pages/Dashboard";
 
+/*
+ * Pages that are not required to render the
+ * Dashboard are downloaded only when visited.
+ */
 const EmailVerifiedPage = lazy(
-  () => import("./pages/EmailVerifiedPage"),
+  () =>
+    import(
+      "./pages/EmailVerifiedPage"
+    ),
 );
 
 const Journal = lazy(
-  () => import("./pages/Journal"),
+  () =>
+    import(
+      "./pages/Journal"
+    ),
 );
 
 const Landing = lazy(
-  () => import("./pages/Landing/Landing"),
+  () =>
+    import(
+      "./pages/Landing/Landing"
+    ),
 );
 
 const LoginPage = lazy(
-  () => import("./pages/LoginPage"),
+  () =>
+    import(
+      "./pages/LoginPage"
+    ),
 );
 
 const NotFound = lazy(
-  () => import("./pages/NotFound"),
+  () =>
+    import(
+      "./pages/NotFound"
+    ),
 );
 
 const PlantDetail = lazy(
-  () => import("./pages/PlantDetail"),
+  () =>
+    import(
+      "./pages/PlantDetail"
+    ),
 );
 
 const PlantInventory = lazy(
-  () => import("./pages/PlantInventory"),
+  () =>
+    import(
+      "./pages/PlantInventory"
+    ),
 );
 
 const RegisterPage = lazy(
-  () => import("./pages/RegisterPage"),
+  () =>
+    import(
+      "./pages/RegisterPage"
+    ),
 );
 
 function PageLoader() {
@@ -91,51 +117,73 @@ function PageLoader() {
 function App() {
   return (
     <BrowserRouter>
-      <Suspense fallback={<PageLoader />}>
+      <Suspense
+        fallback={
+          <PageLoader />
+        }
+      >
         <Routes>
           <Route
             path="/"
-            element={<Landing />}
+            element={
+              <Landing />
+            }
           />
 
           <Route
             path="/login"
-            element={<LoginPage />}
+            element={
+              <LoginPage />
+            }
           />
 
           <Route
             path="/register"
-            element={<RegisterPage />}
+            element={
+              <RegisterPage />
+            }
           />
 
           <Route
             path="/verified"
-            element={<EmailVerifiedPage />}
+            element={
+              <EmailVerifiedPage />
+            }
           />
 
           <Route
             path="/garden"
-            element={<Dashboard />}
+            element={
+              <Dashboard />
+            }
           />
 
           <Route
             path="/journal"
-            element={<Journal />}
+            element={
+              <Journal />
+            }
           />
 
           <Route
             path="/plants"
-            element={<PlantInventory />}
+            element={
+              <PlantInventory />
+            }
           />
 
           <Route
             path="/plants/:plantId"
-            element={<PlantDetail />}
+            element={
+              <PlantDetail />
+            }
           />
 
           <Route
             path="*"
-            element={<NotFound />}
+            element={
+              <NotFound />
+            }
           />
         </Routes>
       </Suspense>
