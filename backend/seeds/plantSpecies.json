@@ -1,0 +1,1927 @@
+[
+  {
+    "commonName": "Snake Plant",
+    "scientificName": "Dracaena trifasciata",
+    "aliases": [],
+    "description": "Snake Plant is a popular indoor houseplant.",
+    "defaultImageFileId": null,
+    "sunlight": {
+      "level": "bright-indirect",
+      "instructions": "Provide the recommended amount of light and avoid sudden lighting changes."
+    },
+    "watering": {
+      "intervalDays": 14,
+      "instructions": "Water when the top layer of soil becomes dry.",
+      "warningSigns": [
+        "Yellow leaves",
+        "Drooping leaves",
+        "Soft stems"
+      ]
+    },
+    "humidity": {
+      "level": "low",
+      "instructions": "Maintain the recommended humidity level."
+    },
+    "temperature": {
+      "minimum": 65,
+      "maximum": 85,
+      "unit": "F"
+    },
+    "soil": "Well-draining indoor potting mix.",
+    "fertilizing": {
+      "intervalDays": 30,
+      "instructions": "Fertilize monthly during spring and summer."
+    },
+    "toxicity": {
+      "toxicToPets": true,
+      "notes": "Keep away from pets if toxic."
+    },
+    "commonDiseases": [
+      {
+        "name": "Root Rot",
+        "symptoms": [
+          "Yellow leaves",
+          "Soft stems",
+          "Wilting"
+        ],
+        "cause": "Overwatering",
+        "treatment": [
+          "Reduce watering",
+          "Repot into fresh soil",
+          "Trim damaged roots"
+        ],
+        "imageFileId": null
+      },
+      {
+        "name": "Spider Mites",
+        "symptoms": [
+          "Tiny webs",
+          "Spotted leaves"
+        ],
+        "cause": "Dry conditions",
+        "treatment": [
+          "Increase humidity",
+          "Treat with insecticidal soap"
+        ],
+        "imageFileId": null
+      }
+    ],
+    "additionalCareNotes": [
+      "Rotate the plant every few weeks for even growth."
+    ],
+    "createdAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    },
+    "updatedAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    }
+  },
+  {
+    "commonName": "Pothos",
+    "scientificName": "Epipremnum aureum",
+    "aliases": [],
+    "description": "Pothos is a popular indoor houseplant.",
+    "defaultImageFileId": null,
+    "sunlight": {
+      "level": "bright-indirect",
+      "instructions": "Provide the recommended amount of light and avoid sudden lighting changes."
+    },
+    "watering": {
+      "intervalDays": 7,
+      "instructions": "Water when the top layer of soil becomes dry.",
+      "warningSigns": [
+        "Yellow leaves",
+        "Drooping leaves",
+        "Soft stems"
+      ]
+    },
+    "humidity": {
+      "level": "average",
+      "instructions": "Maintain the recommended humidity level."
+    },
+    "temperature": {
+      "minimum": 65,
+      "maximum": 85,
+      "unit": "F"
+    },
+    "soil": "Well-draining indoor potting mix.",
+    "fertilizing": {
+      "intervalDays": 30,
+      "instructions": "Fertilize monthly during spring and summer."
+    },
+    "toxicity": {
+      "toxicToPets": true,
+      "notes": "Keep away from pets if toxic."
+    },
+    "commonDiseases": [
+      {
+        "name": "Root Rot",
+        "symptoms": [
+          "Yellow leaves",
+          "Soft stems",
+          "Wilting"
+        ],
+        "cause": "Overwatering",
+        "treatment": [
+          "Reduce watering",
+          "Repot into fresh soil",
+          "Trim damaged roots"
+        ],
+        "imageFileId": null
+      },
+      {
+        "name": "Spider Mites",
+        "symptoms": [
+          "Tiny webs",
+          "Spotted leaves"
+        ],
+        "cause": "Dry conditions",
+        "treatment": [
+          "Increase humidity",
+          "Treat with insecticidal soap"
+        ],
+        "imageFileId": null
+      }
+    ],
+    "additionalCareNotes": [
+      "Rotate the plant every few weeks for even growth."
+    ],
+    "createdAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    },
+    "updatedAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    }
+  },
+  {
+    "commonName": "Monstera",
+    "scientificName": "Monstera deliciosa",
+    "aliases": [],
+    "description": "Monstera is a popular indoor houseplant.",
+    "defaultImageFileId": null,
+    "sunlight": {
+      "level": "bright-indirect",
+      "instructions": "Provide the recommended amount of light and avoid sudden lighting changes."
+    },
+    "watering": {
+      "intervalDays": 7,
+      "instructions": "Water when the top layer of soil becomes dry.",
+      "warningSigns": [
+        "Yellow leaves",
+        "Drooping leaves",
+        "Soft stems"
+      ]
+    },
+    "humidity": {
+      "level": "average",
+      "instructions": "Maintain the recommended humidity level."
+    },
+    "temperature": {
+      "minimum": 65,
+      "maximum": 85,
+      "unit": "F"
+    },
+    "soil": "Well-draining indoor potting mix.",
+    "fertilizing": {
+      "intervalDays": 30,
+      "instructions": "Fertilize monthly during spring and summer."
+    },
+    "toxicity": {
+      "toxicToPets": true,
+      "notes": "Keep away from pets if toxic."
+    },
+    "commonDiseases": [
+      {
+        "name": "Root Rot",
+        "symptoms": [
+          "Yellow leaves",
+          "Soft stems",
+          "Wilting"
+        ],
+        "cause": "Overwatering",
+        "treatment": [
+          "Reduce watering",
+          "Repot into fresh soil",
+          "Trim damaged roots"
+        ],
+        "imageFileId": null
+      },
+      {
+        "name": "Spider Mites",
+        "symptoms": [
+          "Tiny webs",
+          "Spotted leaves"
+        ],
+        "cause": "Dry conditions",
+        "treatment": [
+          "Increase humidity",
+          "Treat with insecticidal soap"
+        ],
+        "imageFileId": null
+      }
+    ],
+    "additionalCareNotes": [
+      "Rotate the plant every few weeks for even growth."
+    ],
+    "createdAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    },
+    "updatedAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    }
+  },
+  {
+    "commonName": "Spider Plant",
+    "scientificName": "Chlorophytum comosum",
+    "aliases": [],
+    "description": "Spider Plant is a popular indoor houseplant.",
+    "defaultImageFileId": null,
+    "sunlight": {
+      "level": "bright-indirect",
+      "instructions": "Provide the recommended amount of light and avoid sudden lighting changes."
+    },
+    "watering": {
+      "intervalDays": 7,
+      "instructions": "Water when the top layer of soil becomes dry.",
+      "warningSigns": [
+        "Yellow leaves",
+        "Drooping leaves",
+        "Soft stems"
+      ]
+    },
+    "humidity": {
+      "level": "average",
+      "instructions": "Maintain the recommended humidity level."
+    },
+    "temperature": {
+      "minimum": 60,
+      "maximum": 80,
+      "unit": "F"
+    },
+    "soil": "Well-draining indoor potting mix.",
+    "fertilizing": {
+      "intervalDays": 30,
+      "instructions": "Fertilize monthly during spring and summer."
+    },
+    "toxicity": {
+      "toxicToPets": false,
+      "notes": "Keep away from pets if toxic."
+    },
+    "commonDiseases": [
+      {
+        "name": "Root Rot",
+        "symptoms": [
+          "Yellow leaves",
+          "Soft stems",
+          "Wilting"
+        ],
+        "cause": "Overwatering",
+        "treatment": [
+          "Reduce watering",
+          "Repot into fresh soil",
+          "Trim damaged roots"
+        ],
+        "imageFileId": null
+      },
+      {
+        "name": "Spider Mites",
+        "symptoms": [
+          "Tiny webs",
+          "Spotted leaves"
+        ],
+        "cause": "Dry conditions",
+        "treatment": [
+          "Increase humidity",
+          "Treat with insecticidal soap"
+        ],
+        "imageFileId": null
+      }
+    ],
+    "additionalCareNotes": [
+      "Rotate the plant every few weeks for even growth."
+    ],
+    "createdAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    },
+    "updatedAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    }
+  },
+  {
+    "commonName": "ZZ Plant",
+    "scientificName": "Zamioculcas zamiifolia",
+    "aliases": [],
+    "description": "ZZ Plant is a popular indoor houseplant.",
+    "defaultImageFileId": null,
+    "sunlight": {
+      "level": "low",
+      "instructions": "Provide the recommended amount of light and avoid sudden lighting changes."
+    },
+    "watering": {
+      "intervalDays": 14,
+      "instructions": "Water when the top layer of soil becomes dry.",
+      "warningSigns": [
+        "Yellow leaves",
+        "Drooping leaves",
+        "Soft stems"
+      ]
+    },
+    "humidity": {
+      "level": "low",
+      "instructions": "Maintain the recommended humidity level."
+    },
+    "temperature": {
+      "minimum": 60,
+      "maximum": 85,
+      "unit": "F"
+    },
+    "soil": "Well-draining indoor potting mix.",
+    "fertilizing": {
+      "intervalDays": 30,
+      "instructions": "Fertilize monthly during spring and summer."
+    },
+    "toxicity": {
+      "toxicToPets": true,
+      "notes": "Keep away from pets if toxic."
+    },
+    "commonDiseases": [
+      {
+        "name": "Root Rot",
+        "symptoms": [
+          "Yellow leaves",
+          "Soft stems",
+          "Wilting"
+        ],
+        "cause": "Overwatering",
+        "treatment": [
+          "Reduce watering",
+          "Repot into fresh soil",
+          "Trim damaged roots"
+        ],
+        "imageFileId": null
+      },
+      {
+        "name": "Spider Mites",
+        "symptoms": [
+          "Tiny webs",
+          "Spotted leaves"
+        ],
+        "cause": "Dry conditions",
+        "treatment": [
+          "Increase humidity",
+          "Treat with insecticidal soap"
+        ],
+        "imageFileId": null
+      }
+    ],
+    "additionalCareNotes": [
+      "Rotate the plant every few weeks for even growth."
+    ],
+    "createdAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    },
+    "updatedAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    }
+  },
+  {
+    "commonName": "Peace Lily",
+    "scientificName": "Spathiphyllum wallisii",
+    "aliases": [],
+    "description": "Peace Lily is a popular indoor houseplant.",
+    "defaultImageFileId": null,
+    "sunlight": {
+      "level": "bright-indirect",
+      "instructions": "Provide the recommended amount of light and avoid sudden lighting changes."
+    },
+    "watering": {
+      "intervalDays": 7,
+      "instructions": "Water when the top layer of soil becomes dry.",
+      "warningSigns": [
+        "Yellow leaves",
+        "Drooping leaves",
+        "Soft stems"
+      ]
+    },
+    "humidity": {
+      "level": "high",
+      "instructions": "Maintain the recommended humidity level."
+    },
+    "temperature": {
+      "minimum": 65,
+      "maximum": 85,
+      "unit": "F"
+    },
+    "soil": "Well-draining indoor potting mix.",
+    "fertilizing": {
+      "intervalDays": 30,
+      "instructions": "Fertilize monthly during spring and summer."
+    },
+    "toxicity": {
+      "toxicToPets": true,
+      "notes": "Keep away from pets if toxic."
+    },
+    "commonDiseases": [
+      {
+        "name": "Root Rot",
+        "symptoms": [
+          "Yellow leaves",
+          "Soft stems",
+          "Wilting"
+        ],
+        "cause": "Overwatering",
+        "treatment": [
+          "Reduce watering",
+          "Repot into fresh soil",
+          "Trim damaged roots"
+        ],
+        "imageFileId": null
+      },
+      {
+        "name": "Spider Mites",
+        "symptoms": [
+          "Tiny webs",
+          "Spotted leaves"
+        ],
+        "cause": "Dry conditions",
+        "treatment": [
+          "Increase humidity",
+          "Treat with insecticidal soap"
+        ],
+        "imageFileId": null
+      }
+    ],
+    "additionalCareNotes": [
+      "Rotate the plant every few weeks for even growth."
+    ],
+    "createdAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    },
+    "updatedAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    }
+  },
+  {
+    "commonName": "Aloe Vera",
+    "scientificName": "Aloe barbadensis miller",
+    "aliases": [],
+    "description": "Aloe Vera is a popular indoor houseplant.",
+    "defaultImageFileId": null,
+    "sunlight": {
+      "level": "full-sun",
+      "instructions": "Provide the recommended amount of light and avoid sudden lighting changes."
+    },
+    "watering": {
+      "intervalDays": 21,
+      "instructions": "Water when the top layer of soil becomes dry.",
+      "warningSigns": [
+        "Yellow leaves",
+        "Drooping leaves",
+        "Soft stems"
+      ]
+    },
+    "humidity": {
+      "level": "low",
+      "instructions": "Maintain the recommended humidity level."
+    },
+    "temperature": {
+      "minimum": 60,
+      "maximum": 90,
+      "unit": "F"
+    },
+    "soil": "Well-draining indoor potting mix.",
+    "fertilizing": {
+      "intervalDays": 30,
+      "instructions": "Fertilize monthly during spring and summer."
+    },
+    "toxicity": {
+      "toxicToPets": true,
+      "notes": "Keep away from pets if toxic."
+    },
+    "commonDiseases": [
+      {
+        "name": "Root Rot",
+        "symptoms": [
+          "Yellow leaves",
+          "Soft stems",
+          "Wilting"
+        ],
+        "cause": "Overwatering",
+        "treatment": [
+          "Reduce watering",
+          "Repot into fresh soil",
+          "Trim damaged roots"
+        ],
+        "imageFileId": null
+      },
+      {
+        "name": "Spider Mites",
+        "symptoms": [
+          "Tiny webs",
+          "Spotted leaves"
+        ],
+        "cause": "Dry conditions",
+        "treatment": [
+          "Increase humidity",
+          "Treat with insecticidal soap"
+        ],
+        "imageFileId": null
+      }
+    ],
+    "additionalCareNotes": [
+      "Rotate the plant every few weeks for even growth."
+    ],
+    "createdAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    },
+    "updatedAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    }
+  },
+  {
+    "commonName": "Jade Plant",
+    "scientificName": "Crassula ovata",
+    "aliases": [],
+    "description": "Jade Plant is a popular indoor houseplant.",
+    "defaultImageFileId": null,
+    "sunlight": {
+      "level": "full-sun",
+      "instructions": "Provide the recommended amount of light and avoid sudden lighting changes."
+    },
+    "watering": {
+      "intervalDays": 14,
+      "instructions": "Water when the top layer of soil becomes dry.",
+      "warningSigns": [
+        "Yellow leaves",
+        "Drooping leaves",
+        "Soft stems"
+      ]
+    },
+    "humidity": {
+      "level": "low",
+      "instructions": "Maintain the recommended humidity level."
+    },
+    "temperature": {
+      "minimum": 60,
+      "maximum": 80,
+      "unit": "F"
+    },
+    "soil": "Well-draining indoor potting mix.",
+    "fertilizing": {
+      "intervalDays": 30,
+      "instructions": "Fertilize monthly during spring and summer."
+    },
+    "toxicity": {
+      "toxicToPets": true,
+      "notes": "Keep away from pets if toxic."
+    },
+    "commonDiseases": [
+      {
+        "name": "Root Rot",
+        "symptoms": [
+          "Yellow leaves",
+          "Soft stems",
+          "Wilting"
+        ],
+        "cause": "Overwatering",
+        "treatment": [
+          "Reduce watering",
+          "Repot into fresh soil",
+          "Trim damaged roots"
+        ],
+        "imageFileId": null
+      },
+      {
+        "name": "Spider Mites",
+        "symptoms": [
+          "Tiny webs",
+          "Spotted leaves"
+        ],
+        "cause": "Dry conditions",
+        "treatment": [
+          "Increase humidity",
+          "Treat with insecticidal soap"
+        ],
+        "imageFileId": null
+      }
+    ],
+    "additionalCareNotes": [
+      "Rotate the plant every few weeks for even growth."
+    ],
+    "createdAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    },
+    "updatedAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    }
+  },
+  {
+    "commonName": "Rubber Plant",
+    "scientificName": "Ficus elastica",
+    "aliases": [],
+    "description": "Rubber Plant is a popular indoor houseplant.",
+    "defaultImageFileId": null,
+    "sunlight": {
+      "level": "bright-indirect",
+      "instructions": "Provide the recommended amount of light and avoid sudden lighting changes."
+    },
+    "watering": {
+      "intervalDays": 7,
+      "instructions": "Water when the top layer of soil becomes dry.",
+      "warningSigns": [
+        "Yellow leaves",
+        "Drooping leaves",
+        "Soft stems"
+      ]
+    },
+    "humidity": {
+      "level": "average",
+      "instructions": "Maintain the recommended humidity level."
+    },
+    "temperature": {
+      "minimum": 60,
+      "maximum": 85,
+      "unit": "F"
+    },
+    "soil": "Well-draining indoor potting mix.",
+    "fertilizing": {
+      "intervalDays": 30,
+      "instructions": "Fertilize monthly during spring and summer."
+    },
+    "toxicity": {
+      "toxicToPets": true,
+      "notes": "Keep away from pets if toxic."
+    },
+    "commonDiseases": [
+      {
+        "name": "Root Rot",
+        "symptoms": [
+          "Yellow leaves",
+          "Soft stems",
+          "Wilting"
+        ],
+        "cause": "Overwatering",
+        "treatment": [
+          "Reduce watering",
+          "Repot into fresh soil",
+          "Trim damaged roots"
+        ],
+        "imageFileId": null
+      },
+      {
+        "name": "Spider Mites",
+        "symptoms": [
+          "Tiny webs",
+          "Spotted leaves"
+        ],
+        "cause": "Dry conditions",
+        "treatment": [
+          "Increase humidity",
+          "Treat with insecticidal soap"
+        ],
+        "imageFileId": null
+      }
+    ],
+    "additionalCareNotes": [
+      "Rotate the plant every few weeks for even growth."
+    ],
+    "createdAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    },
+    "updatedAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    }
+  },
+  {
+    "commonName": "Chinese Evergreen",
+    "scientificName": "Aglaonema commutatum",
+    "aliases": [],
+    "description": "Chinese Evergreen is a popular indoor houseplant.",
+    "defaultImageFileId": null,
+    "sunlight": {
+      "level": "low",
+      "instructions": "Provide the recommended amount of light and avoid sudden lighting changes."
+    },
+    "watering": {
+      "intervalDays": 7,
+      "instructions": "Water when the top layer of soil becomes dry.",
+      "warningSigns": [
+        "Yellow leaves",
+        "Drooping leaves",
+        "Soft stems"
+      ]
+    },
+    "humidity": {
+      "level": "average",
+      "instructions": "Maintain the recommended humidity level."
+    },
+    "temperature": {
+      "minimum": 65,
+      "maximum": 85,
+      "unit": "F"
+    },
+    "soil": "Well-draining indoor potting mix.",
+    "fertilizing": {
+      "intervalDays": 30,
+      "instructions": "Fertilize monthly during spring and summer."
+    },
+    "toxicity": {
+      "toxicToPets": true,
+      "notes": "Keep away from pets if toxic."
+    },
+    "commonDiseases": [
+      {
+        "name": "Root Rot",
+        "symptoms": [
+          "Yellow leaves",
+          "Soft stems",
+          "Wilting"
+        ],
+        "cause": "Overwatering",
+        "treatment": [
+          "Reduce watering",
+          "Repot into fresh soil",
+          "Trim damaged roots"
+        ],
+        "imageFileId": null
+      },
+      {
+        "name": "Spider Mites",
+        "symptoms": [
+          "Tiny webs",
+          "Spotted leaves"
+        ],
+        "cause": "Dry conditions",
+        "treatment": [
+          "Increase humidity",
+          "Treat with insecticidal soap"
+        ],
+        "imageFileId": null
+      }
+    ],
+    "additionalCareNotes": [
+      "Rotate the plant every few weeks for even growth."
+    ],
+    "createdAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    },
+    "updatedAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    }
+  },
+  {
+    "commonName": "Heartleaf Philodendron",
+    "scientificName": "Philodendron hederaceum",
+    "aliases": [],
+    "description": "Heartleaf Philodendron is a popular indoor houseplant.",
+    "defaultImageFileId": null,
+    "sunlight": {
+      "level": "bright-indirect",
+      "instructions": "Provide the recommended amount of light and avoid sudden lighting changes."
+    },
+    "watering": {
+      "intervalDays": 7,
+      "instructions": "Water when the top layer of soil becomes dry.",
+      "warningSigns": [
+        "Yellow leaves",
+        "Drooping leaves",
+        "Soft stems"
+      ]
+    },
+    "humidity": {
+      "level": "average",
+      "instructions": "Maintain the recommended humidity level."
+    },
+    "temperature": {
+      "minimum": 65,
+      "maximum": 85,
+      "unit": "F"
+    },
+    "soil": "Well-draining indoor potting mix.",
+    "fertilizing": {
+      "intervalDays": 30,
+      "instructions": "Fertilize monthly during spring and summer."
+    },
+    "toxicity": {
+      "toxicToPets": true,
+      "notes": "Keep away from pets if toxic."
+    },
+    "commonDiseases": [
+      {
+        "name": "Root Rot",
+        "symptoms": [
+          "Yellow leaves",
+          "Soft stems",
+          "Wilting"
+        ],
+        "cause": "Overwatering",
+        "treatment": [
+          "Reduce watering",
+          "Repot into fresh soil",
+          "Trim damaged roots"
+        ],
+        "imageFileId": null
+      },
+      {
+        "name": "Spider Mites",
+        "symptoms": [
+          "Tiny webs",
+          "Spotted leaves"
+        ],
+        "cause": "Dry conditions",
+        "treatment": [
+          "Increase humidity",
+          "Treat with insecticidal soap"
+        ],
+        "imageFileId": null
+      }
+    ],
+    "additionalCareNotes": [
+      "Rotate the plant every few weeks for even growth."
+    ],
+    "createdAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    },
+    "updatedAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    }
+  },
+  {
+    "commonName": "Fiddle Leaf Fig",
+    "scientificName": "Ficus lyrata",
+    "aliases": [],
+    "description": "Fiddle Leaf Fig is a popular indoor houseplant.",
+    "defaultImageFileId": null,
+    "sunlight": {
+      "level": "bright-indirect",
+      "instructions": "Provide the recommended amount of light and avoid sudden lighting changes."
+    },
+    "watering": {
+      "intervalDays": 7,
+      "instructions": "Water when the top layer of soil becomes dry.",
+      "warningSigns": [
+        "Yellow leaves",
+        "Drooping leaves",
+        "Soft stems"
+      ]
+    },
+    "humidity": {
+      "level": "average",
+      "instructions": "Maintain the recommended humidity level."
+    },
+    "temperature": {
+      "minimum": 60,
+      "maximum": 85,
+      "unit": "F"
+    },
+    "soil": "Well-draining indoor potting mix.",
+    "fertilizing": {
+      "intervalDays": 30,
+      "instructions": "Fertilize monthly during spring and summer."
+    },
+    "toxicity": {
+      "toxicToPets": true,
+      "notes": "Keep away from pets if toxic."
+    },
+    "commonDiseases": [
+      {
+        "name": "Root Rot",
+        "symptoms": [
+          "Yellow leaves",
+          "Soft stems",
+          "Wilting"
+        ],
+        "cause": "Overwatering",
+        "treatment": [
+          "Reduce watering",
+          "Repot into fresh soil",
+          "Trim damaged roots"
+        ],
+        "imageFileId": null
+      },
+      {
+        "name": "Spider Mites",
+        "symptoms": [
+          "Tiny webs",
+          "Spotted leaves"
+        ],
+        "cause": "Dry conditions",
+        "treatment": [
+          "Increase humidity",
+          "Treat with insecticidal soap"
+        ],
+        "imageFileId": null
+      }
+    ],
+    "additionalCareNotes": [
+      "Rotate the plant every few weeks for even growth."
+    ],
+    "createdAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    },
+    "updatedAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    }
+  },
+  {
+    "commonName": "Bird of Paradise",
+    "scientificName": "Strelitzia reginae",
+    "aliases": [],
+    "description": "Bird of Paradise is a popular indoor houseplant.",
+    "defaultImageFileId": null,
+    "sunlight": {
+      "level": "full-sun",
+      "instructions": "Provide the recommended amount of light and avoid sudden lighting changes."
+    },
+    "watering": {
+      "intervalDays": 7,
+      "instructions": "Water when the top layer of soil becomes dry.",
+      "warningSigns": [
+        "Yellow leaves",
+        "Drooping leaves",
+        "Soft stems"
+      ]
+    },
+    "humidity": {
+      "level": "average",
+      "instructions": "Maintain the recommended humidity level."
+    },
+    "temperature": {
+      "minimum": 65,
+      "maximum": 85,
+      "unit": "F"
+    },
+    "soil": "Well-draining indoor potting mix.",
+    "fertilizing": {
+      "intervalDays": 30,
+      "instructions": "Fertilize monthly during spring and summer."
+    },
+    "toxicity": {
+      "toxicToPets": true,
+      "notes": "Keep away from pets if toxic."
+    },
+    "commonDiseases": [
+      {
+        "name": "Root Rot",
+        "symptoms": [
+          "Yellow leaves",
+          "Soft stems",
+          "Wilting"
+        ],
+        "cause": "Overwatering",
+        "treatment": [
+          "Reduce watering",
+          "Repot into fresh soil",
+          "Trim damaged roots"
+        ],
+        "imageFileId": null
+      },
+      {
+        "name": "Spider Mites",
+        "symptoms": [
+          "Tiny webs",
+          "Spotted leaves"
+        ],
+        "cause": "Dry conditions",
+        "treatment": [
+          "Increase humidity",
+          "Treat with insecticidal soap"
+        ],
+        "imageFileId": null
+      }
+    ],
+    "additionalCareNotes": [
+      "Rotate the plant every few weeks for even growth."
+    ],
+    "createdAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    },
+    "updatedAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    }
+  },
+  {
+    "commonName": "Boston Fern",
+    "scientificName": "Nephrolepis exaltata",
+    "aliases": [],
+    "description": "Boston Fern is a popular indoor houseplant.",
+    "defaultImageFileId": null,
+    "sunlight": {
+      "level": "bright-indirect",
+      "instructions": "Provide the recommended amount of light and avoid sudden lighting changes."
+    },
+    "watering": {
+      "intervalDays": 5,
+      "instructions": "Water when the top layer of soil becomes dry.",
+      "warningSigns": [
+        "Yellow leaves",
+        "Drooping leaves",
+        "Soft stems"
+      ]
+    },
+    "humidity": {
+      "level": "high",
+      "instructions": "Maintain the recommended humidity level."
+    },
+    "temperature": {
+      "minimum": 60,
+      "maximum": 80,
+      "unit": "F"
+    },
+    "soil": "Well-draining indoor potting mix.",
+    "fertilizing": {
+      "intervalDays": 30,
+      "instructions": "Fertilize monthly during spring and summer."
+    },
+    "toxicity": {
+      "toxicToPets": false,
+      "notes": "Keep away from pets if toxic."
+    },
+    "commonDiseases": [
+      {
+        "name": "Root Rot",
+        "symptoms": [
+          "Yellow leaves",
+          "Soft stems",
+          "Wilting"
+        ],
+        "cause": "Overwatering",
+        "treatment": [
+          "Reduce watering",
+          "Repot into fresh soil",
+          "Trim damaged roots"
+        ],
+        "imageFileId": null
+      },
+      {
+        "name": "Spider Mites",
+        "symptoms": [
+          "Tiny webs",
+          "Spotted leaves"
+        ],
+        "cause": "Dry conditions",
+        "treatment": [
+          "Increase humidity",
+          "Treat with insecticidal soap"
+        ],
+        "imageFileId": null
+      }
+    ],
+    "additionalCareNotes": [
+      "Rotate the plant every few weeks for even growth."
+    ],
+    "createdAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    },
+    "updatedAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    }
+  },
+  {
+    "commonName": "Areca Palm",
+    "scientificName": "Dypsis lutescens",
+    "aliases": [],
+    "description": "Areca Palm is a popular indoor houseplant.",
+    "defaultImageFileId": null,
+    "sunlight": {
+      "level": "bright-indirect",
+      "instructions": "Provide the recommended amount of light and avoid sudden lighting changes."
+    },
+    "watering": {
+      "intervalDays": 7,
+      "instructions": "Water when the top layer of soil becomes dry.",
+      "warningSigns": [
+        "Yellow leaves",
+        "Drooping leaves",
+        "Soft stems"
+      ]
+    },
+    "humidity": {
+      "level": "high",
+      "instructions": "Maintain the recommended humidity level."
+    },
+    "temperature": {
+      "minimum": 65,
+      "maximum": 80,
+      "unit": "F"
+    },
+    "soil": "Well-draining indoor potting mix.",
+    "fertilizing": {
+      "intervalDays": 30,
+      "instructions": "Fertilize monthly during spring and summer."
+    },
+    "toxicity": {
+      "toxicToPets": false,
+      "notes": "Keep away from pets if toxic."
+    },
+    "commonDiseases": [
+      {
+        "name": "Root Rot",
+        "symptoms": [
+          "Yellow leaves",
+          "Soft stems",
+          "Wilting"
+        ],
+        "cause": "Overwatering",
+        "treatment": [
+          "Reduce watering",
+          "Repot into fresh soil",
+          "Trim damaged roots"
+        ],
+        "imageFileId": null
+      },
+      {
+        "name": "Spider Mites",
+        "symptoms": [
+          "Tiny webs",
+          "Spotted leaves"
+        ],
+        "cause": "Dry conditions",
+        "treatment": [
+          "Increase humidity",
+          "Treat with insecticidal soap"
+        ],
+        "imageFileId": null
+      }
+    ],
+    "additionalCareNotes": [
+      "Rotate the plant every few weeks for even growth."
+    ],
+    "createdAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    },
+    "updatedAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    }
+  },
+  {
+    "commonName": "Parlor Palm",
+    "scientificName": "Chamaedorea elegans",
+    "aliases": [],
+    "description": "Parlor Palm is a popular indoor houseplant.",
+    "defaultImageFileId": null,
+    "sunlight": {
+      "level": "low",
+      "instructions": "Provide the recommended amount of light and avoid sudden lighting changes."
+    },
+    "watering": {
+      "intervalDays": 10,
+      "instructions": "Water when the top layer of soil becomes dry.",
+      "warningSigns": [
+        "Yellow leaves",
+        "Drooping leaves",
+        "Soft stems"
+      ]
+    },
+    "humidity": {
+      "level": "average",
+      "instructions": "Maintain the recommended humidity level."
+    },
+    "temperature": {
+      "minimum": 65,
+      "maximum": 80,
+      "unit": "F"
+    },
+    "soil": "Well-draining indoor potting mix.",
+    "fertilizing": {
+      "intervalDays": 30,
+      "instructions": "Fertilize monthly during spring and summer."
+    },
+    "toxicity": {
+      "toxicToPets": false,
+      "notes": "Keep away from pets if toxic."
+    },
+    "commonDiseases": [
+      {
+        "name": "Root Rot",
+        "symptoms": [
+          "Yellow leaves",
+          "Soft stems",
+          "Wilting"
+        ],
+        "cause": "Overwatering",
+        "treatment": [
+          "Reduce watering",
+          "Repot into fresh soil",
+          "Trim damaged roots"
+        ],
+        "imageFileId": null
+      },
+      {
+        "name": "Spider Mites",
+        "symptoms": [
+          "Tiny webs",
+          "Spotted leaves"
+        ],
+        "cause": "Dry conditions",
+        "treatment": [
+          "Increase humidity",
+          "Treat with insecticidal soap"
+        ],
+        "imageFileId": null
+      }
+    ],
+    "additionalCareNotes": [
+      "Rotate the plant every few weeks for even growth."
+    ],
+    "createdAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    },
+    "updatedAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    }
+  },
+  {
+    "commonName": "Calathea",
+    "scientificName": "Calathea orbifolia",
+    "aliases": [],
+    "description": "Calathea is a popular indoor houseplant.",
+    "defaultImageFileId": null,
+    "sunlight": {
+      "level": "bright-indirect",
+      "instructions": "Provide the recommended amount of light and avoid sudden lighting changes."
+    },
+    "watering": {
+      "intervalDays": 7,
+      "instructions": "Water when the top layer of soil becomes dry.",
+      "warningSigns": [
+        "Yellow leaves",
+        "Drooping leaves",
+        "Soft stems"
+      ]
+    },
+    "humidity": {
+      "level": "high",
+      "instructions": "Maintain the recommended humidity level."
+    },
+    "temperature": {
+      "minimum": 65,
+      "maximum": 80,
+      "unit": "F"
+    },
+    "soil": "Well-draining indoor potting mix.",
+    "fertilizing": {
+      "intervalDays": 30,
+      "instructions": "Fertilize monthly during spring and summer."
+    },
+    "toxicity": {
+      "toxicToPets": false,
+      "notes": "Keep away from pets if toxic."
+    },
+    "commonDiseases": [
+      {
+        "name": "Root Rot",
+        "symptoms": [
+          "Yellow leaves",
+          "Soft stems",
+          "Wilting"
+        ],
+        "cause": "Overwatering",
+        "treatment": [
+          "Reduce watering",
+          "Repot into fresh soil",
+          "Trim damaged roots"
+        ],
+        "imageFileId": null
+      },
+      {
+        "name": "Spider Mites",
+        "symptoms": [
+          "Tiny webs",
+          "Spotted leaves"
+        ],
+        "cause": "Dry conditions",
+        "treatment": [
+          "Increase humidity",
+          "Treat with insecticidal soap"
+        ],
+        "imageFileId": null
+      }
+    ],
+    "additionalCareNotes": [
+      "Rotate the plant every few weeks for even growth."
+    ],
+    "createdAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    },
+    "updatedAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    }
+  },
+  {
+    "commonName": "Prayer Plant",
+    "scientificName": "Maranta leuconeura",
+    "aliases": [],
+    "description": "Prayer Plant is a popular indoor houseplant.",
+    "defaultImageFileId": null,
+    "sunlight": {
+      "level": "bright-indirect",
+      "instructions": "Provide the recommended amount of light and avoid sudden lighting changes."
+    },
+    "watering": {
+      "intervalDays": 7,
+      "instructions": "Water when the top layer of soil becomes dry.",
+      "warningSigns": [
+        "Yellow leaves",
+        "Drooping leaves",
+        "Soft stems"
+      ]
+    },
+    "humidity": {
+      "level": "high",
+      "instructions": "Maintain the recommended humidity level."
+    },
+    "temperature": {
+      "minimum": 65,
+      "maximum": 80,
+      "unit": "F"
+    },
+    "soil": "Well-draining indoor potting mix.",
+    "fertilizing": {
+      "intervalDays": 30,
+      "instructions": "Fertilize monthly during spring and summer."
+    },
+    "toxicity": {
+      "toxicToPets": false,
+      "notes": "Keep away from pets if toxic."
+    },
+    "commonDiseases": [
+      {
+        "name": "Root Rot",
+        "symptoms": [
+          "Yellow leaves",
+          "Soft stems",
+          "Wilting"
+        ],
+        "cause": "Overwatering",
+        "treatment": [
+          "Reduce watering",
+          "Repot into fresh soil",
+          "Trim damaged roots"
+        ],
+        "imageFileId": null
+      },
+      {
+        "name": "Spider Mites",
+        "symptoms": [
+          "Tiny webs",
+          "Spotted leaves"
+        ],
+        "cause": "Dry conditions",
+        "treatment": [
+          "Increase humidity",
+          "Treat with insecticidal soap"
+        ],
+        "imageFileId": null
+      }
+    ],
+    "additionalCareNotes": [
+      "Rotate the plant every few weeks for even growth."
+    ],
+    "createdAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    },
+    "updatedAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    }
+  },
+  {
+    "commonName": "English Ivy",
+    "scientificName": "Hedera helix",
+    "aliases": [],
+    "description": "English Ivy is a popular indoor houseplant.",
+    "defaultImageFileId": null,
+    "sunlight": {
+      "level": "partial-sun",
+      "instructions": "Provide the recommended amount of light and avoid sudden lighting changes."
+    },
+    "watering": {
+      "intervalDays": 7,
+      "instructions": "Water when the top layer of soil becomes dry.",
+      "warningSigns": [
+        "Yellow leaves",
+        "Drooping leaves",
+        "Soft stems"
+      ]
+    },
+    "humidity": {
+      "level": "average",
+      "instructions": "Maintain the recommended humidity level."
+    },
+    "temperature": {
+      "minimum": 55,
+      "maximum": 75,
+      "unit": "F"
+    },
+    "soil": "Well-draining indoor potting mix.",
+    "fertilizing": {
+      "intervalDays": 30,
+      "instructions": "Fertilize monthly during spring and summer."
+    },
+    "toxicity": {
+      "toxicToPets": true,
+      "notes": "Keep away from pets if toxic."
+    },
+    "commonDiseases": [
+      {
+        "name": "Root Rot",
+        "symptoms": [
+          "Yellow leaves",
+          "Soft stems",
+          "Wilting"
+        ],
+        "cause": "Overwatering",
+        "treatment": [
+          "Reduce watering",
+          "Repot into fresh soil",
+          "Trim damaged roots"
+        ],
+        "imageFileId": null
+      },
+      {
+        "name": "Spider Mites",
+        "symptoms": [
+          "Tiny webs",
+          "Spotted leaves"
+        ],
+        "cause": "Dry conditions",
+        "treatment": [
+          "Increase humidity",
+          "Treat with insecticidal soap"
+        ],
+        "imageFileId": null
+      }
+    ],
+    "additionalCareNotes": [
+      "Rotate the plant every few weeks for even growth."
+    ],
+    "createdAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    },
+    "updatedAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    }
+  },
+  {
+    "commonName": "Orchid",
+    "scientificName": "Phalaenopsis amabilis",
+    "aliases": [],
+    "description": "Orchid is a popular indoor houseplant.",
+    "defaultImageFileId": null,
+    "sunlight": {
+      "level": "bright-indirect",
+      "instructions": "Provide the recommended amount of light and avoid sudden lighting changes."
+    },
+    "watering": {
+      "intervalDays": 7,
+      "instructions": "Water when the top layer of soil becomes dry.",
+      "warningSigns": [
+        "Yellow leaves",
+        "Drooping leaves",
+        "Soft stems"
+      ]
+    },
+    "humidity": {
+      "level": "high",
+      "instructions": "Maintain the recommended humidity level."
+    },
+    "temperature": {
+      "minimum": 65,
+      "maximum": 85,
+      "unit": "F"
+    },
+    "soil": "Well-draining indoor potting mix.",
+    "fertilizing": {
+      "intervalDays": 30,
+      "instructions": "Fertilize monthly during spring and summer."
+    },
+    "toxicity": {
+      "toxicToPets": true,
+      "notes": "Keep away from pets if toxic."
+    },
+    "commonDiseases": [
+      {
+        "name": "Root Rot",
+        "symptoms": [
+          "Yellow leaves",
+          "Soft stems",
+          "Wilting"
+        ],
+        "cause": "Overwatering",
+        "treatment": [
+          "Reduce watering",
+          "Repot into fresh soil",
+          "Trim damaged roots"
+        ],
+        "imageFileId": null
+      },
+      {
+        "name": "Spider Mites",
+        "symptoms": [
+          "Tiny webs",
+          "Spotted leaves"
+        ],
+        "cause": "Dry conditions",
+        "treatment": [
+          "Increase humidity",
+          "Treat with insecticidal soap"
+        ],
+        "imageFileId": null
+      }
+    ],
+    "additionalCareNotes": [
+      "Rotate the plant every few weeks for even growth."
+    ],
+    "createdAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    },
+    "updatedAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    }
+  },
+  {
+    "commonName": "Christmas Cactus",
+    "scientificName": "Schlumbergera truncata",
+    "aliases": [],
+    "description": "Christmas Cactus is a popular indoor houseplant.",
+    "defaultImageFileId": null,
+    "sunlight": {
+      "level": "bright-indirect",
+      "instructions": "Provide the recommended amount of light and avoid sudden lighting changes."
+    },
+    "watering": {
+      "intervalDays": 14,
+      "instructions": "Water when the top layer of soil becomes dry.",
+      "warningSigns": [
+        "Yellow leaves",
+        "Drooping leaves",
+        "Soft stems"
+      ]
+    },
+    "humidity": {
+      "level": "average",
+      "instructions": "Maintain the recommended humidity level."
+    },
+    "temperature": {
+      "minimum": 60,
+      "maximum": 80,
+      "unit": "F"
+    },
+    "soil": "Well-draining indoor potting mix.",
+    "fertilizing": {
+      "intervalDays": 30,
+      "instructions": "Fertilize monthly during spring and summer."
+    },
+    "toxicity": {
+      "toxicToPets": false,
+      "notes": "Keep away from pets if toxic."
+    },
+    "commonDiseases": [
+      {
+        "name": "Root Rot",
+        "symptoms": [
+          "Yellow leaves",
+          "Soft stems",
+          "Wilting"
+        ],
+        "cause": "Overwatering",
+        "treatment": [
+          "Reduce watering",
+          "Repot into fresh soil",
+          "Trim damaged roots"
+        ],
+        "imageFileId": null
+      },
+      {
+        "name": "Spider Mites",
+        "symptoms": [
+          "Tiny webs",
+          "Spotted leaves"
+        ],
+        "cause": "Dry conditions",
+        "treatment": [
+          "Increase humidity",
+          "Treat with insecticidal soap"
+        ],
+        "imageFileId": null
+      }
+    ],
+    "additionalCareNotes": [
+      "Rotate the plant every few weeks for even growth."
+    ],
+    "createdAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    },
+    "updatedAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    }
+  },
+  {
+    "commonName": "Ponytail Palm",
+    "scientificName": "Beaucarnea recurvata",
+    "aliases": [],
+    "description": "Ponytail Palm is a popular indoor houseplant.",
+    "defaultImageFileId": null,
+    "sunlight": {
+      "level": "full-sun",
+      "instructions": "Provide the recommended amount of light and avoid sudden lighting changes."
+    },
+    "watering": {
+      "intervalDays": 21,
+      "instructions": "Water when the top layer of soil becomes dry.",
+      "warningSigns": [
+        "Yellow leaves",
+        "Drooping leaves",
+        "Soft stems"
+      ]
+    },
+    "humidity": {
+      "level": "low",
+      "instructions": "Maintain the recommended humidity level."
+    },
+    "temperature": {
+      "minimum": 60,
+      "maximum": 90,
+      "unit": "F"
+    },
+    "soil": "Well-draining indoor potting mix.",
+    "fertilizing": {
+      "intervalDays": 30,
+      "instructions": "Fertilize monthly during spring and summer."
+    },
+    "toxicity": {
+      "toxicToPets": false,
+      "notes": "Keep away from pets if toxic."
+    },
+    "commonDiseases": [
+      {
+        "name": "Root Rot",
+        "symptoms": [
+          "Yellow leaves",
+          "Soft stems",
+          "Wilting"
+        ],
+        "cause": "Overwatering",
+        "treatment": [
+          "Reduce watering",
+          "Repot into fresh soil",
+          "Trim damaged roots"
+        ],
+        "imageFileId": null
+      },
+      {
+        "name": "Spider Mites",
+        "symptoms": [
+          "Tiny webs",
+          "Spotted leaves"
+        ],
+        "cause": "Dry conditions",
+        "treatment": [
+          "Increase humidity",
+          "Treat with insecticidal soap"
+        ],
+        "imageFileId": null
+      }
+    ],
+    "additionalCareNotes": [
+      "Rotate the plant every few weeks for even growth."
+    ],
+    "createdAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    },
+    "updatedAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    }
+  },
+  {
+    "commonName": "Lucky Bamboo",
+    "scientificName": "Dracaena sanderiana",
+    "aliases": [],
+    "description": "Lucky Bamboo is a popular indoor houseplant.",
+    "defaultImageFileId": null,
+    "sunlight": {
+      "level": "low",
+      "instructions": "Provide the recommended amount of light and avoid sudden lighting changes."
+    },
+    "watering": {
+      "intervalDays": 10,
+      "instructions": "Water when the top layer of soil becomes dry.",
+      "warningSigns": [
+        "Yellow leaves",
+        "Drooping leaves",
+        "Soft stems"
+      ]
+    },
+    "humidity": {
+      "level": "high",
+      "instructions": "Maintain the recommended humidity level."
+    },
+    "temperature": {
+      "minimum": 65,
+      "maximum": 90,
+      "unit": "F"
+    },
+    "soil": "Well-draining indoor potting mix.",
+    "fertilizing": {
+      "intervalDays": 30,
+      "instructions": "Fertilize monthly during spring and summer."
+    },
+    "toxicity": {
+      "toxicToPets": true,
+      "notes": "Keep away from pets if toxic."
+    },
+    "commonDiseases": [
+      {
+        "name": "Root Rot",
+        "symptoms": [
+          "Yellow leaves",
+          "Soft stems",
+          "Wilting"
+        ],
+        "cause": "Overwatering",
+        "treatment": [
+          "Reduce watering",
+          "Repot into fresh soil",
+          "Trim damaged roots"
+        ],
+        "imageFileId": null
+      },
+      {
+        "name": "Spider Mites",
+        "symptoms": [
+          "Tiny webs",
+          "Spotted leaves"
+        ],
+        "cause": "Dry conditions",
+        "treatment": [
+          "Increase humidity",
+          "Treat with insecticidal soap"
+        ],
+        "imageFileId": null
+      }
+    ],
+    "additionalCareNotes": [
+      "Rotate the plant every few weeks for even growth."
+    ],
+    "createdAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    },
+    "updatedAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    }
+  },
+  {
+    "commonName": "Croton",
+    "scientificName": "Codiaeum variegatum",
+    "aliases": [],
+    "description": "Croton is a popular indoor houseplant.",
+    "defaultImageFileId": null,
+    "sunlight": {
+      "level": "full-sun",
+      "instructions": "Provide the recommended amount of light and avoid sudden lighting changes."
+    },
+    "watering": {
+      "intervalDays": 7,
+      "instructions": "Water when the top layer of soil becomes dry.",
+      "warningSigns": [
+        "Yellow leaves",
+        "Drooping leaves",
+        "Soft stems"
+      ]
+    },
+    "humidity": {
+      "level": "average",
+      "instructions": "Maintain the recommended humidity level."
+    },
+    "temperature": {
+      "minimum": 60,
+      "maximum": 85,
+      "unit": "F"
+    },
+    "soil": "Well-draining indoor potting mix.",
+    "fertilizing": {
+      "intervalDays": 30,
+      "instructions": "Fertilize monthly during spring and summer."
+    },
+    "toxicity": {
+      "toxicToPets": true,
+      "notes": "Keep away from pets if toxic."
+    },
+    "commonDiseases": [
+      {
+        "name": "Root Rot",
+        "symptoms": [
+          "Yellow leaves",
+          "Soft stems",
+          "Wilting"
+        ],
+        "cause": "Overwatering",
+        "treatment": [
+          "Reduce watering",
+          "Repot into fresh soil",
+          "Trim damaged roots"
+        ],
+        "imageFileId": null
+      },
+      {
+        "name": "Spider Mites",
+        "symptoms": [
+          "Tiny webs",
+          "Spotted leaves"
+        ],
+        "cause": "Dry conditions",
+        "treatment": [
+          "Increase humidity",
+          "Treat with insecticidal soap"
+        ],
+        "imageFileId": null
+      }
+    ],
+    "additionalCareNotes": [
+      "Rotate the plant every few weeks for even growth."
+    ],
+    "createdAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    },
+    "updatedAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    }
+  },
+  {
+    "commonName": "String of Pearls",
+    "scientificName": "Curio rowleyanus",
+    "aliases": [],
+    "description": "String of Pearls is a popular indoor houseplant.",
+    "defaultImageFileId": null,
+    "sunlight": {
+      "level": "full-sun",
+      "instructions": "Provide the recommended amount of light and avoid sudden lighting changes."
+    },
+    "watering": {
+      "intervalDays": 14,
+      "instructions": "Water when the top layer of soil becomes dry.",
+      "warningSigns": [
+        "Yellow leaves",
+        "Drooping leaves",
+        "Soft stems"
+      ]
+    },
+    "humidity": {
+      "level": "low",
+      "instructions": "Maintain the recommended humidity level."
+    },
+    "temperature": {
+      "minimum": 65,
+      "maximum": 85,
+      "unit": "F"
+    },
+    "soil": "Well-draining indoor potting mix.",
+    "fertilizing": {
+      "intervalDays": 30,
+      "instructions": "Fertilize monthly during spring and summer."
+    },
+    "toxicity": {
+      "toxicToPets": true,
+      "notes": "Keep away from pets if toxic."
+    },
+    "commonDiseases": [
+      {
+        "name": "Root Rot",
+        "symptoms": [
+          "Yellow leaves",
+          "Soft stems",
+          "Wilting"
+        ],
+        "cause": "Overwatering",
+        "treatment": [
+          "Reduce watering",
+          "Repot into fresh soil",
+          "Trim damaged roots"
+        ],
+        "imageFileId": null
+      },
+      {
+        "name": "Spider Mites",
+        "symptoms": [
+          "Tiny webs",
+          "Spotted leaves"
+        ],
+        "cause": "Dry conditions",
+        "treatment": [
+          "Increase humidity",
+          "Treat with insecticidal soap"
+        ],
+        "imageFileId": null
+      }
+    ],
+    "additionalCareNotes": [
+      "Rotate the plant every few weeks for even growth."
+    ],
+    "createdAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    },
+    "updatedAt": {
+      "$date": "2026-07-27T00:00:00Z"
+    }
+  }
+]
