@@ -17,49 +17,44 @@ const {
 
 const router = express.Router();
 
-/*
- * Verifies the Bearer token and
- * sets req.userId for every route.
- */
 router.use(authenticateToken);
 
 router.get(
   "/",
-  getAllPlants
+  getAllPlants,
 );
 
 router.get(
   "/:id",
-  getPlantById
+  getPlantById,
 );
 
 router.post(
   "/",
-  createPlant
+  createPlant,
+);
+
+router.patch(
+  "/:id/water",
+  waterPlant,
 );
 
 /*
- * Supports the newer PATCH request
- * and the older POST request.
+ * Keeps older POST watering calls working.
  */
-router.patch(
-  "/:id/water",
-  waterPlant
-);
-
 router.post(
   "/:id/water",
-  waterPlant
+  waterPlant,
 );
 
 router.patch(
   "/:id",
-  updatePlant
+  updatePlant,
 );
 
 router.delete(
   "/:id",
-  deletePlant
+  deletePlant,
 );
 
 module.exports = router;
