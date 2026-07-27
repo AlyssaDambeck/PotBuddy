@@ -63,7 +63,7 @@ async function getPlantById(req, res) {
 // POST /api/plants
 async function createPlant(req, res) {
     try {
-        const ownerId = req.user._id;      // or req.user.id
+        const ownerId = req.userid;      // or req.user.id
         const {
             speciesId,
             nickname,
