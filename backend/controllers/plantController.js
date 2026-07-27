@@ -1,15 +1,13 @@
 const { ObjectId } = require("mongodb");
 const { client } = require("../config/db");
 
-function getPlantsCollection() {
-  return client.db().collection("userPlants");
-}
+const plantsCollection = () =>
+  client.db().collection("userPlants");
 
-function getSpeciesCollection() {
-  return client.db().collection("plantSpecies");
-}
+const speciesCollection = () =>
+  client.db().collection("plantSpecies");
 
-const allowedHealthStatuses = new Set([
+const HEALTH_STATUSES = new Set([
   "healthy",
   "needs-attention",
   "sick",
@@ -18,7 +16,7 @@ const allowedHealthStatuses = new Set([
   "dead",
 ]);
 
-const legacyHealthStatuses = {
+const LEGACY_HEALTH_STATUSES = {
   Healthy: "healthy",
   "Needs attention": "needs-attention",
   "Needs Attention": "needs-attention",
@@ -63,18 +61,54 @@ function getPlantId(req, res) {
   return new ObjectId(req.params.id);
 }
 
-function normalizeHealthStatus(value) {
+/*
+ * Supports both:
+ *
+ * ownerId: ObjectId("...")
+ * ownerId: "..."
+ *
+ * New records are always saved as ObjectId values.
+ */
+function ownerMatch(ownerId) {
+  return {
+    $or: [
+      {
+        ownerId,
+      },
+      {
+        ownerId: ownerId.toString(),
+      },
+    ],
+  };
+}
+
+function ownedPlantMatch(
+  ownerId,
+  plantId,
+) {
+  return {
+    _id: plantId,
+    ...ownerMatch(ownerId),
+  };
+}
+
+function normalizeHealthStatus(
+  value = "healthy",
+) {
   if (typeof value !== "string") {
     return null;
   }
 
-  const trimmedValue = value.trim();
+  const normalized = value.trim();
 
-  if (allowedHealthStatuses.has(trimmedValue)) {
-    return trimmedValue;
+  if (HEALTH_STATUSES.has(normalized)) {
+    return normalized;
   }
 
-  return legacyHealthStatuses[trimmedValue] || null;
+  return (
+    LEGACY_HEALTH_STATUSES[normalized] ||
+    null
+  );
 }
 
 function parseOptionalDate(value) {
@@ -88,18 +122,19 @@ function parseOptionalDate(value) {
 
   const date = new Date(value);
 
-  if (Number.isNaN(date.getTime())) {
-    return undefined;
-  }
-
-  return date;
+  return Number.isNaN(date.getTime())
+    ? undefined
+    : date;
 }
 
-function addDays(date, days) {
+function addDays(
+  date,
+  numberOfDays,
+) {
   const result = new Date(date);
 
   result.setDate(
-    result.getDate() + days,
+    result.getDate() + numberOfDays,
   );
 
   return result;
@@ -116,50 +151,54 @@ function normalizeNotificationSettings(
       ? value
       : {};
 
-  const enabled =
-    source.enabled ??
-    defaults.enabled ??
-    false;
+  const settings = {
+    enabled:
+      source.enabled ??
+      defaults.enabled ??
+      false,
 
-  const reminderTime =
-    source.reminderTime ??
-    defaults.reminderTime ??
-    "09:00";
+    reminderTime:
+      source.reminderTime ??
+      defaults.reminderTime ??
+      "09:00",
 
-  const reminderDaysBefore =
-    source.reminderDaysBefore ??
-    defaults.reminderDaysBefore ??
-    0;
+    reminderDaysBefore:
+      source.reminderDaysBefore ??
+      defaults.reminderDaysBefore ??
+      0,
+  };
 
-  if (typeof enabled !== "boolean") {
+  if (
+    typeof settings.enabled !== "boolean"
+  ) {
     return null;
   }
 
   if (
-    typeof reminderTime !== "string" ||
+    typeof settings.reminderTime !==
+      "string" ||
     !/^([01]\d|2[0-3]):[0-5]\d$/.test(
-      reminderTime,
+      settings.reminderTime,
     )
   ) {
     return null;
   }
 
   if (
-    typeof reminderDaysBefore !== "number" ||
-    !Number.isFinite(reminderDaysBefore) ||
-    reminderDaysBefore < 0
+    typeof settings.reminderDaysBefore !==
+      "number" ||
+    !Number.isFinite(
+      settings.reminderDaysBefore,
+    ) ||
+    settings.reminderDaysBefore < 0
   ) {
     return null;
   }
 
-  return {
-    enabled,
-    reminderTime,
-    reminderDaysBefore,
-  };
+  return settings;
 }
 
-function plantLookupPipeline(match) {
+function populatedPlantPipeline(match) {
   return [
     {
       $match: match,
@@ -182,14 +221,12 @@ function plantLookupPipeline(match) {
 }
 
 /*
- * The frontend accepts speciesId as either:
- * - the original ObjectId/string
- * - a populated species object
- *
- * Returning the populated object here keeps the Dashboard,
- * Inventory, Journal, and Plant Detail pages compatible.
+ * The frontend supports both speciesId
+ * and species. Returning both keeps the
+ * Dashboard, Inventory, Journal, and
+ * Plant Detail pages compatible.
  */
-function shapePlant(plant) {
+function formatPlant(plant) {
   if (!plant) {
     return null;
   }
@@ -199,9 +236,11 @@ function shapePlant(plant) {
 
   return {
     ...plant,
+
     speciesId:
       populatedSpecies ||
       plant.speciesId,
+
     species: populatedSpecies,
   };
 }
@@ -210,55 +249,61 @@ async function findOwnedPlant(
   ownerId,
   plantId,
 ) {
-  const plantsCollection =
-    getPlantsCollection();
+  const [plant] =
+    await plantsCollection()
+      .aggregate(
+        populatedPlantPipeline(
+          ownedPlantMatch(
+            ownerId,
+            plantId,
+          ),
+        ),
+      )
+      .toArray();
 
-  const [plant] = await plantsCollection
-    .aggregate(
-      plantLookupPipeline({
-        _id: plantId,
-        ownerId,
-      }),
-    )
-    .toArray();
-
-  return shapePlant(plant);
+  return formatPlant(plant);
 }
 
 /*
  * GET /api/user-plants
- *
- * Returns only plants owned by the authenticated user.
- * An account with no plants receives plants: [] and status 200.
  */
 async function getAllPlants(req, res) {
   try {
-    const ownerId = getOwnerId(req, res);
+    const ownerId =
+      getOwnerId(req, res);
 
     if (!ownerId) {
       return;
     }
 
-    const plantsCollection =
-      getPlantsCollection();
-
-    const plants = await plantsCollection
-      .aggregate([
-        ...plantLookupPipeline({
-          ownerId,
-        }),
-        {
-          $sort: {
-            createdAt: -1,
+    const plants =
+      await plantsCollection()
+        .aggregate([
+          ...populatedPlantPipeline(
+            ownerMatch(ownerId),
+          ),
+          {
+            $sort: {
+              createdAt: -1,
+            },
           },
-        },
-      ])
-      .toArray();
+        ])
+        .toArray();
+
+    const formattedPlants =
+      plants.map(formatPlant);
 
     return res.status(200).json({
       success: true,
-      plants: plants.map(shapePlant),
-      count: plants.length,
+
+      /*
+       * Both property names are returned
+       * for frontend compatibility.
+       */
+      plants: formattedPlants,
+      userPlants: formattedPlants,
+
+      count: formattedPlants.length,
     });
   } catch (error) {
     console.error(
@@ -277,19 +322,26 @@ async function getAllPlants(req, res) {
 /*
  * GET /api/user-plants/:id
  */
-async function getPlantById(req, res) {
+async function getPlantById(
+  req,
+  res,
+) {
   try {
-    const ownerId = getOwnerId(req, res);
-    const plantId = getPlantId(req, res);
+    const ownerId =
+      getOwnerId(req, res);
+
+    const plantId =
+      getPlantId(req, res);
 
     if (!ownerId || !plantId) {
       return;
     }
 
-    const plant = await findOwnedPlant(
-      ownerId,
-      plantId,
-    );
+    const plant =
+      await findOwnedPlant(
+        ownerId,
+        plantId,
+      );
 
     if (!plant) {
       return sendError(
@@ -320,30 +372,28 @@ async function getPlantById(req, res) {
 /*
  * POST /api/user-plants
  */
-async function createPlant(req, res) {
+async function createPlant(
+  req,
+  res,
+) {
   try {
-    const ownerId = getOwnerId(req, res);
+    const ownerId =
+      getOwnerId(req, res);
 
     if (!ownerId) {
       return;
     }
 
-    const {
-      speciesId: rawSpeciesId,
-      nickname: rawNickname,
-      healthNotes,
-      notes,
-      location,
-      acquiredAt: rawAcquiredAt,
-      lastWateredAt: rawLastWateredAt,
-      nextWateringAt: rawNextWateringAt,
-      wateringRemindersEnabled:
-        rawWateringRemindersEnabled,
-      notificationSettings:
-        rawNotificationSettings,
-    } = req.body;
+    const rawSpeciesId =
+      req.body.speciesId &&
+      typeof req.body.speciesId ===
+        "object"
+        ? req.body.speciesId._id
+        : req.body.speciesId;
 
-    if (!ObjectId.isValid(rawSpeciesId)) {
+    if (
+      !ObjectId.isValid(rawSpeciesId)
+    ) {
       return sendError(
         res,
         400,
@@ -354,11 +404,8 @@ async function createPlant(req, res) {
     const speciesId =
       new ObjectId(rawSpeciesId);
 
-    const speciesCollection =
-      getSpeciesCollection();
-
     const species =
-      await speciesCollection.findOne({
+      await speciesCollection().findOne({
         _id: speciesId,
       });
 
@@ -371,8 +418,9 @@ async function createPlant(req, res) {
     }
 
     const nickname =
-      typeof rawNickname === "string"
-        ? rawNickname.trim()
+      typeof req.body.nickname ===
+      "string"
+        ? req.body.nickname.trim()
         : "";
 
     if (
@@ -401,16 +449,18 @@ async function createPlant(req, res) {
       );
     }
 
-    const normalizedHealthNotes =
-      typeof healthNotes === "string"
-        ? healthNotes.trim() || null
-        : typeof notes === "string"
-          ? notes.trim() || null
-          : null;
+    const rawHealthNotes =
+      req.body.healthNotes ??
+      req.body.notes;
+
+    const healthNotes =
+      typeof rawHealthNotes === "string"
+        ? rawHealthNotes.trim() || null
+        : null;
 
     if (
-      normalizedHealthNotes &&
-      normalizedHealthNotes.length > 3000
+      healthNotes &&
+      healthNotes.length > 3000
     ) {
       return sendError(
         res,
@@ -419,14 +469,16 @@ async function createPlant(req, res) {
       );
     }
 
-    const normalizedLocation =
-      typeof location === "string"
-        ? location.trim() || null
+    const location =
+      typeof req.body.location ===
+      "string"
+        ? req.body.location.trim() ||
+          null
         : null;
 
     if (
-      normalizedLocation &&
-      normalizedLocation.length > 200
+      location &&
+      location.length > 200
     ) {
       return sendError(
         res,
@@ -436,7 +488,19 @@ async function createPlant(req, res) {
     }
 
     const acquiredAt =
-      parseOptionalDate(rawAcquiredAt);
+      parseOptionalDate(
+        req.body.acquiredAt,
+      );
+
+    const lastWateredAt =
+      parseOptionalDate(
+        req.body.lastWateredAt,
+      );
+
+    let nextWateringAt =
+      parseOptionalDate(
+        req.body.nextWateringAt,
+      );
 
     if (acquiredAt === undefined) {
       return sendError(
@@ -446,12 +510,9 @@ async function createPlant(req, res) {
       );
     }
 
-    const lastWateredAt =
-      parseOptionalDate(
-        rawLastWateredAt,
-      );
-
-    if (lastWateredAt === undefined) {
+    if (
+      lastWateredAt === undefined
+    ) {
       return sendError(
         res,
         422,
@@ -459,12 +520,9 @@ async function createPlant(req, res) {
       );
     }
 
-    let nextWateringAt =
-      parseOptionalDate(
-        rawNextWateringAt,
-      );
-
-    if (nextWateringAt === undefined) {
+    if (
+      nextWateringAt === undefined
+    ) {
       return sendError(
         res,
         422,
@@ -472,11 +530,6 @@ async function createPlant(req, res) {
       );
     }
 
-    /*
-     * Calculate the next watering date when the
-     * frontend supplies lastWateredAt but not
-     * nextWateringAt.
-     */
     const wateringIntervalDays =
       species.watering?.intervalDays;
 
@@ -494,7 +547,8 @@ async function createPlant(req, res) {
     }
 
     const wateringRemindersEnabled =
-      rawWateringRemindersEnabled ??
+      req.body
+        .wateringRemindersEnabled ??
       false;
 
     if (
@@ -510,11 +564,13 @@ async function createPlant(req, res) {
 
     const notificationSettings =
       normalizeNotificationSettings(
-        rawNotificationSettings,
+        req.body.notificationSettings,
         {
           enabled:
             wateringRemindersEnabled,
+
           reminderTime: "09:00",
+
           reminderDaysBefore: 0,
         },
       );
@@ -530,15 +586,18 @@ async function createPlant(req, res) {
     const now = new Date();
 
     const newPlant = {
+      /*
+       * This is the authenticated user ID.
+       * It is saved as an ObjectId.
+       */
       ownerId,
+
       speciesId,
       nickname,
       picture: null,
       healthStatus,
-      healthNotes:
-        normalizedHealthNotes,
-      location:
-        normalizedLocation,
+      healthNotes,
+      location,
       acquiredAt,
       lastWateredAt,
       nextWateringAt,
@@ -548,15 +607,12 @@ async function createPlant(req, res) {
       updatedAt: now,
     };
 
-    const plantsCollection =
-      getPlantsCollection();
-
     const result =
-      await plantsCollection.insertOne(
+      await plantsCollection().insertOne(
         newPlant,
       );
 
-    const createdPlant =
+    const plant =
       await findOwnedPlant(
         ownerId,
         result.insertedId,
@@ -566,7 +622,7 @@ async function createPlant(req, res) {
       success: true,
       message:
         "Plant created successfully",
-      plant: createdPlant,
+      plant,
     });
   } catch (error) {
     console.error(
@@ -585,23 +641,31 @@ async function createPlant(req, res) {
 /*
  * PATCH /api/user-plants/:id
  */
-async function updatePlant(req, res) {
+async function updatePlant(
+  req,
+  res,
+) {
   try {
-    const ownerId = getOwnerId(req, res);
-    const plantId = getPlantId(req, res);
+    const ownerId =
+      getOwnerId(req, res);
+
+    const plantId =
+      getPlantId(req, res);
 
     if (!ownerId || !plantId) {
       return;
     }
 
-    const plantsCollection =
-      getPlantsCollection();
+    const collection =
+      plantsCollection();
 
     const existingPlant =
-      await plantsCollection.findOne({
-        _id: plantId,
-        ownerId,
-      });
+      await collection.findOne(
+        ownedPlantMatch(
+          ownerId,
+          plantId,
+        ),
+      );
 
     if (!existingPlant) {
       return sendError(
@@ -613,7 +677,9 @@ async function updatePlant(req, res) {
 
     const updates = {};
 
-    if (req.body.nickname !== undefined) {
+    if (
+      req.body.nickname !== undefined
+    ) {
       const nickname =
         typeof req.body.nickname ===
         "string"
@@ -697,7 +763,9 @@ async function updatePlant(req, res) {
         healthNotes;
     }
 
-    if (req.body.location !== undefined) {
+    if (
+      req.body.location !== undefined
+    ) {
       if (
         req.body.location !== null &&
         typeof req.body.location !==
@@ -738,13 +806,15 @@ async function updatePlant(req, res) {
     ];
 
     for (const field of dateFields) {
-      if (req.body[field] !== undefined) {
-        const parsedDate =
+      if (
+        req.body[field] !== undefined
+      ) {
+        const date =
           parseOptionalDate(
             req.body[field],
           );
 
-        if (parsedDate === undefined) {
+        if (date === undefined) {
           return sendError(
             res,
             422,
@@ -752,12 +822,13 @@ async function updatePlant(req, res) {
           );
         }
 
-        updates[field] = parsedDate;
+        updates[field] = date;
       }
     }
 
     if (
-      req.body.wateringRemindersEnabled !==
+      req.body
+        .wateringRemindersEnabled !==
       undefined
     ) {
       if (
@@ -783,8 +854,11 @@ async function updatePlant(req, res) {
     ) {
       const notificationSettings =
         normalizeNotificationSettings(
-          req.body.notificationSettings,
-          existingPlant.notificationSettings,
+          req.body
+            .notificationSettings,
+
+          existingPlant
+            .notificationSettings,
         );
 
       if (!notificationSettings) {
@@ -799,7 +873,9 @@ async function updatePlant(req, res) {
         notificationSettings;
     }
 
-    if (Object.keys(updates).length === 0) {
+    if (
+      Object.keys(updates).length === 0
+    ) {
       return sendError(
         res,
         400,
@@ -808,8 +884,9 @@ async function updatePlant(req, res) {
     }
 
     /*
-     * Recalculate nextWateringAt when the user changes
-     * lastWateredAt but does not send nextWateringAt.
+     * Recalculate nextWateringAt when
+     * lastWateredAt changes without an
+     * explicit nextWateringAt.
      */
     if (
       Object.prototype.hasOwnProperty.call(
@@ -823,15 +900,18 @@ async function updatePlant(req, res) {
       updates.lastWateredAt
     ) {
       const species =
-        await getSpeciesCollection().findOne({
-          _id: existingPlant.speciesId,
+        await speciesCollection().findOne({
+          _id:
+            existingPlant.speciesId,
         });
 
       const intervalDays =
-        species?.watering?.intervalDays;
+        species?.watering
+          ?.intervalDays;
 
       if (
-        typeof intervalDays === "number" &&
+        typeof intervalDays ===
+          "number" &&
         intervalDays >= 1
       ) {
         updates.nextWateringAt =
@@ -844,17 +924,17 @@ async function updatePlant(req, res) {
 
     updates.updatedAt = new Date();
 
-    await plantsCollection.updateOne(
-      {
-        _id: plantId,
+    await collection.updateOne(
+      ownedPlantMatch(
         ownerId,
-      },
+        plantId,
+      ),
       {
         $set: updates,
       },
     );
 
-    const updatedPlant =
+    const plant =
       await findOwnedPlant(
         ownerId,
         plantId,
@@ -864,7 +944,7 @@ async function updatePlant(req, res) {
       success: true,
       message:
         "Plant updated successfully",
-      plant: updatedPlant,
+      plant,
     });
   } catch (error) {
     console.error(
@@ -883,25 +963,32 @@ async function updatePlant(req, res) {
 /*
  * DELETE /api/user-plants/:id
  */
-async function deletePlant(req, res) {
+async function deletePlant(
+  req,
+  res,
+) {
   try {
-    const ownerId = getOwnerId(req, res);
-    const plantId = getPlantId(req, res);
+    const ownerId =
+      getOwnerId(req, res);
+
+    const plantId =
+      getPlantId(req, res);
 
     if (!ownerId || !plantId) {
       return;
     }
 
-    const plantsCollection =
-      getPlantsCollection();
-
     const result =
-      await plantsCollection.deleteOne({
-        _id: plantId,
-        ownerId,
-      });
+      await plantsCollection().deleteOne(
+        ownedPlantMatch(
+          ownerId,
+          plantId,
+        ),
+      );
 
-    if (result.deletedCount === 0) {
+    if (
+      result.deletedCount === 0
+    ) {
       return sendError(
         res,
         404,
@@ -929,25 +1016,34 @@ async function deletePlant(req, res) {
 }
 
 /*
- * PATCH or POST /api/user-plants/:id/water
+ * PATCH or POST
+ * /api/user-plants/:id/water
  */
-async function waterPlant(req, res) {
+async function waterPlant(
+  req,
+  res,
+) {
   try {
-    const ownerId = getOwnerId(req, res);
-    const plantId = getPlantId(req, res);
+    const ownerId =
+      getOwnerId(req, res);
+
+    const plantId =
+      getPlantId(req, res);
 
     if (!ownerId || !plantId) {
       return;
     }
 
-    const plantsCollection =
-      getPlantsCollection();
+    const collection =
+      plantsCollection();
 
     const plant =
-      await plantsCollection.findOne({
-        _id: plantId,
-        ownerId,
-      });
+      await collection.findOne(
+        ownedPlantMatch(
+          ownerId,
+          plantId,
+        ),
+      );
 
     if (!plant) {
       return sendError(
@@ -958,7 +1054,7 @@ async function waterPlant(req, res) {
     }
 
     const species =
-      await getSpeciesCollection().findOne({
+      await speciesCollection().findOne({
         _id: plant.speciesId,
       });
 
@@ -987,7 +1083,9 @@ async function waterPlant(req, res) {
 
     const wateredAt =
       req.body.wateredAt
-        ? new Date(req.body.wateredAt)
+        ? new Date(
+            req.body.wateredAt,
+          )
         : new Date();
 
     if (
@@ -1008,16 +1106,20 @@ async function waterPlant(req, res) {
         wateringIntervalDays,
       );
 
-    await plantsCollection.updateOne(
-      {
-        _id: plantId,
+    await collection.updateOne(
+      ownedPlantMatch(
         ownerId,
-      },
+        plantId,
+      ),
       {
         $set: {
-          lastWateredAt: wateredAt,
+          lastWateredAt:
+            wateredAt,
+
           nextWateringAt,
-          updatedAt: new Date(),
+
+          updatedAt:
+            new Date(),
         },
       },
     );
@@ -1030,8 +1132,10 @@ async function waterPlant(req, res) {
 
     return res.status(200).json({
       success: true,
+
       message:
         "Plant watering recorded successfully",
+
       plant: updatedPlant,
     });
   } catch (error) {
