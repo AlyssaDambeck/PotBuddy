@@ -1,27 +1,27 @@
 :root {
-  --potbuddy-green-950: #17351f;
-  --potbuddy-green-900: #21482b;
-  --potbuddy-green-800: #2d6038;
-  --potbuddy-green-700: #3b7a46;
-  --potbuddy-green-600: #4c9655;
-  --potbuddy-green-500: #68ad65;
-  --potbuddy-green-300: #aee197;
-  --potbuddy-green-200: #cceeba;
-  --potbuddy-green-100: #e8f8df;
-  --potbuddy-green-50: #f5fbf1;
+  --potbuddy-green-950: var(--text, #ece8de);
+  --potbuddy-green-900: var(--text, #ece8de);
+  --potbuddy-green-800: var(--primary-green, #879a72);
+  --potbuddy-green-700: var(--primary-green, #879a72);
+  --potbuddy-green-600: var(--secondary-green, #6d8062);
+  --potbuddy-green-500: var(--primary-green, #879a72);
+  --potbuddy-green-300: var(--primary-green, #879a72);
+  --potbuddy-green-200: var(--secondary-green, #6d8062);
+  --potbuddy-green-100: var(--surface-light, #343b33);
+  --potbuddy-green-50: var(--background, #1f241e);
 
-  --potbuddy-cream: #fffdf7;
-  --potbuddy-white: #ffffff;
-  --potbuddy-text: #1e2a20;
-  --potbuddy-muted: #647067;
-  --potbuddy-border: #dbe7d9;
-  --potbuddy-warning: #b95c24;
-  --potbuddy-warning-light: #fff0e5;
+  --potbuddy-cream: var(--surface, #2a3028);
+  --potbuddy-white: var(--surface, #2a3028);
+  --potbuddy-text: var(--text, #ece8de);
+  --potbuddy-muted: var(--text-muted, #b8b2a6);
+  --potbuddy-border: var(--border, rgba(236, 232, 222, 0.08));
+  --potbuddy-warning: var(--terracotta, #b16f4e);
+  --potbuddy-warning-light: rgba(177, 111, 78, 0.16);
 
   --potbuddy-shadow:
-    0 18px 50px rgba(29, 77, 39, 0.12);
+    0 18px 50px rgba(0, 0, 0, 0.3);
   --potbuddy-small-shadow:
-    0 8px 24px rgba(29, 77, 39, 0.1);
+    0 8px 24px rgba(0, 0, 0, 0.22);
 }
 
 * {
@@ -35,17 +35,24 @@ body {
   background:
     radial-gradient(
       circle at top left,
-      rgba(174, 225, 151, 0.35),
+      rgba(135, 154, 114, 0.12),
       transparent 34rem
     ),
     var(--potbuddy-green-50);
   font-family:
-    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
     "Segoe UI", sans-serif;
 }
 
 button {
   font: inherit;
+}
+
+.dashboard-page h1,
+.dashboard-page h2,
+.dashboard-page h3,
+.brand-button {
+  font-family: "Cormorant Garamond", Georgia, serif;
 }
 
 .dashboard-page {
@@ -66,8 +73,8 @@ button {
   align-items: center;
   min-height: 4.5rem;
   padding: 0.65rem 1rem;
-  border-bottom: 1px solid rgba(219, 231, 217, 0.85);
-  background: rgba(255, 253, 247, 0.9);
+  border-bottom: 1px solid rgba(236, 232, 222, 0.08);
+  background: rgba(42, 48, 40, 0.92);
   backdrop-filter: blur(16px);
 }
 
@@ -148,7 +155,7 @@ button {
   border: 2px solid var(--potbuddy-cream);
   border-radius: 999px;
 
-  color: #ffffff;
+  color: var(--text, #ece8de);
   background: var(--potbuddy-warning);
 
   font-size: 0.65rem;
@@ -210,7 +217,7 @@ button {
 .garden-card,
 .care-section,
 .plant-summary-section {
-  border: 1px solid rgba(219, 231, 217, 0.9);
+  border: 1px solid rgba(236, 232, 222, 0.08);
   border-radius: 1.5rem;
   background: var(--potbuddy-white);
   box-shadow: var(--potbuddy-small-shadow);
@@ -258,15 +265,15 @@ button {
   position: relative;
   min-height: 17rem;
   overflow: hidden;
-  border: 1px solid rgba(76, 150, 85, 0.2);
+  border: 1px solid rgba(135, 154, 114, 0.2);
   border-radius: 1.25rem;
   background:
     linear-gradient(
       180deg,
-      #dff7d1 0%,
-      #effbe8 58%,
-      #d1e9b9 58%,
-      #b4d391 100%
+      #343b33 0%,
+      #2a3028 58%,
+      #6d8062 58%,
+      #6d8062 100%
     );
 }
 
@@ -305,7 +312,7 @@ button {
 }
 
 .garden-plant:hover {
-  filter: drop-shadow(0 8px 7px rgba(33, 72, 43, 0.2));
+  filter: drop-shadow(0 8px 7px rgba(0, 0, 0, 0.28));
   transform: translateY(-0.3rem);
 }
 
@@ -318,7 +325,7 @@ button {
   margin-top: 0.35rem;
   padding: 0.25rem 0.55rem;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(42, 48, 40, 0.88);
   font-size: 0.7rem;
   font-weight: 800;
   backdrop-filter: blur(6px);
@@ -339,7 +346,7 @@ button {
   left: -5%;
   height: 5rem;
   border-radius: 50% 50% 0 0;
-  background: #88b36b;
+  background: #6d8062;
 }
 
 .primary-button {
@@ -353,7 +360,7 @@ button {
   gap: 0.6rem;
   border: 0;
   border-radius: 1rem;
-  color: white;
+  color: var(--background, #1f241e);
   background: var(--potbuddy-green-800);
   cursor: pointer;
   font-weight: 800;
@@ -476,9 +483,9 @@ button {
   margin: 0 auto;
   padding: 0.45rem;
   grid-template-columns: repeat(4, 1fr);
-  border: 1px solid rgba(219, 231, 217, 0.95);
+  border: 1px solid rgba(236, 232, 222, 0.08);
   border-radius: 1.35rem;
-  background: rgba(255, 255, 255, 0.94);
+  background: rgba(42, 48, 40, 0.95);
   box-shadow: var(--potbuddy-shadow);
   backdrop-filter: blur(18px);
 }
@@ -516,7 +523,7 @@ button {
   inset: 0;
   z-index: 39;
   border: 0;
-  background: rgba(15, 35, 20, 0.5);
+  background: rgba(0, 0, 0, 0.68);
   cursor: pointer;
   backdrop-filter: blur(2px);
 }
@@ -528,7 +535,7 @@ button {
   width: min(19rem, 85vw);
   padding: 1rem;
   background: var(--potbuddy-cream);
-  box-shadow: 20px 0 50px rgba(23, 53, 31, 0.2);
+  box-shadow: 20px 0 50px rgba(0, 0, 0, 0.38);
   transform: translateX(-105%);
   transition: transform 200ms ease;
 }
@@ -583,7 +590,7 @@ button {
 }
 
 button:focus-visible {
-  outline: 3px solid rgba(76, 150, 85, 0.35);
+  outline: 3px solid rgba(135, 154, 114, 0.42);
   outline-offset: 2px;
 }
 
@@ -797,10 +804,10 @@ button:focus-visible {
   width: 5rem;
   height: 5rem;
   place-items: center;
-  border: 3px solid rgba(255, 255, 255, 0.85);
+  border: 3px solid rgba(236, 232, 222, 0.28);
   border-radius: 50%;
   background: var(--potbuddy-green-100);
-  box-shadow: 0 8px 18px rgba(33, 72, 43, 0.18);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.28);
   font-size: 3rem;
   line-height: 1;
 }
@@ -810,11 +817,11 @@ button:focus-visible {
   display: block;
   width: 5rem;
   height: 5rem;
-  border: 3px solid rgba(255, 255, 255, 0.85);
+  border: 3px solid rgba(236, 232, 222, 0.28);
   border-radius: 50%;
   object-fit: cover;
   background: var(--potbuddy-green-100);
-  box-shadow: 0 8px 18px rgba(33, 72, 43, 0.18);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.28);
 }
 
 
@@ -894,13 +901,13 @@ img.plant-summary-card__image {
   margin-top: 0.75rem;
   border-top: 1px solid var(--potbuddy-border);
   border-radius: 0;
-  color: #8d3c35;
+  color: var(--terracotta, #b16f4e);
 }
 
 .side-menu__link--logout:hover,
 .side-menu__link--logout:focus-visible {
-  color: #7b2f2a;
-  background: #fff0ef;
+  color: var(--terracotta, #b16f4e);
+  background: rgba(177, 111, 78, 0.16);
 }
 
 .side-menu__link--logout:disabled {
@@ -1089,7 +1096,7 @@ img.plant-summary-card__image {
   padding: 1rem;
   place-items: center;
   overflow-y: auto;
-  background: rgba(15, 35, 20, 0.58);
+  background: rgba(0, 0, 0, 0.72);
   backdrop-filter: blur(6px);
   animation: dashboard-modal-fade-in 160ms ease-out;
 }
@@ -1098,12 +1105,12 @@ img.plant-summary-card__image {
   width: min(100%, 40rem);
   max-height: min(48rem, calc(100dvh - 2rem));
   overflow: hidden;
-  border: 1px solid rgba(219, 231, 217, 0.95);
+  border: 1px solid rgba(236, 232, 222, 0.08);
   border-radius: 1.5rem;
   background: var(--potbuddy-white);
   box-shadow:
-    0 30px 90px rgba(15, 35, 20, 0.32),
-    0 8px 24px rgba(29, 77, 39, 0.12);
+    0 30px 90px rgba(0, 0, 0, 0.4),
+    0 8px 24px rgba(0, 0, 0, 0.24);
   animation: dashboard-dialog-pop-in 180ms ease-out;
 }
 
@@ -1121,7 +1128,7 @@ img.plant-summary-card__image {
   background:
     radial-gradient(
       circle at top right,
-      rgba(174, 225, 151, 0.42),
+      rgba(135, 154, 114, 0.16),
       transparent 12rem
     ),
     var(--potbuddy-cream);
@@ -1164,7 +1171,7 @@ img.plant-summary-card__image {
 .dashboard-dialog-message {
   margin: 1rem 1.25rem 0;
   padding: 0.75rem 0.9rem;
-  border: 1px solid #f1cfb7;
+  border: 1px solid rgba(177, 111, 78, 0.48);
   border-radius: 0.85rem;
   color: var(--potbuddy-warning);
   background: var(--potbuddy-warning-light);
@@ -1243,7 +1250,7 @@ img.plant-summary-card__image {
 .dashboard-action-form textarea:focus {
   border-color: var(--potbuddy-green-600);
   background: var(--potbuddy-white);
-  box-shadow: 0 0 0 4px rgba(76, 150, 85, 0.15);
+  box-shadow: 0 0 0 4px rgba(135, 154, 114, 0.18);
 }
 
 .dashboard-action-form > button {
@@ -1259,7 +1266,7 @@ img.plant-summary-card__image {
       var(--potbuddy-green-700),
       var(--potbuddy-green-900)
     );
-  box-shadow: 0 10px 22px rgba(33, 72, 43, 0.2);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.28);
   cursor: pointer;
   font-weight: 900;
 }
