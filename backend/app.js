@@ -6,6 +6,7 @@ const plantRoutes = require("./routes/plantRoutes");
 const speciesRoutes = require("./routes/speciesRoutes");
 const journalRoutes = require("./routes/journalRoutes");
 const photoRoutes = require("./routes/photoRoutes");
+const weatherRoutes = require("./routes/weatherRoutes");
 
 /*const dns = require("node:dns");
 
@@ -28,7 +29,7 @@ app.use("/api/plants", plantRoutes);
 app.use("/api/species", speciesRoutes);
 app.use("/api/journal-entries", journalRoutes);
 app.use("/api/photos", photoRoutes);
-
+app.use("/api/weather", weatherRoutes);
 app.use((req, res) => {
   res.status(404).json({
     success: false,
