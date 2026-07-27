@@ -1,23 +1,39 @@
 const express = require("express");
-const authenticateToken = require("../middleware/authenticateToken");
 
+const authenticateToken = require(
+  "../middleware/authenticateToken"
+);
 
 const {
-    getAllPlants,
-    getPlantById,
-    createPlant,
-    updatePlant,
-    deletePlant,
-    waterPlant
+  getAllPlants,
+  getPlantById,
+  createPlant,
+  updatePlant,
+  deletePlant,
+  waterPlant,
 } = require("../controllers/plantController");
 
 const router = express.Router();
 
-router.get("/", authenticateToken, getAllPlants);
-router.get("/:id", authenticateToken, getPlantById);
-router.post("/", authenticateToken, createPlant);
-router.patch("/:id", authenticateToken, updatePlant);
-router.delete("/:id", authenticateToken, deletePlant);
-router.post("/:id/water", authenticateToken, waterPlant);
+/*
+ * Verifies the Bearer token and sets req.userId
+ * for every plant endpoint below.
+ */
+router.use(authenticateToken);
+
+router.get("/", getAllPlants);
+router.get("/:id", getPlantById);
+router.post("/", createPlant);
+
+router.patch("/:id/water", waterPlant);
+
+/*
+ * Keep POST watering temporarily for compatibility
+ * with any older frontend code.
+ */
+router.post("/:id/water", waterPlant);
+
+router.patch("/:id", updatePlant);
+router.delete("/:id", deletePlant);
 
 module.exports = router;
