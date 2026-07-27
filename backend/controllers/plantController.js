@@ -62,6 +62,8 @@ async function getPlantById(req, res) {
 
 // POST /api/plants
 async function createPlant(req, res) {
+    console.log("req.userId =", req.userId);
+    console.log("Authorization =", req.get("Authorization"));
     try {
         const ownerId = req.userid;      // or req.user.id
         const {
