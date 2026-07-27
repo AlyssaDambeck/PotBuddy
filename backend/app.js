@@ -5,6 +5,7 @@ const authRoutes = require("./routes/authRoutes");
 const plantRoutes = require("./routes/plantRoutes");
 const speciesRoutes = require("./routes/speciesRoutes");
 const journalRoutes = require("./routes/journalRoutes");
+const photoRoute = require("./routes/photoRoute");
 
 /*const dns = require("node:dns");
 
@@ -26,6 +27,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/plants", plantRoutes);
 app.use("/api/species", speciesRoutes);
 app.use("/api/journal-entries", journalRoutes);
+app.use("/api/photos", photoRoute);
 
 app.use((req, res) => {
   res.status(404).json({
