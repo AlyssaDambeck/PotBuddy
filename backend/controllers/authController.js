@@ -173,13 +173,13 @@ async function login(req, res) {
         message: "Invalid email or password",
       });
     }
-
-    if (!user.emailVerified) {
-  return res.status(403).json({
-    success: false,
-    message: "Verify your email before logging in",
-  });
-}
+//
+//   if (!user.emailVerified) {
+//  return res.status(403).json({
+//    success: false,
+//    message: "Verify your email before logging in",
+//  });
+//}
 
     const token = generateToken(user._id);
 
