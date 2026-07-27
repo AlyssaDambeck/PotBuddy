@@ -75,7 +75,7 @@ describe("Weather API", () => {
 
     expect(response.statusCode).toBe(200);
     expect(response.body.success).toBe(true);
-    expect(response.body.data.location).toBe("Orlando");
+    expect(response.body.data.location).toBe("Orlando, Florida");
     expect(response.body.data.temperature).toBe(92);
     expect(response.body.data.careMessage).toBe(
       "Consider your plant's water needs today."
