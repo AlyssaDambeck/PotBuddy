@@ -1405,3 +1405,56 @@ img.plant-summary-card__image {
 .dashboard-notification-image img {
   image-rendering: auto;
 }
+:root {
+  /*
+   * Gold remains inside the approved theme and passes AA contrast for
+   * normal-sized text against the dark surface colors.
+   */
+  --potbuddy-accessible-accent: var(--gold, #c5a46d);
+
+  /*
+   * A lighter tint of the approved terracotta is required for readable
+   * warning text on the dark surfaces.
+   */
+  --potbuddy-accessible-warning: #e1a98b;
+}
+
+/* Small green accent text was slightly below the 4.5:1 AA requirement. */
+.eyebrow,
+.text-button,
+.plant-summary-card__details small {
+  color: var(--potbuddy-accessible-accent);
+}
+
+/* Pills use the cream text so they remain readable on surface-light. */
+.plant-count,
+.health-status--healthy {
+  color: var(--potbuddy-text);
+}
+
+/* Warning copy keeps the terracotta character but uses an accessible tint. */
+.task-count,
+.health-status--warning,
+.watering-label,
+.dashboard-notification-details > span,
+.dashboard-dialog-message,
+.side-menu__link--logout,
+.side-menu__link--logout:hover,
+.side-menu__link--logout:focus-visible {
+  color: var(--potbuddy-accessible-warning);
+}
+
+/* The original primary green text was 4.44:1 on the card surface. */
+.water-button {
+  color: var(--potbuddy-text);
+}
+
+/* Keep keyboard focus highly visible on all dashboard controls. */
+.dashboard-page button:focus-visible,
+.dashboard-page a:focus-visible,
+.dashboard-page input:focus-visible,
+.dashboard-page select:focus-visible,
+.dashboard-page textarea:focus-visible {
+  outline: 3px solid var(--potbuddy-accessible-accent);
+  outline-offset: 3px;
+}
