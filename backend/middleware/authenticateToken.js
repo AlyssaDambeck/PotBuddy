@@ -21,6 +21,7 @@ function authenticateToken(req, res, next) {
 
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("JWT payload:", payload);
 
     if (!payload.userId) {
       return res.status(401).json({
