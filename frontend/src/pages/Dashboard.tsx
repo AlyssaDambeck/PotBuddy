@@ -981,82 +981,88 @@ function Dashboard() {
   return (
     <div className="dashboard-page">
       {menuOpen && (
-        <button
-          className="menu-overlay"
-          type="button"
-          aria-label="Close navigation menu"
-          onClick={() => setMenuOpen(false)}
-        />
-      )}
-
-      <aside
-        className={`side-menu ${menuOpen ? "side-menu--open" : ""}`}
-        aria-hidden={!menuOpen}
-      >
-        <div className="side-menu__header">
-          <div className="side-menu__logo">
-            <span aria-hidden="true">🌱</span>
-            <span>Pot Buddy</span>
-          </div>
-
+        <>
           <button
-            className="icon-button"
+            className="menu-overlay"
             type="button"
-            aria-label="Close menu"
+            aria-label="Close navigation menu"
             onClick={() => setMenuOpen(false)}
-          >
-            ×
-          </button>
-        </div>
+          />
 
-        <nav className="side-menu__navigation">
-          <button
-            type="button"
-            className="side-menu__link side-menu__link--active"
-            onClick={() => handleNavigation("/garden")}
+          <aside
+            className="side-menu side-menu--open"
+            aria-label="Main navigation"
           >
-            <span aria-hidden="true">🏠</span>
-            Home
-          </button>
+            <div className="side-menu__header">
+              <div className="side-menu__logo">
+                <span aria-hidden="true">🌱</span>
+                <span>Pot Buddy</span>
+              </div>
 
-          <button
-            type="button"
-            className="side-menu__link"
-            onClick={() => handleNavigation("/plants")}
-          >
-            <span aria-hidden="true">🪴</span>
-            My Plants
-          </button>
+              <button
+                className="icon-button"
+                type="button"
+                aria-label="Close menu"
+                onClick={() => setMenuOpen(false)}
+              >
+                ×
+              </button>
+            </div>
 
-          <button
-            type="button"
-            className="side-menu__link"
-            onClick={() => handleNavigation("/profile")}
-          >
-            <span aria-hidden="true">👤</span>
-            Profile
-          </button>
+            <nav
+              className="side-menu__navigation"
+              aria-label="Dashboard navigation"
+            >
+              <button
+                type="button"
+                className="side-menu__link side-menu__link--active"
+                aria-current="page"
+                onClick={() => handleNavigation("/garden")}
+              >
+                <span aria-hidden="true">🏠</span>
+                Home
+              </button>
 
-          <button
-            type="button"
-            className="side-menu__link"
-            onClick={() => handleNavigation("/settings")}
-          >
-            <span aria-hidden="true">⚙️</span>
-            Settings
-          </button>
+              <button
+                type="button"
+                className="side-menu__link"
+                onClick={() => handleNavigation("/plants")}
+              >
+                <span aria-hidden="true">🪴</span>
+                My Plants
+              </button>
 
-          <button
-            type="button"
-            className="side-menu__link side-menu__link--logout"
-            disabled={loggingOut}
-            onClick={() => void handleLogout()}
-          >
-            <span aria-hidden="true">↪</span>
-            {loggingOut ? "Logging out…" : "Log out"}
-          </button>
-        </nav>
-      </aside>
+              <button
+                type="button"
+                className="side-menu__link"
+                onClick={() => handleNavigation("/profile")}
+              >
+                <span aria-hidden="true">👤</span>
+                Profile
+              </button>
+
+              <button
+                type="button"
+                className="side-menu__link"
+                onClick={() => handleNavigation("/settings")}
+              >
+                <span aria-hidden="true">⚙️</span>
+                Settings
+              </button>
+
+              <button
+                type="button"
+                className="side-menu__link side-menu__link--logout"
+                disabled={loggingOut}
+                onClick={() => void handleLogout()}
+              >
+                <span aria-hidden="true">↪</span>
+                {loggingOut ? "Logging out…" : "Log out"}
+              </button>
+            </nav>
+          </aside>
+        </>
+      )}
 
       <div className="dashboard-container">
         <header className="top-navigation">
