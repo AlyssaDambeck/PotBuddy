@@ -136,6 +136,10 @@
   text-align: center;
 }
 
+.plant-detail-photo-card__empty[hidden] {
+  display: none;
+}
+
 .plant-detail-photo-card__empty > span {
   font-size: 5rem;
 }
