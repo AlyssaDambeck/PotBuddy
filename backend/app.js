@@ -5,7 +5,7 @@ const authRoutes = require("./routes/authRoutes");
 const plantRoutes = require("./routes/plantRoutes");
 const speciesRoutes = require("./routes/speciesRoutes");
 const journalRoutes = require("./routes/journalRoutes");
-const photoRoute = require("./routes/photoRoutes");
+const photoRoutes = require("./routes/photoRoutes");
 
 /*const dns = require("node:dns");
 
