@@ -7,6 +7,32 @@ import {
 import { useNavigate } from "react-router-dom";
 import "./PlantInventory.css";
 
+const apiBaseUrl = (
+  import.meta.env.VITE_API_URL || "/api"
+).replace(/\/$/, "");
+
+function getAuthToken(): string | null {
+  return localStorage.getItem("potbuddyToken");
+}
+
+async function apiFetch(
+  path: string,
+  options: RequestInit = {},
+): Promise<Response> {
+  const headers = new Headers(options.headers);
+  const token = getAuthToken();
+
+  if (token) {
+    headers.set("Authorization", `Bearer ${token}`);
+  }
+
+  return fetch(`${apiBaseUrl}${path}`, {
+    ...options,
+    headers,
+    credentials: "include",
+  });
+}
+
 type PlantHealthStatus =
   | "healthy"
   | "needs-attention"
@@ -83,6 +109,17 @@ const healthOptions: Array<{
 ];
 
 function normalizeCurrentUser(data: unknown): CurrentUser {
+  if (
+    typeof data === "object" &&
+    data !== null &&
+    "data" in data &&
+    typeof (data as { data?: unknown }).data === "object" &&
+    (data as { data: { user?: unknown } }).data !== null &&
+    typeof (data as { data: { user?: unknown } }).data.user === "object"
+  ) {
+    return (data as { data: { user: CurrentUser } }).data.user;
+  }
+
   if (
     typeof data === "object" &&
     data !== null &&
@@ -291,12 +328,10 @@ function PlantInventory() {
         setPageError("");
 
         const [userResponse, plantsResponse] = await Promise.all([
-          fetch("/api/auth/me", {
-            credentials: "include",
+          apiFetch("/auth/me", {
             signal,
           }),
-          fetch("/api/user-plants", {
-            credentials: "include",
+          apiFetch("/user-plants", {
             signal,
           }),
         ]);
