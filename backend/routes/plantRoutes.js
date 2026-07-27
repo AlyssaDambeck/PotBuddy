@@ -1,4 +1,6 @@
 const express = require("express");
+const authenticateToken = require("../middleware/authenticateToken");
+
 
 const {
     getAllPlants,
@@ -11,11 +13,11 @@ const {
 
 const router = express.Router();
 
-router.get("/", getAllPlants);
-router.get("/:id", getPlantById);
-router.post("/", createPlant);
-router.patch("/:id", updatePlant);
-router.delete("/:id", deletePlant);
-router.post("/:id/water", waterPlant);
+router.get("/", authenticateToken, getAllPlants);
+router.get("/:id", authenticateToken, getPlantById);
+router.post("/", authenticateToken, createPlant);
+router.patch("/:id", authenticateToken, updatePlant);
+router.delete("/:id", authenticateToken, deletePlant);
+router.post("/:id/water", authenticateToken, waterPlant);
 
 module.exports = router;
