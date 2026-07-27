@@ -85,6 +85,7 @@ async function createPlant(req, res) {
 
         console.log("ownerId:", ownerId);
         console.log("speciesId:", speciesId);
+        console.log("Body:", req.body);
 
         if (!ObjectId.isValid(ownerId) || !ObjectId.isValid(speciesId)) {
             return res.status(400).json({
