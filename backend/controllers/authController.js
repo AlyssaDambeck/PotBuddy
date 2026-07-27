@@ -231,23 +231,18 @@ async function verifyEmail(req, res) {
     );
 
     if (result.matchedCount === 0) {
-      return res.status(400).json({
-        success: false,
-        message: "Verification link is invalid or expired",
-      });
+      return res.redirect(`${process.env.APP_URL}/verified?status=invalid`);
     }
 
-    return res.status(200).json({
-      success: true,
-      message: "Email verified successfully. You can now log in.",
-    });
+    return res.redirect(`${process.env.APP_URL}/verified`);
+
+
   } catch (error) {
     console.error("Email verification error:", error);
 
-    return res.status(500).json({
-      success: false,
-      message: "Unable to verify email",
-    });
+    return res.redirect(`${process.env.APP_URL}/verified?status=error`);
+
+
   }
 }
 

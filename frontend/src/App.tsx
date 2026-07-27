@@ -1,13 +1,14 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import Dashboard from "./pages/Dashboard";
+import EmailVerifiedPage from "./pages/EmailVerifiedPage";
+import Journal from "./pages/Journal";
 import Landing from "./pages/Landing/Landing";
 import LoginPage from "./pages/LoginPage";
 import NotFound from "./pages/NotFound";
-import RegisterPage from "./pages/RegisterPage";
-import Journal from "./pages/Journal";
 import PlantDetail from "./pages/PlantDetail";
 import PlantInventory from "./pages/PlantInventory";
+import RegisterPage from "./pages/RegisterPage";
 
 function App() {
     return (
@@ -19,6 +20,8 @@ function App() {
                 <Route path="/login" element={<LoginPage />} />
 
                 <Route path="/register" element={<RegisterPage />} />
+
+                <Route path="/verified" element={<EmailVerifiedPage />} />
 
                 <Route path="/garden" element={<Dashboard />} />
 
