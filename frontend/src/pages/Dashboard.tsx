@@ -2,6 +2,7 @@ import type { ChangeEvent, FormEvent } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import "./Dashboard.css";
+import WeatherButton from "../components/WeatherButton";
 
 const apiBaseUrl = (
   import.meta.env.VITE_API_URL || "/api"
@@ -1978,6 +1979,7 @@ function Dashboard() {
             </p>
           )}
 
+          <WeatherButton />
           <section className="garden-card">
             <div className="section-heading">
               <div>
