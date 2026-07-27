@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import "./Dashboard.css";
 
@@ -487,7 +487,7 @@ function Dashboard() {
   );
 
   const loadPlants = useCallback(async (): Promise<void> => {
-    const response = await apiFetch("/user-plants");
+    const response = await apiFetch("/plants");
 
     if (redirectOnUnauthorized(response)) {
       return;
@@ -507,7 +507,7 @@ function Dashboard() {
 
       const [userResponse, plantsResponse] = await Promise.all([
         apiFetch("/auth/me"),
-        apiFetch("/user-plants"),
+        apiFetch("/plants"),
       ]);
 
       if (
@@ -551,7 +551,7 @@ function Dashboard() {
     try {
       setSpeciesLoading(true);
 
-      const response = await apiFetch("/plant-species");
+      const response = await apiFetch("/species");
 
       if (redirectOnUnauthorized(response)) {
         return;
@@ -725,7 +725,7 @@ function Dashboard() {
       setSaving(true);
       setMessage("");
 
-      const response = await apiFetch("/user-plants", {
+      const response = await apiFetch("/plants", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -812,7 +812,7 @@ function Dashboard() {
       };
 
       let response = await apiFetch(
-        `/user-plants/${photoPlantId}/photos`,
+        `/plants/${photoPlantId}/photos`,
         {
           method: "POST",
           body: createPhotoFormData(),
@@ -821,7 +821,7 @@ function Dashboard() {
 
       if (response.status === 404 || response.status === 405) {
         response = await apiFetch(
-          `/user-plants/${photoPlantId}/picture`,
+          `/plants/${photoPlantId}/picture`,
           {
             method: "POST",
             body: createPhotoFormData(),
@@ -890,7 +890,7 @@ function Dashboard() {
       };
 
       let response = await apiFetch(
-        `/user-plants/${careDraft.plantId}/care-events`,
+        `/plants/${careDraft.plantId}/care-events`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -951,7 +951,7 @@ function Dashboard() {
       setWateringPlantId(plantId);
       setMessage("");
 
-      const response = await apiFetch(`/user-plants/${plantId}/water`, {
+      const response = await apiFetch(`/plants/${plantId}/water`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ wateredAt: new Date().toISOString() }),
