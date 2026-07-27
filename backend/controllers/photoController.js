@@ -895,10 +895,10 @@ async function getPhoto(
       `inline; filename="${responseFilename}"`,
     );
 
-    res.setHeader(
-      "Cache-Control",
-      "public, max-age=86400",
-    );
+   res.setHeader(
+  "Cache-Control",
+  "public, max-age=31536000, immutable",
+);
 
     const downloadStream =
       bucket.openDownloadStream(
