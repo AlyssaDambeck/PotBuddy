@@ -1,3 +1,5 @@
+console.log("authenticateToken.js loaded");
+
 const jwt = require("jsonwebtoken");
 
 function authenticateToken(req, res, next) {
@@ -31,6 +33,8 @@ function authenticateToken(req, res, next) {
     }
 
     req.userId = payload.userId;
+    console.log("req.userId set to:", req.userId);
+
     next();
   } catch (error) {
     return res.status(401).json({
