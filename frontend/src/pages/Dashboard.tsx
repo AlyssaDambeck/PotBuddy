@@ -374,9 +374,11 @@ function neededActions(plant: UserPlant): string[] {
 function PlantImage({
   plant,
   className,
+  priority = false,
 }: {
   plant: UserPlant;
   className: string;
+  priority?: boolean;
 }) {
   const source = photoSource(plant.picture);
 
@@ -386,7 +388,11 @@ function PlantImage({
         <img
           src={source}
           alt={`${plant.nickname} plant`}
-          loading="lazy"
+          width={320}
+          height={320}
+          loading={priority ? "eager" : "lazy"}
+          fetchPriority={priority ? "high" : "auto"}
+          decoding="async"
           onError={(event) => {
             event.currentTarget.style.display = "none";
             event.currentTarget.nextElementSibling?.removeAttribute("hidden");
@@ -410,6 +416,8 @@ function Dashboard() {
   const [loggingOut, setLoggingOut] = useState(false);
   const [plants, setPlants] = useState<UserPlant[]>([]);
   const [speciesOptions, setSpeciesOptions] = useState<Species[]>([]);
+  const [speciesLoading, setSpeciesLoading] = useState(false);
+  const [speciesLoaded, setSpeciesLoaded] = useState(false);
   const [loading, setLoading] = useState(true);
   const [pageError, setPageError] = useState("");
   const [message, setMessage] = useState("");
@@ -505,7 +513,13 @@ function Dashboard() {
   }, [redirectOnUnauthorized]);
 
   const loadSpecies = useCallback(async (): Promise<void> => {
+    if (speciesLoaded || speciesLoading) {
+      return;
+    }
+
     try {
+      setSpeciesLoading(true);
+
       const response = await fetch("/api/plant-species", {
         credentials: "include",
       });
@@ -514,18 +528,28 @@ function Dashboard() {
         return;
       }
 
-      if (response.ok) {
-        setSpeciesOptions(normalizeSpecies(await jsonResponse(response)));
+      if (!response.ok) {
+        throw new Error("The species catalog could not be loaded.");
       }
+
+      setSpeciesOptions(
+        normalizeSpecies(await jsonResponse(response)),
+      );
+      setSpeciesLoaded(true);
     } catch {
       setSpeciesOptions([]);
+    } finally {
+      setSpeciesLoading(false);
     }
-  }, [redirectOnUnauthorized]);
+  }, [
+    redirectOnUnauthorized,
+    speciesLoaded,
+    speciesLoading,
+  ]);
 
   useEffect(() => {
     void loadDashboard();
-    void loadSpecies();
-  }, [loadDashboard, loadSpecies]);
+  }, [loadDashboard]);
 
   /*
    * The inventory page links back here with:
@@ -549,10 +573,12 @@ function Dashboard() {
       ...emptyPlantDraft,
       speciesId: speciesOptions[0]?._id ?? "",
     });
+    void loadSpecies();
 
     setSearchParams({}, { replace: true });
   }, [
     loading,
+    loadSpecies,
     searchParams,
     setSearchParams,
     speciesOptions,
@@ -581,7 +607,11 @@ function Dashboard() {
     speciesOptions,
   ]);
 
-  const carePlants = useMemo(() => plants.filter(needsCare), [plants]);
+  const carePlants = useMemo(
+    () => plants.filter(needsCare),
+    [plants],
+  );
+  const visibleCarePlants = carePlants.slice(0, 4);
   const gardenPlants = plants.slice(0, 5);
   const collectionPlants = plants.slice(0, 4);
 
@@ -642,6 +672,7 @@ function Dashboard() {
         ...emptyPlantDraft,
         speciesId: speciesOptions[0]?._id ?? "",
       });
+      void loadSpecies();
     }
 
     if (name === "add-photo") {
@@ -1206,6 +1237,7 @@ function Dashboard() {
                       <PlantImage
                         plant={plant}
                         className="garden-plant__emoji"
+                        priority={index === 0}
                       />
                       <span className="garden-plant__name">
                         {plant.nickname}
@@ -1244,7 +1276,7 @@ function Dashboard() {
 
             {carePlants.length > 0 ? (
               <div className="care-list">
-                {carePlants.map((plant) => (
+                {visibleCarePlants.map((plant) => (
                   <article className="care-card" key={plant._id}>
                     <button
                       className="care-card__plant"
@@ -1296,6 +1328,17 @@ function Dashboard() {
                     </div>
                   </article>
                 ))}
+
+                {carePlants.length > visibleCarePlants.length && (
+                  <button
+                    className="dashboard-care-more"
+                    type="button"
+                    onClick={() => handleNavigation("/plants")}
+                  >
+                    View all {carePlants.length} plants needing care
+                    <span aria-hidden="true">→</span>
+                  </button>
+                )}
               </div>
             ) : (
               <div className="empty-care-state">
@@ -1467,7 +1510,11 @@ function Dashboard() {
                     }
                   >
                     {speciesOptions.length === 0 ? (
-                      <option value="">Species catalog unavailable</option>
+                      <option value="">
+                        {speciesLoading
+                          ? "Loading species…"
+                          : "Species catalog unavailable"}
+                      </option>
                     ) : (
                       speciesOptions.map((species) => (
                         <option value={species._id} key={species._id}>
