@@ -23,7 +23,10 @@ async function apiFetch(
   const token = getAuthToken();
 
   if (token) {
-    headers.set("Authorization", `Bearer ${token}`);
+    headers.set(
+      "Authorization",
+      `Bearer ${token}`,
+    );
   }
 
   return fetch(`${apiBaseUrl}${path}`, {
@@ -81,12 +84,19 @@ type InventoryPlant = {
   _id: string;
   ownerId?: string;
   nickname: string;
-  speciesId?: PlantSpecies | string | null;
+
+  speciesId?:
+    | PlantSpecies
+    | string
+    | null;
+
   species?: PlantSpecies | null;
+
   healthStatus?:
     | PlantHealthStatus
     | LegacyPlantHealthStatus
     | null;
+
   healthNotes?: string | null;
   notes?: string | null;
   location?: string | null;
@@ -94,7 +104,11 @@ type InventoryPlant = {
   lastWateredAt?: string | null;
   nextWateringAt?: string | null;
   wateringRemindersEnabled?: boolean;
-  notificationSettings?: NotificationSettings | null;
+
+  notificationSettings?:
+    | NotificationSettings
+    | null;
+
   picture?: PlantPicture | null;
   createdAt?: string | null;
   updatedAt?: string | null;
@@ -130,94 +144,123 @@ const healthOptions: Array<{
   },
 ];
 
-function normalizePlantsResponse(
-  responseData: unknown,
-): InventoryPlant[] {
-  if (Array.isArray(responseData)) {
-    return responseData as InventoryPlant[];
+function normalizeCurrentUser(
+  data: unknown,
+): CurrentUser {
+  if (
+    typeof data === "object" &&
+    data !== null &&
+    "data" in data
+  ) {
+    const nestedData = (
+      data as {
+        data?: unknown;
+      }
+    ).data;
+
+    if (
+      typeof nestedData === "object" &&
+      nestedData !== null &&
+      "user" in nestedData
+    ) {
+      const nestedUser = (
+        nestedData as {
+          user?: unknown;
+        }
+      ).user;
+
+      if (
+        typeof nestedUser === "object" &&
+        nestedUser !== null
+      ) {
+        return nestedUser as CurrentUser;
+      }
+    }
   }
 
   if (
-    typeof responseData !== "object" ||
-    responseData === null
+    typeof data === "object" &&
+    data !== null &&
+    "user" in data
+  ) {
+    const user = (
+      data as {
+        user?: unknown;
+      }
+    ).user;
+
+    if (
+      typeof user === "object" &&
+      user !== null
+    ) {
+      return user as CurrentUser;
+    }
+  }
+
+  return data as CurrentUser;
+}
+
+function normalizePlantsResponse(
+  data: unknown,
+): InventoryPlant[] {
+  if (Array.isArray(data)) {
+    return data as InventoryPlant[];
+  }
+
+  if (
+    typeof data !== "object" ||
+    data === null
   ) {
     return [];
   }
 
-  const root = responseData as {
+  const response = data as {
     plants?: unknown;
     userPlants?: unknown;
     data?: unknown;
   };
 
-  if (Array.isArray(root.plants)) {
-    return root.plants as InventoryPlant[];
-  }
-
-  if (Array.isArray(root.userPlants)) {
-    return root.userPlants as InventoryPlant[];
-  }
-
-  if (Array.isArray(root.data)) {
-    return root.data as InventoryPlant[];
+  if (Array.isArray(response.plants)) {
+    return response.plants as InventoryPlant[];
   }
 
   if (
-    typeof root.data === "object" &&
-    root.data !== null
+    Array.isArray(response.userPlants)
   ) {
-    const nested = root.data as {
+    return response.userPlants as InventoryPlant[];
+  }
+
+  if (Array.isArray(response.data)) {
+    return response.data as InventoryPlant[];
+  }
+
+  if (
+    typeof response.data === "object" &&
+    response.data !== null
+  ) {
+    const nestedData = response.data as {
       plants?: unknown;
       userPlants?: unknown;
     };
 
-    if (Array.isArray(nested.plants)) {
-      return nested.plants as InventoryPlant[];
+    if (
+      Array.isArray(
+        nestedData.plants,
+      )
+    ) {
+      return nestedData.plants as InventoryPlant[];
     }
 
-    if (Array.isArray(nested.userPlants)) {
-      return nested.userPlants as InventoryPlant[];
+    if (
+      Array.isArray(
+        nestedData.userPlants,
+      )
+    ) {
+      return nestedData.userPlants as InventoryPlant[];
     }
   }
 
   return [];
-}
-
-function readStoredUser(): CurrentUser | null {
-  const storedUser =
-    localStorage.getItem("potbuddyUser");
-
-  if (!storedUser) {
-    return null;
-  }
-
-  try {
-    const parsedUser =
-      JSON.parse(storedUser) as unknown;
-
-    if (
-      typeof parsedUser === "object" &&
-      parsedUser !== null &&
-      "username" in parsedUser &&
-      typeof (
-        parsedUser as {
-          username?: unknown;
-        }
-      ).username === "string" &&
-      "email" in parsedUser &&
-      typeof (
-        parsedUser as {
-          email?: unknown;
-        }
-      ).email === "string"
-    ) {
-      return parsedUser as CurrentUser;
-    }
-  } catch {
-    return null;
-  }
-
-  return null;
 }
 
 async function readJson(
@@ -239,6 +282,55 @@ async function readJson(
   return response.json();
 }
 
+async function getResponseError(
+  response: Response,
+  fallbackMessage: string,
+): Promise<string> {
+  try {
+    const data =
+      (await response.json()) as unknown;
+
+    if (
+      typeof data === "object" &&
+      data !== null
+    ) {
+      if (
+        "message" in data &&
+        typeof (
+          data as {
+            message?: unknown;
+          }
+        ).message === "string"
+      ) {
+        return (
+          data as {
+            message: string;
+          }
+        ).message;
+      }
+
+      if (
+        "error" in data &&
+        typeof (
+          data as {
+            error?: unknown;
+          }
+        ).error === "string"
+      ) {
+        return (
+          data as {
+            error: string;
+          }
+        ).error;
+      }
+    }
+  } catch {
+    return fallbackMessage;
+  }
+
+  return fallbackMessage;
+}
+
 function normalizeHealthStatus(
   healthStatus?:
     | PlantHealthStatus
@@ -250,8 +342,10 @@ function normalizeHealthStatus(
     PlantHealthStatus
   > = {
     Healthy: "healthy",
-    "Needs attention": "needs-attention",
-    "Needs Attention": "needs-attention",
+    "Needs attention":
+      "needs-attention",
+    "Needs Attention":
+      "needs-attention",
     Sick: "sick",
     Recovering: "recovering",
     Dormant: "dormant",
@@ -278,13 +372,17 @@ function healthLabel(
     | null,
 ): string {
   const normalizedHealthStatus =
-    normalizeHealthStatus(healthStatus);
+    normalizeHealthStatus(
+      healthStatus,
+    );
 
   return (
     healthOptions.find(
       (option) =>
-        option.value === normalizedHealthStatus,
-    )?.label ?? normalizedHealthStatus
+        option.value ===
+        normalizedHealthStatus,
+    )?.label ??
+    normalizedHealthStatus
   );
 }
 
@@ -309,7 +407,7 @@ function getPictureSource(
   }
 
   return picture?.fileId
-    ? `/api/photos/${picture.fileId}`
+    ? `${apiBaseUrl}/photos/${picture.fileId}`
     : null;
 }
 
@@ -323,7 +421,9 @@ function formatDate(
   const parsedDate = new Date(date);
 
   if (
-    Number.isNaN(parsedDate.getTime())
+    Number.isNaN(
+      parsedDate.getTime(),
+    )
   ) {
     return "Not recorded";
   }
@@ -345,27 +445,32 @@ function daysUntil(
     return null;
   }
 
-  const targetDate = new Date(date);
+  const targetDate =
+    new Date(date);
 
   if (
-    Number.isNaN(targetDate.getTime())
+    Number.isNaN(
+      targetDate.getTime(),
+    )
   ) {
     return null;
   }
 
   const today = new Date();
 
-  const startOfToday = new Date(
-    today.getFullYear(),
-    today.getMonth(),
-    today.getDate(),
-  );
+  const startOfToday =
+    new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+    );
 
-  const startOfTarget = new Date(
-    targetDate.getFullYear(),
-    targetDate.getMonth(),
-    targetDate.getDate(),
-  );
+  const startOfTarget =
+    new Date(
+      targetDate.getFullYear(),
+      targetDate.getMonth(),
+      targetDate.getDate(),
+    );
 
   return Math.ceil(
     (
@@ -419,8 +524,10 @@ function needsAttention(
 function PlantInventory() {
   const navigate = useNavigate();
 
-  const [menuOpen, setMenuOpen] =
-    useState(false);
+  const [
+    menuOpen,
+    setMenuOpen,
+  ] = useState(false);
 
   const [
     currentUser,
@@ -429,33 +536,28 @@ function PlantInventory() {
     null,
   );
 
-  const [plants, setPlants] =
-    useState<InventoryPlant[]>([]);
+  const [
+    plants,
+    setPlants,
+  ] = useState<InventoryPlant[]>([]);
 
-  const [loading, setLoading] =
-    useState(true);
+  const [
+    loading,
+    setLoading,
+  ] = useState(true);
 
-  const [pageError, setPageError] =
-    useState("");
+  const [
+    pageError,
+    setPageError,
+  ] = useState("");
 
-  const loadInventory = useCallback(
-    async (
-      signal?: AbortSignal,
-    ): Promise<void> => {
-      try {
-        setLoading(true);
-        setPageError("");
-
-        const plantsResponse =
-          await apiFetch(
-            "/user-plants",
-            {
-              signal,
-            },
-          );
-
+  const redirectOnUnauthorized =
+    useCallback(
+      (
+        response: Response,
+      ): boolean => {
         if (
-          plantsResponse.status === 401
+          response.status === 401
         ) {
           localStorage.removeItem(
             "potbuddyToken",
@@ -472,72 +574,127 @@ function PlantInventory() {
             },
           );
 
-          return;
+          return true;
         }
 
-        if (!plantsResponse.ok) {
-          const errorData =
-            await plantsResponse
-              .json()
-              .catch(() => null);
+        return false;
+      },
+      [navigate],
+    );
 
-          const serverMessage =
-            errorData &&
-            typeof errorData ===
-              "object" &&
-            "message" in errorData &&
-            typeof (
-              errorData as {
-                message?: unknown;
-              }
-            ).message === "string"
-              ? (
-                  errorData as {
-                    message: string;
-                  }
-                ).message
-              : "Your plant inventory could not be loaded.";
+  const loadInventory =
+    useCallback(
+      async (
+        signal?: AbortSignal,
+      ): Promise<void> => {
+        try {
+          setLoading(true);
+          setPageError("");
 
-          throw new Error(
-            serverMessage,
-          );
-        }
-
-        const plantsData =
-          await readJson(
+          /*
+           * These are the same working
+           * endpoints used by Dashboard.
+           *
+           * /api/auth/me
+           * /api/plants
+           */
+          const [
+            userResponse,
             plantsResponse,
-          );
+          ] = await Promise.all([
+            apiFetch(
+              "/auth/me",
+              {
+                signal,
+              },
+            ),
 
-        const loadedPlants =
-          normalizePlantsResponse(
+            apiFetch(
+              "/plants",
+              {
+                signal,
+              },
+            ),
+          ]);
+
+          if (
+            redirectOnUnauthorized(
+              userResponse,
+            ) ||
+            redirectOnUnauthorized(
+              plantsResponse,
+            )
+          ) {
+            return;
+          }
+
+          if (!userResponse.ok) {
+            const message =
+              await getResponseError(
+                userResponse,
+                "Your account could not be loaded.",
+              );
+
+            throw new Error(
+              message,
+            );
+          }
+
+          if (!plantsResponse.ok) {
+            const message =
+              await getResponseError(
+                plantsResponse,
+                "Your plant inventory could not be loaded.",
+              );
+
+            throw new Error(
+              message,
+            );
+          }
+
+          const [
+            userData,
             plantsData,
+          ] = await Promise.all([
+            readJson(userResponse),
+            readJson(plantsResponse),
+          ]);
+
+          setCurrentUser(
+            normalizeCurrentUser(
+              userData,
+            ),
           );
 
-        setPlants(loadedPlants);
-        setCurrentUser(
-          readStoredUser(),
-        );
-      } catch (requestError) {
-        if (
-          requestError instanceof
-            DOMException &&
-          requestError.name ===
-            "AbortError"
-        ) {
-          return;
-        }
+          setPlants(
+            normalizePlantsResponse(
+              plantsData,
+            ),
+          );
+        } catch (requestError) {
+          if (
+            requestError instanceof
+              DOMException &&
+            requestError.name ===
+              "AbortError"
+          ) {
+            return;
+          }
 
-        setPageError(
-          requestError instanceof Error
-            ? requestError.message
-            : "Something went wrong while loading your plants.",
-        );
-      } finally {
-        setLoading(false);
-      }
-    },
-    [navigate],
-  );
+          setPageError(
+            requestError instanceof
+              Error
+              ? requestError.message
+              : "Something went wrong while loading your plants.",
+          );
+        } finally {
+          setLoading(false);
+        }
+      },
+      [
+        redirectOnUnauthorized,
+      ],
+    );
 
   useEffect(() => {
     const controller =
@@ -547,8 +704,9 @@ function PlantInventory() {
       controller.signal,
     );
 
-    return () =>
+    return () => {
       controller.abort();
+    };
   }, [loadInventory]);
 
   const notificationCount =
@@ -695,7 +853,9 @@ function PlantInventory() {
             🪴
           </span>
 
-          <span>Inventory</span>
+          <span>
+            Inventory
+          </span>
         </div>
 
         <button
@@ -788,7 +948,9 @@ function PlantInventory() {
               Inventory unavailable
             </h2>
 
-            <p>{pageError}</p>
+            <p>
+              {pageError}
+            </p>
 
             <button
               type="button"
@@ -806,7 +968,9 @@ function PlantInventory() {
               🌿
             </span>
 
-            <h2>No plants yet</h2>
+            <h2>
+              No plants yet
+            </h2>
 
             <p>
               Add your first plant using
@@ -895,11 +1059,13 @@ function PlantInventory() {
                       </strong>
 
                       <span>
-                        {species?.commonName ||
+                        {species
+                          ?.commonName ||
                           "Plant species not recorded"}
                       </span>
 
-                      {species?.scientificName && (
+                      {species
+                        ?.scientificName && (
                         <small>
                           {
                             species.scientificName
