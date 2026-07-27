@@ -11,29 +11,55 @@ const {
   updatePlant,
   deletePlant,
   waterPlant,
-} = require("../controllers/plantController");
+} = require(
+  "../controllers/plantController"
+);
 
 const router = express.Router();
 
 /*
- * Verifies the Bearer token and sets req.userId
- * for every plant endpoint below.
+ * Verifies the Bearer token and
+ * sets req.userId for every route.
  */
 router.use(authenticateToken);
 
-router.get("/", getAllPlants);
-router.get("/:id", getPlantById);
-router.post("/", createPlant);
+router.get(
+  "/",
+  getAllPlants
+);
 
-router.patch("/:id/water", waterPlant);
+router.get(
+  "/:id",
+  getPlantById
+);
+
+router.post(
+  "/",
+  createPlant
+);
 
 /*
- * Keep POST watering temporarily for compatibility
- * with any older frontend code.
+ * Supports the newer PATCH request
+ * and the older POST request.
  */
-router.post("/:id/water", waterPlant);
+router.patch(
+  "/:id/water",
+  waterPlant
+);
 
-router.patch("/:id", updatePlant);
-router.delete("/:id", deletePlant);
+router.post(
+  "/:id/water",
+  waterPlant
+);
+
+router.patch(
+  "/:id",
+  updatePlant
+);
+
+router.delete(
+  "/:id",
+  deletePlant
+);
 
 module.exports = router;
