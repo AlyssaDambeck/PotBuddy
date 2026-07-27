@@ -177,18 +177,30 @@ function normalizeCurrentUser(data: unknown): CurrentUser {
     data !== null &&
     "data" in data &&
     typeof (data as { data?: unknown }).data === "object" &&
-    (data as { data: { user?: unknown } }).data !== null &&
-    typeof (data as { data: { user?: unknown } }).data.user ===
-      "object"
+    (data as { data?: unknown }).data !== null
   ) {
-    return (data as { data: { user: CurrentUser } }).data.user;
+    const nestedData = (
+      data as {
+        data: {
+          user?: unknown;
+        };
+      }
+    ).data;
+
+    if (
+      typeof nestedData.user === "object" &&
+      nestedData.user !== null
+    ) {
+      return nestedData.user as CurrentUser;
+    }
   }
 
   if (
     typeof data === "object" &&
     data !== null &&
     "user" in data &&
-    typeof (data as { user?: unknown }).user === "object"
+    typeof (data as { user?: unknown }).user === "object" &&
+    (data as { user?: unknown }).user !== null
   ) {
     return (data as { user: CurrentUser }).user;
   }
@@ -202,7 +214,7 @@ function normalizePlantResponse(data: unknown): PlantDetailData {
     data !== null &&
     "data" in data &&
     typeof (data as { data?: unknown }).data === "object" &&
-    (data as { data: unknown }).data !== null
+    (data as { data?: unknown }).data !== null
   ) {
     const nestedData = (
       data as {
@@ -232,7 +244,8 @@ function normalizePlantResponse(data: unknown): PlantDetailData {
     typeof data === "object" &&
     data !== null &&
     "plant" in data &&
-    typeof (data as { plant?: unknown }).plant === "object"
+    typeof (data as { plant?: unknown }).plant === "object" &&
+    (data as { plant?: unknown }).plant !== null
   ) {
     return (data as { plant: PlantDetailData }).plant;
   }
@@ -241,7 +254,8 @@ function normalizePlantResponse(data: unknown): PlantDetailData {
     typeof data === "object" &&
     data !== null &&
     "userPlant" in data &&
-    typeof (data as { userPlant?: unknown }).userPlant === "object"
+    typeof (data as { userPlant?: unknown }).userPlant === "object" &&
+    (data as { userPlant?: unknown }).userPlant !== null
   ) {
     return (data as { userPlant: PlantDetailData }).userPlant;
   }
@@ -254,74 +268,44 @@ function normalizeJournalEntries(data: unknown): JournalEntryApi[] {
     return data as JournalEntryApi[];
   }
 
-  if (
-    typeof data === "object" &&
-    data !== null &&
-    "data" in data
-  ) {
-    const nestedData = (data as { data?: unknown }).data;
+  if (typeof data !== "object" || data === null) {
+    return [];
+  }
 
-    if (Array.isArray(nestedData)) {
-      return nestedData as JournalEntryApi[];
-    }
+  const response = data as {
+    entries?: unknown;
+    journalEntries?: unknown;
+    data?: unknown;
+  };
 
-    if (
-      typeof nestedData === "object" &&
-      nestedData !== null &&
-      "entries" in nestedData &&
-      Array.isArray(
-        (nestedData as { entries?: unknown }).entries,
-      )
-    ) {
-      return (
-        nestedData as {
-          entries: JournalEntryApi[];
-        }
-      ).entries;
-    }
+  if (Array.isArray(response.entries)) {
+    return response.entries as JournalEntryApi[];
+  }
 
-    if (
-      typeof nestedData === "object" &&
-      nestedData !== null &&
-      "journalEntries" in nestedData &&
-      Array.isArray(
-        (
-          nestedData as {
-            journalEntries?: unknown;
-          }
-        ).journalEntries,
-      )
-    ) {
-      return (
-        nestedData as {
-          journalEntries: JournalEntryApi[];
-        }
-      ).journalEntries;
-    }
+  if (Array.isArray(response.journalEntries)) {
+    return response.journalEntries as JournalEntryApi[];
+  }
+
+  if (Array.isArray(response.data)) {
+    return response.data as JournalEntryApi[];
   }
 
   if (
-    typeof data === "object" &&
-    data !== null &&
-    "entries" in data &&
-    Array.isArray((data as { entries?: unknown }).entries)
+    typeof response.data === "object" &&
+    response.data !== null
   ) {
-    return (data as { entries: JournalEntryApi[] }).entries;
-  }
+    const nestedData = response.data as {
+      entries?: unknown;
+      journalEntries?: unknown;
+    };
 
-  if (
-    typeof data === "object" &&
-    data !== null &&
-    "journalEntries" in data &&
-    Array.isArray(
-      (data as { journalEntries?: unknown }).journalEntries,
-    )
-  ) {
-    return (
-      data as {
-        journalEntries: JournalEntryApi[];
-      }
-    ).journalEntries;
+    if (Array.isArray(nestedData.entries)) {
+      return nestedData.entries as JournalEntryApi[];
+    }
+
+    if (Array.isArray(nestedData.journalEntries)) {
+      return nestedData.journalEntries as JournalEntryApi[];
+    }
   }
 
   return [];
@@ -346,22 +330,20 @@ async function responseError(
   try {
     const data = (await response.json()) as unknown;
 
-    if (
-      typeof data === "object" &&
-      data !== null &&
-      "message" in data &&
-      typeof (data as { message?: unknown }).message === "string"
-    ) {
-      return (data as { message: string }).message;
-    }
+    if (typeof data === "object" && data !== null) {
+      if (
+        "message" in data &&
+        typeof (data as { message?: unknown }).message === "string"
+      ) {
+        return (data as { message: string }).message;
+      }
 
-    if (
-      typeof data === "object" &&
-      data !== null &&
-      "error" in data &&
-      typeof (data as { error?: unknown }).error === "string"
-    ) {
-      return (data as { error: string }).error;
+      if (
+        "error" in data &&
+        typeof (data as { error?: unknown }).error === "string"
+      ) {
+        return (data as { error: string }).error;
+      }
     }
   } catch {
     return fallbackMessage;
@@ -394,7 +376,9 @@ function normalizeHealthStatus(
   }
 
   if (healthStatus in legacyMap) {
-    return legacyMap[healthStatus as LegacyPlantHealthStatus];
+    return legacyMap[
+      healthStatus as LegacyPlantHealthStatus
+    ];
   }
 
   return healthStatus as PlantHealthStatus;
@@ -411,7 +395,8 @@ function healthLabel(
 
   return (
     healthOptions.find(
-      (option) => option.value === normalizedHealthStatus,
+      (option) =>
+        option.value === normalizedHealthStatus,
     )?.label ?? normalizedHealthStatus
   );
 }
@@ -445,7 +430,9 @@ function getPhotoSource(
     : null;
 }
 
-function toDateInputValue(date?: string | null): string {
+function toDateInputValue(
+  date?: string | null,
+): string {
   if (!date) {
     return "";
   }
@@ -459,18 +446,24 @@ function toDateInputValue(date?: string | null): string {
   const timezoneOffset =
     parsedDate.getTimezoneOffset() * 60_000;
 
-  return new Date(parsedDate.getTime() - timezoneOffset)
+  return new Date(
+    parsedDate.getTime() - timezoneOffset,
+  )
     .toISOString()
     .slice(0, 10);
 }
 
-function dateInputToIso(date: string): string | null {
+function dateInputToIso(
+  date: string,
+): string | null {
   return date
     ? new Date(`${date}T12:00:00`).toISOString()
     : null;
 }
 
-function formatDate(date?: string | null): string {
+function formatDate(
+  date?: string | null,
+): string {
   if (!date) {
     return "Not recorded";
   }
@@ -488,7 +481,9 @@ function formatDate(date?: string | null): string {
   }).format(parsedDate);
 }
 
-function formatTimelineDate(date: string): string {
+function formatTimelineDate(
+  date: string,
+): string {
   const parsedDate = new Date(date);
 
   if (Number.isNaN(parsedDate.getTime())) {
@@ -504,7 +499,9 @@ function formatTimelineDate(date: string): string {
   }).format(parsedDate);
 }
 
-function getTimelineIcon(type: CareEventType): string {
+function getTimelineIcon(
+  type: CareEventType,
+): string {
   const icons: Record<CareEventType, string> = {
     watered: "💧",
     photo: "📷",
@@ -516,7 +513,9 @@ function getTimelineIcon(type: CareEventType): string {
   return icons[type];
 }
 
-function getJournalPlantId(entry: JournalEntryApi): string {
+function getJournalPlantId(
+  entry: JournalEntryApi,
+): string {
   const plantReference =
     entry.userPlantId ?? entry.plantId;
 
@@ -547,59 +546,76 @@ function createTimeline(
 ): CareEvent[] {
   const events: CareEvent[] = entries
     .filter(
-      (entry) => getJournalPlantId(entry) === plant._id,
+      (entry) =>
+        getJournalPlantId(entry) === plant._id,
     )
-    .flatMap((entry, index): CareEvent[] => {
-      const occurredAt = getJournalDate(entry);
+    .flatMap(
+      (
+        entry,
+        index,
+      ): CareEvent[] => {
+        const occurredAt =
+          getJournalDate(entry);
 
-      if (!occurredAt) {
-        return [];
-      }
+        if (!occurredAt) {
+          return [];
+        }
 
-      const normalizedHealthStatus =
-        entry.healthStatus ?? entry.health;
+        const normalizedHealthStatus =
+          entry.healthStatus ??
+          entry.health;
 
-      const hasPhotos =
-        Array.isArray(entry.photos) &&
-        entry.photos.length > 0;
+        const hasPhotos =
+          Array.isArray(entry.photos) &&
+          entry.photos.length > 0;
 
-      let type: CareEventType = "journal";
+        let type: CareEventType =
+          "journal";
 
-      if (entry.watered) {
-        type = "watered";
-      } else if (hasPhotos) {
-        type = "photo";
-      } else if (normalizedHealthStatus) {
-        type = "health";
-      }
+        if (entry.watered) {
+          type = "watered";
+        } else if (hasPhotos) {
+          type = "photo";
+        } else if (
+          normalizedHealthStatus
+        ) {
+          type = "health";
+        }
 
-      const defaultTitle =
-        type === "watered"
-          ? "Plant watered"
-          : type === "photo"
-            ? "Photo added"
-            : type === "health"
-              ? `Health: ${healthLabel(
-                  normalizedHealthStatus,
-                )}`
-              : "Journal entry";
+        const defaultTitle =
+          type === "watered"
+            ? "Plant watered"
+            : type === "photo"
+              ? "Photo added"
+              : type === "health"
+                ? `Health: ${healthLabel(
+                    normalizedHealthStatus,
+                  )}`
+                : "Journal entry";
 
-      return [
-        {
-          _id:
-            entry._id ??
-            entry.id ??
-            `journal-${occurredAt}-${index}`,
-          type,
-          title: entry.title?.trim() || defaultTitle,
-          details:
-            entry.body?.trim() ||
-            entry.notes?.trim() ||
-            undefined,
-          occurredAt,
-        },
-      ];
-    });
+        return [
+          {
+            _id:
+              entry._id ??
+              entry.id ??
+              `journal-${occurredAt}-${index}`,
+
+            type,
+
+            title:
+              entry.title?.trim() ||
+              defaultTitle,
+
+            details:
+              entry.body?.trim() ||
+              entry.notes?.trim() ||
+              undefined,
+
+            occurredAt,
+          },
+        ];
+      },
+    );
 
   if (plant.createdAt) {
     events.push({
@@ -613,23 +629,35 @@ function createTimeline(
 
   if (plant.lastWateredAt) {
     const lastWateredTime =
-      new Date(plant.lastWateredAt).getTime();
+      new Date(
+        plant.lastWateredAt,
+      ).getTime();
 
-    const alreadyRecorded = events.some((event) => {
-      if (event.type !== "watered") {
-        return false;
-      }
+    const alreadyRecorded =
+      events.some((event) => {
+        if (
+          event.type !== "watered"
+        ) {
+          return false;
+        }
 
-      const eventTime =
-        new Date(event.occurredAt).getTime();
+        const eventTime =
+          new Date(
+            event.occurredAt,
+          ).getTime();
 
-      return (
-        Number.isFinite(eventTime) &&
-        Number.isFinite(lastWateredTime) &&
-        Math.abs(eventTime - lastWateredTime) <
-          60 * 60 * 1000
-      );
-    });
+        return (
+          Number.isFinite(eventTime) &&
+          Number.isFinite(
+            lastWateredTime,
+          ) &&
+          Math.abs(
+            eventTime -
+              lastWateredTime,
+          ) <
+            60 * 60 * 1000
+        );
+      });
 
     if (!alreadyRecorded) {
       events.push({
@@ -637,15 +665,23 @@ function createTimeline(
         type: "watered",
         title: "Plant watered",
         details: `Last watering recorded for ${plant.nickname}.`,
-        occurredAt: plant.lastWateredAt,
+        occurredAt:
+          plant.lastWateredAt,
       });
     }
   }
 
   return events.sort(
-    (firstEvent, secondEvent) =>
-      new Date(secondEvent.occurredAt).getTime() -
-      new Date(firstEvent.occurredAt).getTime(),
+    (
+      firstEvent,
+      secondEvent,
+    ) =>
+      new Date(
+        secondEvent.occurredAt,
+      ).getTime() -
+      new Date(
+        firstEvent.occurredAt,
+      ).getTime(),
   );
 }
 
@@ -657,28 +693,54 @@ function createEditDraft(
 
   return {
     nickname: plant.nickname,
-    healthStatus: normalizeHealthStatus(
-      plant.healthStatus,
-    ),
+
+    healthStatus:
+      normalizeHealthStatus(
+        plant.healthStatus,
+      ),
+
     healthNotes:
-      plant.healthNotes ?? plant.notes ?? "",
-    location: plant.location ?? "",
-    acquiredAt: toDateInputValue(plant.acquiredAt),
-    lastWateredAt: toDateInputValue(
-      plant.lastWateredAt,
-    ),
-    nextWateringAt: toDateInputValue(
-      plant.nextWateringAt,
-    ),
+      plant.healthNotes ??
+      plant.notes ??
+      "",
+
+    location:
+      plant.location ?? "",
+
+    acquiredAt:
+      toDateInputValue(
+        plant.acquiredAt,
+      ),
+
+    lastWateredAt:
+      toDateInputValue(
+        plant.lastWateredAt,
+      ),
+
+    nextWateringAt:
+      toDateInputValue(
+        plant.nextWateringAt,
+      ),
+
     wateringRemindersEnabled:
-      plant.wateringRemindersEnabled ?? true,
+      plant.wateringRemindersEnabled ??
+      true,
+
     notificationEnabled:
-      notificationSettings?.enabled ?? true,
+      notificationSettings?.enabled ??
+      true,
+
     reminderTime:
-      notificationSettings?.reminderTime ?? "09:00",
-    reminderDaysBefore: String(
-      notificationSettings?.reminderDaysBefore ?? 0,
-    ),
+      notificationSettings
+        ?.reminderTime ??
+      "09:00",
+
+    reminderDaysBefore:
+      String(
+        notificationSettings
+          ?.reminderDaysBefore ??
+          0,
+      ),
   };
 }
 
@@ -686,248 +748,357 @@ function PlantDetail() {
   const navigate = useNavigate();
 
   const { plantId } =
-    useParams<{ plantId: string }>();
+    useParams<{
+      plantId: string;
+    }>();
 
   const photoInputRef =
-    useRef<HTMLInputElement>(null);
+    useRef<HTMLInputElement>(
+      null,
+    );
 
-  const [currentUser, setCurrentUser] =
-    useState<CurrentUser | null>(null);
-
-  const [plant, setPlant] =
-    useState<PlantDetailData | null>(null);
-
-  const [journalEntries, setJournalEntries] =
-    useState<JournalEntryApi[]>([]);
-
-  const [loading, setLoading] =
-    useState(true);
-
-  const [pageError, setPageError] =
-    useState("");
-
-  const [timelineError, setTimelineError] =
-    useState("");
-
-  const [actionMessage, setActionMessage] =
-    useState("");
-
-  const [watering, setWatering] =
-    useState(false);
-
-  const [uploadingPhoto, setUploadingPhoto] =
-    useState(false);
-
-  const [deleting, setDeleting] =
-    useState(false);
-
-  const [editing, setEditing] =
-    useState(false);
-
-  const [savingEdit, setSavingEdit] =
-    useState(false);
-
-  const [editDraft, setEditDraft] =
-    useState<PlantEditDraft | null>(null);
-
-  const redirectOnUnauthorized = useCallback(
-    (response: Response): boolean => {
-      if (response.status === 401) {
-        localStorage.removeItem("potbuddyToken");
-        localStorage.removeItem("potbuddyUser");
-
-        navigate("/login", {
-          replace: true,
-        });
-
-        return true;
-      }
-
-      return false;
-    },
-    [navigate],
+  const [
+    currentUser,
+    setCurrentUser,
+  ] = useState<CurrentUser | null>(
+    null,
   );
 
-  const loadPlant = useCallback(
-    async (
-      signal?: AbortSignal,
-    ): Promise<void> => {
-      if (!plantId) {
-        setPageError("No plant was selected.");
-        setLoading(false);
-        return;
-      }
-
-      const response = await apiFetch(
-        `/plants/${plantId}`,
-        {
-          signal,
-        },
-      );
-
-      if (redirectOnUnauthorized(response)) {
-        return;
-      }
-
-      if (!response.ok) {
-        const message = await responseError(
-          response,
-          response.status === 404
-            ? "This plant could not be found."
-            : "The plant details could not be loaded.",
-        );
-
-        throw new Error(message);
-      }
-
-      const plantData = await readJson(response);
-
-      setPlant(
-        normalizePlantResponse(plantData),
-      );
-    },
-    [plantId, redirectOnUnauthorized],
+  const [
+    plant,
+    setPlant,
+  ] = useState<PlantDetailData | null>(
+    null,
   );
 
-  const loadJournalEntries = useCallback(
-    async (
-      signal?: AbortSignal,
-    ): Promise<void> => {
-      try {
-        setTimelineError("");
+  const [
+    journalEntries,
+    setJournalEntries,
+  ] = useState<JournalEntryApi[]>(
+    [],
+  );
 
-        const response = await apiFetch(
-          "/journal-entries",
-          {
-            signal,
-          },
-        );
+  const [
+    loading,
+    setLoading,
+  ] = useState(true);
 
-        if (redirectOnUnauthorized(response)) {
+  const [
+    pageError,
+    setPageError,
+  ] = useState("");
+
+  const [
+    timelineError,
+    setTimelineError,
+  ] = useState("");
+
+  const [
+    actionMessage,
+    setActionMessage,
+  ] = useState("");
+
+  const [
+    watering,
+    setWatering,
+  ] = useState(false);
+
+  const [
+    uploadingPhoto,
+    setUploadingPhoto,
+  ] = useState(false);
+
+  const [
+    deleting,
+    setDeleting,
+  ] = useState(false);
+
+  const [
+    editing,
+    setEditing,
+  ] = useState(false);
+
+  const [
+    savingEdit,
+    setSavingEdit,
+  ] = useState(false);
+
+  const [
+    editDraft,
+    setEditDraft,
+  ] = useState<PlantEditDraft | null>(
+    null,
+  );
+
+  const redirectOnUnauthorized =
+    useCallback(
+      (
+        response: Response,
+      ): boolean => {
+        if (
+          response.status === 401
+        ) {
+          localStorage.removeItem(
+            "potbuddyToken",
+          );
+
+          localStorage.removeItem(
+            "potbuddyUser",
+          );
+
+          navigate(
+            "/login",
+            {
+              replace: true,
+            },
+          );
+
+          return true;
+        }
+
+        return false;
+      },
+      [navigate],
+    );
+
+  const loadPlant =
+    useCallback(
+      async (
+        signal?: AbortSignal,
+      ): Promise<void> => {
+        if (!plantId) {
+          setPageError(
+            "No plant was selected.",
+          );
+
+          setLoading(false);
           return;
         }
 
-        if (
-          response.status === 404 ||
-          response.status === 405
-        ) {
-          setJournalEntries([]);
-
-          setTimelineError(
-            "Journal history is not available from the API yet.",
+        const response =
+          await apiFetch(
+            `/plants/${plantId}`,
+            {
+              signal,
+            },
           );
 
+        if (
+          redirectOnUnauthorized(
+            response,
+          )
+        ) {
           return;
         }
 
         if (!response.ok) {
+          const message =
+            await responseError(
+              response,
+
+              response.status === 404
+                ? "This plant could not be found."
+                : "The plant details could not be loaded.",
+            );
+
           throw new Error(
-            "Recent plant activity could not be loaded.",
+            message,
           );
         }
 
-        const entryData = await readJson(response);
+        const responseData =
+          await readJson(response);
 
-        setJournalEntries(
-          normalizeJournalEntries(entryData),
+        setPlant(
+          normalizePlantResponse(
+            responseData,
+          ),
         );
-      } catch (error) {
-        if (
-          error instanceof DOMException &&
-          error.name === "AbortError"
-        ) {
-          return;
+      },
+      [
+        plantId,
+        redirectOnUnauthorized,
+      ],
+    );
+
+  const loadJournalEntries =
+    useCallback(
+      async (
+        signal?: AbortSignal,
+      ): Promise<void> => {
+        try {
+          setTimelineError("");
+
+          const response =
+            await apiFetch(
+              "/journal-entries",
+              {
+                signal,
+              },
+            );
+
+          if (
+            redirectOnUnauthorized(
+              response,
+            )
+          ) {
+            return;
+          }
+
+          if (
+            response.status === 404 ||
+            response.status === 405
+          ) {
+            setJournalEntries(
+              [],
+            );
+
+            setTimelineError(
+              "Journal history is not available from the API yet.",
+            );
+
+            return;
+          }
+
+          if (!response.ok) {
+            throw new Error(
+              "Recent plant activity could not be loaded.",
+            );
+          }
+
+          const responseData =
+            await readJson(
+              response,
+            );
+
+          setJournalEntries(
+            normalizeJournalEntries(
+              responseData,
+            ),
+          );
+        } catch (error) {
+          if (
+            error instanceof
+              DOMException &&
+            error.name ===
+              "AbortError"
+          ) {
+            return;
+          }
+
+          setJournalEntries([]);
+
+          setTimelineError(
+            error instanceof Error
+              ? error.message
+              : "Recent plant activity could not be loaded.",
+          );
         }
+      },
+      [
+        redirectOnUnauthorized,
+      ],
+    );
 
-        setJournalEntries([]);
-
-        setTimelineError(
-          error instanceof Error
-            ? error.message
-            : "Recent plant activity could not be loaded.",
-        );
-      }
-    },
-    [redirectOnUnauthorized],
-  );
-
-  const loadPage = useCallback(
-    async (
-      signal?: AbortSignal,
-    ): Promise<void> => {
-      if (!plantId) {
-        setPageError("No plant was selected.");
-        setLoading(false);
-        return;
-      }
-
-      try {
-        setLoading(true);
-        setPageError("");
-
-        const userResponse = await apiFetch(
-          "/auth/me",
-          {
-            signal,
-          },
-        );
-
-        if (
-          redirectOnUnauthorized(userResponse)
-        ) {
-          return;
-        }
-
-        if (!userResponse.ok) {
-          const message = await responseError(
-            userResponse,
-            "Your account could not be loaded.",
+  const loadPage =
+    useCallback(
+      async (
+        signal?: AbortSignal,
+      ): Promise<void> => {
+        if (!plantId) {
+          setPageError(
+            "No plant was selected.",
           );
 
-          throw new Error(message);
-        }
-
-        const userData =
-          await readJson(userResponse);
-
-        setCurrentUser(
-          normalizeCurrentUser(userData),
-        );
-
-        await Promise.all([
-          loadPlant(signal),
-          loadJournalEntries(signal),
-        ]);
-      } catch (error) {
-        if (
-          error instanceof DOMException &&
-          error.name === "AbortError"
-        ) {
+          setLoading(false);
           return;
         }
 
-        setPageError(
-          error instanceof Error
-            ? error.message
-            : "This plant could not be loaded.",
-        );
-      } finally {
-        setLoading(false);
-      }
-    },
-    [
-      loadJournalEntries,
-      loadPlant,
-      plantId,
-      redirectOnUnauthorized,
-    ],
-  );
+        try {
+          setLoading(true);
+          setPageError("");
+
+          const userResponse =
+            await apiFetch(
+              "/auth/me",
+              {
+                signal,
+              },
+            );
+
+          if (
+            redirectOnUnauthorized(
+              userResponse,
+            )
+          ) {
+            return;
+          }
+
+          if (!userResponse.ok) {
+            const message =
+              await responseError(
+                userResponse,
+
+                "Your account could not be loaded.",
+              );
+
+            throw new Error(
+              message,
+            );
+          }
+
+          const userData =
+            await readJson(
+              userResponse,
+            );
+
+          setCurrentUser(
+            normalizeCurrentUser(
+              userData,
+            ),
+          );
+
+          await Promise.all([
+            loadPlant(signal),
+
+            loadJournalEntries(
+              signal,
+            ),
+          ]);
+        } catch (error) {
+          if (
+            error instanceof
+              DOMException &&
+            error.name ===
+              "AbortError"
+          ) {
+            return;
+          }
+
+          setPageError(
+            error instanceof Error
+              ? error.message
+              : "This plant could not be loaded.",
+          );
+        } finally {
+          setLoading(false);
+        }
+      },
+      [
+        loadJournalEntries,
+        loadPlant,
+        plantId,
+        redirectOnUnauthorized,
+      ],
+    );
 
   useEffect(() => {
     const controller =
       new AbortController();
 
-    void loadPage(controller.signal);
+    void loadPage(
+      controller.signal,
+    );
 
     return () => {
       controller.abort();
@@ -935,28 +1106,41 @@ function PlantDetail() {
   }, [loadPage]);
 
   const species = useMemo(
-    () => getPlantSpecies(plant),
+    () =>
+      getPlantSpecies(plant),
     [plant],
   );
 
-  const featuredPhoto = useMemo(
-    () => getPhotoSource(plant?.picture),
-    [plant?.picture],
-  );
+  const featuredPhoto =
+    useMemo(
+      () =>
+        getPhotoSource(
+          plant?.picture,
+        ),
+      [plant?.picture],
+    );
 
-  const careTimeline = useMemo(
-    () =>
-      plant
-        ? createTimeline(
-            plant,
-            journalEntries,
-          )
-        : [],
-    [journalEntries, plant],
-  );
+  const careTimeline =
+    useMemo(
+      () =>
+        plant
+          ? createTimeline(
+              plant,
+              journalEntries,
+            )
+          : [],
+      [
+        journalEntries,
+        plant,
+      ],
+    );
 
   async function handleWaterPlant(): Promise<void> {
-    if (!plantId || !plant || watering) {
+    if (
+      !plantId ||
+      !plant ||
+      watering
+    ) {
       return;
     }
 
@@ -964,39 +1148,54 @@ function PlantDetail() {
       setWatering(true);
       setActionMessage("");
 
-      const response = await apiFetch(
-        `/plants/${plantId}/water`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            wateredAt:
-              new Date().toISOString(),
-          }),
-        },
-      );
+      const response =
+        await apiFetch(
+          `/plants/${plantId}/water`,
+          {
+            method: "PATCH",
 
-      if (redirectOnUnauthorized(response)) {
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+
+            body: JSON.stringify({
+              wateredAt:
+                new Date().toISOString(),
+            }),
+          },
+        );
+
+      if (
+        redirectOnUnauthorized(
+          response,
+        )
+      ) {
         return;
       }
 
       if (!response.ok) {
-        const message = await responseError(
-          response,
-          "The watering update could not be saved.",
-        );
+        const message =
+          await responseError(
+            response,
 
-        throw new Error(message);
+            "The watering update could not be saved.",
+          );
+
+        throw new Error(
+          message,
+        );
       }
 
       await Promise.all([
         loadPlant(),
+
         loadJournalEntries(),
       ]);
 
-      setActionMessage("Watering recorded.");
+      setActionMessage(
+        "Watering recorded.",
+      );
     } catch (error) {
       setActionMessage(
         error instanceof Error
@@ -1028,7 +1227,10 @@ function PlantDetail() {
     const selectedFile =
       event.target.files?.[0];
 
-    if (!selectedFile || !plantId) {
+    if (
+      !selectedFile ||
+      !plantId
+    ) {
       return;
     }
 
@@ -1059,7 +1261,8 @@ function PlantDetail() {
 
     const createPhotoFormData =
       (): FormData => {
-        const formData = new FormData();
+        const formData =
+          new FormData();
 
         formData.append(
           "photo",
@@ -1073,44 +1276,108 @@ function PlantDetail() {
       setUploadingPhoto(true);
       setActionMessage("");
 
-      let response = await apiFetch(
-        `/plants/${plantId}/photos`,
-        {
-          method: "POST",
-          body: createPhotoFormData(),
-        },
-      );
+      /*
+       * Main new upload endpoint:
+       *
+       * POST /api/plants/:id/photos
+       */
+      let response =
+        await apiFetch(
+          `/plants/${plantId}/photos`,
+          {
+            method: "POST",
 
+            /*
+             * Do not manually set
+             * Content-Type here.
+             *
+             * The browser must create
+             * the multipart boundary.
+             */
+            body:
+              createPhotoFormData(),
+          },
+        );
+
+      /*
+       * Compatibility endpoint:
+       *
+       * POST /api/plants/:id/picture
+       */
       if (
         response.status === 404 ||
         response.status === 405
       ) {
-        response = await apiFetch(
-          `/plants/${plantId}/picture`,
-          {
-            method: "POST",
-            body: createPhotoFormData(),
-          },
-        );
+        response =
+          await apiFetch(
+            `/plants/${plantId}/picture`,
+            {
+              method: "POST",
+
+              body:
+                createPhotoFormData(),
+            },
+          );
       }
 
-      if (redirectOnUnauthorized(response)) {
+      if (
+        redirectOnUnauthorized(
+          response,
+        )
+      ) {
         return;
       }
 
       if (!response.ok) {
-        const message = await responseError(
-          response,
-          "The photo could not be uploaded.",
-        );
+        const message =
+          await responseError(
+            response,
 
-        throw new Error(message);
+            "The photo could not be uploaded.",
+          );
+
+        throw new Error(
+          message,
+        );
       }
 
-      await loadPlant();
+      /*
+       * photoController returns:
+       *
+       * {
+       *   success: true,
+       *   picture: {...},
+       *   plant: {...}
+       * }
+       *
+       * Use the returned plant immediately
+       * so the new image appears without
+       * requiring a page refresh.
+       */
+      const contentType =
+        response.headers.get(
+          "content-type",
+        );
+
+      if (
+        contentType?.includes(
+          "application/json",
+        )
+      ) {
+        const responseData =
+          await response.json();
+
+        setPlant(
+          normalizePlantResponse(
+            responseData,
+          ),
+        );
+      } else {
+        await loadPlant();
+      }
 
       setActionMessage(
-        "Plant photo saved.",
+        "Plant photo saved and added to this plant.",
       );
     } catch (error) {
       setActionMessage(
@@ -1218,24 +1485,29 @@ function PlantDetail() {
         editDraft.location.trim() ||
         null,
 
-      acquiredAt: dateInputToIso(
-        editDraft.acquiredAt,
-      ),
+      acquiredAt:
+        dateInputToIso(
+          editDraft.acquiredAt,
+        ),
 
-      lastWateredAt: dateInputToIso(
-        editDraft.lastWateredAt,
-      ),
+      lastWateredAt:
+        dateInputToIso(
+          editDraft.lastWateredAt,
+        ),
 
-      nextWateringAt: dateInputToIso(
-        editDraft.nextWateringAt,
-      ),
+      nextWateringAt:
+        dateInputToIso(
+          editDraft.nextWateringAt,
+        ),
 
       wateringRemindersEnabled:
-        editDraft.wateringRemindersEnabled,
+        editDraft
+          .wateringRemindersEnabled,
 
       notificationSettings: {
         enabled:
-          editDraft.notificationEnabled,
+          editDraft
+            .notificationEnabled,
 
         reminderTime:
           editDraft.reminderTime,
@@ -1248,33 +1520,42 @@ function PlantDetail() {
       setSavingEdit(true);
       setActionMessage("");
 
-      const response = await apiFetch(
-        `/plants/${plantId}`,
-        {
-          method: "PATCH",
+      const response =
+        await apiFetch(
+          `/plants/${plantId}`,
+          {
+            method: "PATCH",
 
-          headers: {
-            "Content-Type":
-              "application/json",
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+
+            body: JSON.stringify(
+              updatePayload,
+            ),
           },
+        );
 
-          body: JSON.stringify(
-            updatePayload,
-          ),
-        },
-      );
-
-      if (redirectOnUnauthorized(response)) {
+      if (
+        redirectOnUnauthorized(
+          response,
+        )
+      ) {
         return;
       }
 
       if (!response.ok) {
-        const message = await responseError(
-          response,
-          "The plant changes could not be saved.",
-        );
+        const message =
+          await responseError(
+            response,
 
-        throw new Error(message);
+            "The plant changes could not be saved.",
+          );
+
+        throw new Error(
+          message,
+        );
       }
 
       const contentType =
@@ -1317,7 +1598,11 @@ function PlantDetail() {
   }
 
   async function handleDeletePlant(): Promise<void> {
-    if (!plantId || !plant || deleting) {
+    if (
+      !plantId ||
+      !plant ||
+      deleting
+    ) {
       return;
     }
 
@@ -1334,24 +1619,33 @@ function PlantDetail() {
       setDeleting(true);
       setActionMessage("");
 
-      const response = await apiFetch(
-        `/plants/${plantId}`,
-        {
-          method: "DELETE",
-        },
-      );
+      const response =
+        await apiFetch(
+          `/plants/${plantId}`,
+          {
+            method: "DELETE",
+          },
+        );
 
-      if (redirectOnUnauthorized(response)) {
+      if (
+        redirectOnUnauthorized(
+          response,
+        )
+      ) {
         return;
       }
 
       if (!response.ok) {
-        const message = await responseError(
-          response,
-          "The plant could not be deleted.",
-        );
+        const message =
+          await responseError(
+            response,
 
-        throw new Error(message);
+            "The plant could not be deleted.",
+          );
+
+        throw new Error(
+          message,
+        );
       }
 
       navigate("/plants");
@@ -1380,7 +1674,9 @@ function PlantDetail() {
             🌱
           </span>
 
-          <h1>Loading plant…</h1>
+          <h1>
+            Loading plant…
+          </h1>
 
           <p>
             Gathering plant details and
@@ -1391,7 +1687,10 @@ function PlantDetail() {
     );
   }
 
-  if (pageError || !plant) {
+  if (
+    pageError ||
+    !plant
+  ) {
     return (
       <div className="plant-detail-page">
         <main className="plant-detail-state">
@@ -1402,7 +1701,9 @@ function PlantDetail() {
             🪴
           </span>
 
-          <h1>Plant unavailable</h1>
+          <h1>
+            Plant unavailable
+          </h1>
 
           <p>
             {pageError ||
@@ -1426,7 +1727,8 @@ function PlantDetail() {
     plant.notificationSettings;
 
   const remindersOn =
-    plant.wateringRemindersEnabled !==
+    plant
+      .wateringRemindersEnabled !==
       false &&
     reminderSettings?.enabled !==
       false;
@@ -1450,7 +1752,9 @@ function PlantDetail() {
             🌱
           </span>
 
-          <span>Plant details</span>
+          <span>
+            Plant details
+          </span>
         </div>
 
         <button
@@ -1518,7 +1822,8 @@ function PlantDetail() {
           </div>
 
           <div className="plant-detail-summary">
-            {editing && editDraft ? (
+            {editing &&
+            editDraft ? (
               <form
                 className="plant-detail-edit-form"
                 onSubmit={(event) =>
@@ -1568,6 +1873,7 @@ function PlantDetail() {
                           currentDraft
                             ? {
                                 ...currentDraft,
+
                                 nickname:
                                   event
                                     .target
@@ -1584,7 +1890,8 @@ function PlantDetail() {
 
                   <select
                     value={
-                      editDraft.healthStatus
+                      editDraft
+                        .healthStatus
                     }
                     onChange={(
                       event,
@@ -1596,6 +1903,7 @@ function PlantDetail() {
                           currentDraft
                             ? {
                                 ...currentDraft,
+
                                 healthStatus:
                                   event
                                     .target
@@ -1644,6 +1952,7 @@ function PlantDetail() {
                           currentDraft
                             ? {
                                 ...currentDraft,
+
                                 location:
                                   event
                                     .target
@@ -1662,7 +1971,8 @@ function PlantDetail() {
                     <input
                       type="date"
                       value={
-                        editDraft.acquiredAt
+                        editDraft
+                          .acquiredAt
                       }
                       onChange={(
                         event,
@@ -1674,6 +1984,7 @@ function PlantDetail() {
                             currentDraft
                               ? {
                                   ...currentDraft,
+
                                   acquiredAt:
                                     event
                                       .target
@@ -1691,7 +2002,8 @@ function PlantDetail() {
                     <input
                       type="date"
                       value={
-                        editDraft.lastWateredAt
+                        editDraft
+                          .lastWateredAt
                       }
                       onChange={(
                         event,
@@ -1703,6 +2015,7 @@ function PlantDetail() {
                             currentDraft
                               ? {
                                   ...currentDraft,
+
                                   lastWateredAt:
                                     event
                                       .target
@@ -1721,7 +2034,8 @@ function PlantDetail() {
                   <input
                     type="date"
                     value={
-                      editDraft.nextWateringAt
+                      editDraft
+                        .nextWateringAt
                     }
                     onChange={(
                       event,
@@ -1733,6 +2047,7 @@ function PlantDetail() {
                           currentDraft
                             ? {
                                 ...currentDraft,
+
                                 nextWateringAt:
                                   event
                                     .target
@@ -1749,7 +2064,8 @@ function PlantDetail() {
 
                   <textarea
                     value={
-                      editDraft.healthNotes
+                      editDraft
+                        .healthNotes
                     }
                     rows={5}
                     maxLength={3000}
@@ -1764,6 +2080,7 @@ function PlantDetail() {
                           currentDraft
                             ? {
                                 ...currentDraft,
+
                                 healthNotes:
                                   event
                                     .target
@@ -1779,7 +2096,8 @@ function PlantDetail() {
                   <input
                     type="checkbox"
                     checked={
-                      editDraft.wateringRemindersEnabled
+                      editDraft
+                        .wateringRemindersEnabled
                     }
                     onChange={(
                       event,
@@ -1791,6 +2109,7 @@ function PlantDetail() {
                           currentDraft
                             ? {
                                 ...currentDraft,
+
                                 wateringRemindersEnabled:
                                   event
                                     .target
@@ -1811,7 +2130,8 @@ function PlantDetail() {
                   <input
                     type="checkbox"
                     checked={
-                      editDraft.notificationEnabled
+                      editDraft
+                        .notificationEnabled
                     }
                     onChange={(
                       event,
@@ -1823,6 +2143,7 @@ function PlantDetail() {
                           currentDraft
                             ? {
                                 ...currentDraft,
+
                                 notificationEnabled:
                                   event
                                     .target
@@ -1846,7 +2167,8 @@ function PlantDetail() {
                     <input
                       type="time"
                       value={
-                        editDraft.reminderTime
+                        editDraft
+                          .reminderTime
                       }
                       required
                       onChange={(
@@ -1859,6 +2181,7 @@ function PlantDetail() {
                             currentDraft
                               ? {
                                   ...currentDraft,
+
                                   reminderTime:
                                     event
                                       .target
@@ -1878,7 +2201,8 @@ function PlantDetail() {
                       min="0"
                       step="1"
                       value={
-                        editDraft.reminderDaysBefore
+                        editDraft
+                          .reminderDaysBefore
                       }
                       required
                       onChange={(
@@ -1891,6 +2215,7 @@ function PlantDetail() {
                             currentDraft
                               ? {
                                   ...currentDraft,
+
                                   reminderDaysBefore:
                                     event
                                       .target
@@ -1938,7 +2263,9 @@ function PlantDetail() {
 
                 <dl className="plant-detail-facts">
                   <div>
-                    <dt>Health</dt>
+                    <dt>
+                      Health
+                    </dt>
 
                     <dd>
                       {healthLabel(
@@ -1972,7 +2299,9 @@ function PlantDetail() {
                   </div>
 
                   <div>
-                    <dt>Reminders</dt>
+                    <dt>
+                      Reminders
+                    </dt>
 
                     <dd>
                       {remindersOn
@@ -1991,7 +2320,9 @@ function PlantDetail() {
 
                   {plant.location && (
                     <div>
-                      <dt>Location</dt>
+                      <dt>
+                        Location
+                      </dt>
 
                       <dd>
                         {
@@ -2003,7 +2334,9 @@ function PlantDetail() {
 
                   {plant.acquiredAt && (
                     <div>
-                      <dt>Acquired</dt>
+                      <dt>
+                        Acquired
+                      </dt>
 
                       <dd>
                         {formatDate(
@@ -2028,7 +2361,8 @@ function PlantDetail() {
               void handleWaterPlant()
             }
             disabled={
-              watering || editing
+              watering ||
+              editing
             }
           >
             <span aria-hidden="true">
@@ -2108,7 +2442,9 @@ function PlantDetail() {
                 History
               </p>
 
-              <h2>Care timeline</h2>
+              <h2>
+                Care timeline
+              </h2>
             </div>
 
             <span>
@@ -2122,11 +2458,16 @@ function PlantDetail() {
             </p>
           )}
 
-          {careTimeline.length > 0 ? (
+          {careTimeline.length >
+          0 ? (
             <ol className="plant-detail-timeline__list">
               {careTimeline.map(
                 (event) => (
-                  <li key={event._id}>
+                  <li
+                    key={
+                      event._id
+                    }
+                  >
                     <span
                       className="plant-detail-timeline__icon"
                       aria-hidden="true"
@@ -2139,7 +2480,9 @@ function PlantDetail() {
                     <article>
                       <div>
                         <h3>
-                          {event.title}
+                          {
+                            event.title
+                          }
                         </h3>
 
                         <time
@@ -2193,7 +2536,8 @@ function PlantDetail() {
               </p>
 
               <h2>
-                About {plant.nickname}
+                About{" "}
+                {plant.nickname}
               </h2>
 
               <p>
@@ -2224,7 +2568,8 @@ function PlantDetail() {
               void handleDeletePlant()
             }
             disabled={
-              deleting || editing
+              deleting ||
+              editing
             }
           >
             {deleting
