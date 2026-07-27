@@ -63,19 +63,14 @@ async function getPlantById(req, res) {
 // POST /api/plants
 async function createPlant(req, res) {
     try {
-        const {
-            ownerId,
-            speciesId,
-            nickname,
-            healthStatus,
-            healthNotes,
-            location,
-            acquiredAt,
-            lastWateredAt,
-            nextWateringAt,
-            wateringRemindersEnabled,
-            notificationSettings
-        } = req.body;
+        const ownerId = req.user._id;      // or req.user.id
+        const { speciesId, nickname } = req.body;
+
+        if (!speciesId || !nickname) {
+            return res.status(400).json({
+                error: "speciesId and nickname are required."
+            });
+        }
 
         if (!ownerId || !speciesId || !nickname) {
             return res.status(400).json({
