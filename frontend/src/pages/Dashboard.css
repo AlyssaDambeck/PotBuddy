@@ -1361,3 +1361,47 @@ img.plant-summary-card__image {
     animation: none;
   }
 }
+/*
+ * Paint off-screen sections only when the browser approaches them.
+ * The intrinsic sizes reserve space so this does not create layout shift.
+ */
+.plant-summary-section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 32rem;
+}
+
+/*
+ * Keep the dashboard care preview compact when many plants need attention.
+ */
+.dashboard-care-more {
+  display: inline-flex;
+  width: 100%;
+  min-height: 2.8rem;
+  padding: 0.65rem 0.8rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  border: 1px solid var(--potbuddy-border);
+  border-radius: 0.85rem;
+  color: var(--potbuddy-green-800);
+  background: var(--potbuddy-green-100);
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.dashboard-care-more:hover,
+.dashboard-care-more:focus-visible {
+  border-color: var(--potbuddy-green-500);
+  color: var(--potbuddy-text);
+  background: var(--potbuddy-white);
+}
+
+/*
+ * Let image decoding happen independently of layout and painting.
+ */
+.garden-plant__emoji img,
+.care-card__image img,
+.plant-summary-card__image img,
+.dashboard-notification-image img {
+  image-rendering: auto;
+}
