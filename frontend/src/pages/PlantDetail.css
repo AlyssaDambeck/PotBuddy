@@ -1,23 +1,23 @@
 .plant-detail-page {
-  --plant-green-950: #17351f;
-  --plant-green-900: #21482b;
-  --plant-green-800: #2d6038;
-  --plant-green-700: #3b7a46;
-  --plant-green-500: #68ad65;
-  --plant-green-200: #cceeba;
-  --plant-green-100: #e8f8df;
-  --plant-green-50: #f5fbf1;
-  --plant-cream: #fffdf7;
-  --plant-white: #ffffff;
-  --plant-text: #1e2a20;
-  --plant-muted: #647067;
-  --plant-border: #dbe7d9;
-  --plant-danger: #9f3f3f;
-  --plant-danger-light: #fff0ef;
+  --plant-green-950: var(--text, #ece8de);
+  --plant-green-900: var(--text, #ece8de);
+  --plant-green-800: var(--primary-green, #879a72);
+  --plant-green-700: var(--primary-green, #879a72);
+  --plant-green-500: var(--primary-green, #879a72);
+  --plant-green-200: var(--secondary-green, #6d8062);
+  --plant-green-100: var(--surface-light, #343b33);
+  --plant-green-50: var(--background, #1f241e);
+  --plant-cream: var(--surface-light, #343b33);
+  --plant-white: var(--surface, #2a3028);
+  --plant-text: var(--text, #ece8de);
+  --plant-muted: var(--text-muted, #b8b2a6);
+  --plant-border: var(--border, rgba(236, 232, 222, 0.08));
+  --plant-danger: var(--terracotta, #b16f4e);
+  --plant-danger-light: rgba(177, 111, 78, 0.16);
   min-height: 100vh;
   color: var(--plant-text);
   background:
-    radial-gradient(circle at top left, rgba(174, 225, 151, 0.35), transparent 34rem),
+    radial-gradient(circle at top left, rgba(135, 154, 114, 0.12), transparent 34rem),
     var(--plant-green-50);
 }
 
@@ -32,6 +32,17 @@
   font: inherit;
 }
 
+.plant-detail-page {
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+.plant-detail-page h1,
+.plant-detail-page h2,
+.plant-detail-page h3,
+.plant-detail-header__brand {
+  font-family: "Cormorant Garamond", Georgia, serif;
+}
+
 .plant-detail-header {
   position: sticky;
   top: 0;
@@ -42,8 +53,8 @@
   grid-template-columns: 3rem 1fr 3rem;
   align-items: center;
   gap: 0.75rem;
-  border-bottom: 1px solid rgba(219, 231, 217, 0.9);
-  background: rgba(255, 253, 247, 0.92);
+  border-bottom: 1px solid rgba(236, 232, 222, 0.08);
+  background: rgba(42, 48, 40, 0.92);
   backdrop-filter: blur(16px);
 }
 
@@ -64,7 +75,7 @@
 
 .plant-detail-header__button:hover,
 .plant-detail-header__button:focus-visible {
-  color: white;
+  color: var(--background, #1f241e);
   background: var(--plant-green-800);
 }
 
@@ -88,10 +99,10 @@
 .plant-detail-actions,
 .plant-detail-timeline,
 .plant-detail-notes {
-  border: 1px solid rgba(219, 231, 217, 0.95);
+  border: 1px solid rgba(236, 232, 222, 0.08);
   border-radius: 1.5rem;
   background: var(--plant-white);
-  box-shadow: 0 10px 30px rgba(29, 77, 39, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.24);
 }
 
 .plant-detail-hero {
@@ -106,9 +117,9 @@
   min-height: 20rem;
   overflow: hidden;
   place-items: center;
-  border: 1px solid rgba(76, 150, 85, 0.2);
+  border: 1px solid rgba(135, 154, 114, 0.2);
   border-radius: 1.25rem;
-  background: linear-gradient(180deg, rgba(232, 248, 223, 0.8), rgba(204, 238, 186, 0.7));
+  background: linear-gradient(180deg, rgba(52, 59, 51, 0.96), rgba(109, 128, 98, 0.52));
 }
 
 .plant-detail-photo-card > img {
@@ -140,7 +151,7 @@
   border: 1px solid var(--plant-green-700);
   border-radius: 0.75rem;
   color: var(--plant-green-800);
-  background: rgba(255, 255, 255, 0.82);
+  background: rgba(42, 48, 40, 0.88);
   cursor: pointer;
   font-size: 0.8rem;
   font-weight: 900;
@@ -341,7 +352,7 @@
   width: 2.5rem;
   height: 2.5rem;
   place-items: center;
-  border: 3px solid white;
+  border: 3px solid var(--surface, #2a3028);
   border-radius: 50%;
   background: var(--plant-green-100);
 }
@@ -375,7 +386,7 @@
 
 .plant-detail-timeline__list p {
   margin: 0.55rem 0 0;
-  color: #3f4b41;
+  color: var(--text-muted, #b8b2a6);
   font-size: 0.85rem;
   line-height: 1.55;
 }
@@ -403,7 +414,7 @@
 
 .plant-detail-notes > p:last-child {
   margin: 0.75rem 0 0;
-  color: #3f4b41;
+  color: var(--text-muted, #b8b2a6);
   line-height: 1.65;
   white-space: pre-wrap;
 }
@@ -434,7 +445,7 @@
 }
 
 .plant-detail-management .plant-detail-delete-button {
-  border-color: rgba(159, 63, 63, 0.5);
+  border-color: rgba(177, 111, 78, 0.5);
   color: var(--plant-danger);
   background: var(--plant-danger-light);
 }
@@ -442,7 +453,7 @@
 .plant-detail-management .plant-detail-delete-button:hover,
 .plant-detail-management .plant-detail-delete-button:focus-visible {
   border-color: var(--plant-danger);
-  color: white;
+  color: var(--background, #1f241e);
   background: var(--plant-danger);
 }
 
@@ -477,14 +488,14 @@
   padding: 0.7rem 1rem;
   border: 0;
   border-radius: 0.9rem;
-  color: white;
+  color: var(--background, #1f241e);
   background: var(--plant-green-800);
   cursor: pointer;
   font-weight: 900;
 }
 
 .plant-detail-page button:focus-visible {
-  outline: 3px solid rgba(76, 150, 85, 0.35);
+  outline: 3px solid rgba(135, 154, 114, 0.42);
   outline-offset: 2px;
 }
 
@@ -609,7 +620,7 @@
 .plant-detail-edit-form select:focus,
 .plant-detail-edit-form textarea:focus {
   border-color: var(--plant-green-500);
-  box-shadow: 0 0 0 3px rgba(76, 150, 85, 0.16);
+  box-shadow: 0 0 0 3px rgba(135, 154, 114, 0.16);
 }
 
 .plant-detail-edit-form__row {
@@ -622,7 +633,7 @@
   padding: 0.7rem 1rem;
   border: 0;
   border-radius: 0.9rem;
-  color: white;
+  color: var(--background, #1f241e);
   background: var(--plant-green-800);
   cursor: pointer;
   font-weight: 900;
