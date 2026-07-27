@@ -11,6 +11,32 @@ import {
 } from "react-router-dom";
 import "./Journal.css";
 
+const apiBaseUrl = (
+  import.meta.env.VITE_API_URL || "/api"
+).replace(/\/$/, "");
+
+function getAuthToken(): string | null {
+  return localStorage.getItem("potbuddyToken");
+}
+
+async function apiFetch(
+  path: string,
+  options: RequestInit = {},
+): Promise<Response> {
+  const headers = new Headers(options.headers);
+  const token = getAuthToken();
+
+  if (token) {
+    headers.set("Authorization", `Bearer ${token}`);
+  }
+
+  return fetch(`${apiBaseUrl}${path}`, {
+    ...options,
+    headers,
+    credentials: "include",
+  });
+}
+
 type PlantHealthStatus =
   | "healthy"
   | "needs-attention"
@@ -146,6 +172,17 @@ function createEmptyDraft(userPlantId = ""): JournalDraft {
 }
 
 function normalizeCurrentUser(data: unknown): CurrentUser {
+  if (
+    typeof data === "object" &&
+    data !== null &&
+    "data" in data &&
+    typeof (data as { data?: unknown }).data === "object" &&
+    (data as { data: { user?: unknown } }).data !== null &&
+    typeof (data as { data: { user?: unknown } }).data.user === "object"
+  ) {
+    return (data as { data: { user: CurrentUser } }).data.user;
+  }
+
   if (
     typeof data === "object" &&
     data !== null &&
@@ -421,15 +458,9 @@ function Journal() {
 
       const [userResponse, plantsResponse, entriesResponse] =
         await Promise.all([
-          fetch("/api/auth/me", {
-            credentials: "include",
-          }),
-          fetch("/api/user-plants", {
-            credentials: "include",
-          }),
-          fetch("/api/journal-entries", {
-            credentials: "include",
-          }),
+          apiFetch("/auth/me"),
+          apiFetch("/user-plants"),
+          apiFetch("/journal-entries"),
         ]);
 
       if (
@@ -588,9 +619,8 @@ function Journal() {
         `${draft.date}T12:00:00`,
       ).toISOString();
 
-      const response = await fetch("/api/journal-entries", {
+      const response = await apiFetch("/journal-entries", {
         method: "POST",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },

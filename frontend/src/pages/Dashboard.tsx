@@ -8,7 +8,7 @@ const apiBaseUrl = (
 ).replace(/\/$/, "");
 
 function getAuthToken(): string | null {
-  return localStorage.getItem("token");
+  return localStorage.getItem("potbuddyToken");
 }
 
 async function apiFetch(
@@ -667,7 +667,8 @@ function Dashboard() {
     setMenuOpen(false);
     setNotificationsOpen(false);
 
-    localStorage.removeItem("token");
+    localStorage.removeItem("potbuddyToken");
+    localStorage.removeItem("potbuddyUser");
     setCurrentUser(null);
     setPlants([]);
     navigate("/login", { replace: true });
