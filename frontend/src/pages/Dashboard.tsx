@@ -1,8 +1,8 @@
 import type { ChangeEvent, FormEvent } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import "./Dashboard.css";
 import WeatherButton from "../components/WeatherButton";
+import "./Dashboard.css";
 
 const apiBaseUrl = (
   import.meta.env.VITE_API_URL || "/api"
