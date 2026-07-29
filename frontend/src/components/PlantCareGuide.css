@@ -10,50 +10,41 @@
 
 }
 
-.care-grid{
-
-    display:grid;
-
-    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-
-    gap:20px;
-
+.care-list{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    margin-top:20px;
 }
 
-.care-card{
+.care-row{
+    display:flex;
+    justify-content:space-between;
+    gap:30px;
 
-    background:var(--plant-white);
+    padding:14px 18px;
 
-    border:1px solid var(--plant-border);
+    border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.care-row span:first-child{
+    font-weight:700;
+    color:var(--plant-text);
+    min-width:180px;
+}
+
+.care-row span:last-child{
+    text-align:right;
+    color:var(--plant-text-light);
+}
+
+
+.care-card-full{
+    margin-top:30px;
+
+    padding:22px;
 
     border-radius:18px;
-
-    padding:20px;
-
-    box-shadow:0 8px 20px rgba(0,0,0,.12);
-
-}
-
-.care-card h3{
-
-    margin-bottom:12px;
-
-}
-
-.care-card p{
-
-    margin-top:12px;
-
-    line-height:1.6;
-
-}
-
-.care-card ul{
-
-    margin-top:10px;
-
-    padding-left:20px;
-
 }
 
 .care-badge{
