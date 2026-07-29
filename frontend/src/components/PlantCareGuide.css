@@ -1,0 +1,137 @@
+.care-guide{
+
+    margin-top:2rem;
+
+}
+
+.care-guide h2{
+
+    margin-bottom:1.5rem;
+
+}
+
+.care-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+
+    gap:20px;
+
+}
+
+.care-card{
+
+    background:var(--plant-white);
+
+    border:1px solid var(--plant-border);
+
+    border-radius:18px;
+
+    padding:20px;
+
+    box-shadow:0 8px 20px rgba(0,0,0,.12);
+
+}
+
+.care-card h3{
+
+    margin-bottom:12px;
+
+}
+
+.care-card p{
+
+    margin-top:12px;
+
+    line-height:1.6;
+
+}
+
+.care-card ul{
+
+    margin-top:10px;
+
+    padding-left:20px;
+
+}
+
+.care-badge{
+
+    display:inline-block;
+
+    margin-top:4px;
+
+    padding:6px 14px;
+
+    border-radius:999px;
+
+    background:#dbeecf;
+
+    color:#335b2f;
+
+    font-weight:600;
+
+}
+
+.care-badge.safe{
+
+    background:#d9f7d9;
+
+    color:#166534;
+
+}
+
+.care-badge.danger{
+
+    background:#fde2e2;
+
+    color:#991b1b;
+
+}
+
+.care-card-full{
+    grid-column:1/-1;
+}
+
+.disease-item{
+    margin-top:14px;
+    border:1px solid var(--plant-border);
+    border-radius:12px;
+    overflow:hidden;
+}
+
+.disease-item summary{
+    cursor:pointer;
+    padding:14px 18px;
+    font-weight:600;
+    list-style:none;
+}
+
+.disease-item summary::-webkit-details-marker{
+    display:none;
+}
+
+.disease-item summary::after{
+    content:"+";
+    float:right;
+    font-size:1.2rem;
+}
+
+.disease-item[open] summary::after{
+    content:"−";
+}
+
+.disease-content{
+    padding:18px;
+    border-top:1px solid var(--plant-border);
+}
+
+.disease-content h4{
+    margin:16px 0 8px;
+}
+
+.disease-content ul{
+    margin:0;
+    padding-left:20px;
+}

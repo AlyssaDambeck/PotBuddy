@@ -1,3 +1,4 @@
+import type { ChangeEvent, FormEvent } from "react";
 import {
   useCallback,
   useEffect,
@@ -5,8 +6,8 @@ import {
   useRef,
   useState,
 } from "react";
-import type { ChangeEvent, FormEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import PlantCareGuide from "../components/PlantCareGuide";
 import "./PlantDetail.css";
 
 const apiBaseUrl = (
@@ -59,10 +60,57 @@ type CurrentUser = {
   email: string;
 };
 
+type Disease = {
+  name: string;
+  symptoms: string[];
+  cause: string;
+  treatment: string[];
+};
+
 type PlantSpecies = {
   _id?: string;
+
   commonName?: string;
   scientificName?: string;
+  description?: string;
+
+  sunlight?: {
+    level: string;
+    instructions: string;
+  };
+
+  watering?: {
+    intervalDays: number;
+    instructions: string;
+    warningSigns?: string[];
+  };
+
+  humidity?: {
+    level: string;
+    instructions: string;
+  };
+
+  temperature?: {
+    minimum: number;
+    maximum: number;
+    unit: string;
+  };
+
+  soil?: string;
+
+  fertilizing?: {
+    intervalDays?: number;
+    instructions?: string;
+  };
+
+  toxicity?: {
+    toxicToPets: boolean;
+    notes?: string;
+  };
+
+  commonDiseases?: Disease[];
+
+  additionalCareNotes?: string[];
 };
 
 type PlantPicture = {
@@ -2434,6 +2482,10 @@ function PlantDetail() {
             {actionMessage}
           </p>
         )}
+
+        <PlantCareGuide
+          species={getPlantSpecies(plant)}
+        />
 
         <section className="plant-detail-timeline">
           <div className="plant-detail-section-heading">
