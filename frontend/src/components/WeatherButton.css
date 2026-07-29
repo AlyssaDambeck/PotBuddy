@@ -25,7 +25,7 @@
   padding: 0.55rem 1rem;
   border: 0;
   border-radius: 999px;
-  color: black;
+  color: transparent;
   background: var(--potbuddy-green-700);
   font-weight: 800;
   cursor: pointer;
